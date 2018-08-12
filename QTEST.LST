@@ -1,0 +1,107 @@
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:36  05/08/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE MAIN
+OBJECT MODULE PLACED IN QTEST.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE QTEST.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     NAME  MAIN
+                             2     
+                             3      
+                             4     CGROUP  GROUP   CODE
+                             5     
+                             6     
+                             7     EXTRN   InitQueues      :NEAR
+                             8     EXTRN   TxEnQueue       :NEAR
+                             9     EXTRN   TxDeQueue       :NEAR
+                            10     
+                            11     
+                            12     
+----                        13     CODE SEGMENT PUBLIC 'CODE'
+                            14     
+                            15             ASSUME  CS:CGROUP, DS:DATA, SS:STACK
+                            16     
+                            17     
+                            18     
+0000                        19     START:  
+                            20     
+0000                        21     MAIN:
+0000 B8----         R       22             MOV     AX, STACK               ;initialize the stack pointer
+0003 8ED0                   23             MOV     SS, AX
+0005 BCE00190       R       24             MOV     SP, OFFSET(TopOfStack)
+                            25     
+0009 B8----         R       26             MOV     AX, DATA                ;initialize the data segment
+000C 8ED8                   27             MOV     DS, AX
+                            28     
+000E E80000         E       29             CALL    InitQueues
+                            30     
+0011                        31     Forever:
+                            32     
+0011                        33     point1: 
+                            34     
+0011 3D0100                 35             CMP     AX, 1
+0014 7505                   36             JNE     GetChar
+                            37      
+0016                        38     PutChar:
+                            39     
+0016 E80000         E       40             CALL    TxEnQueue
+0019 EBF6                   41             JMP     Forever
+                            42     
+001B                        43     GetChar:
+                            44     
+001B E80000         E       45             CALL    TXDeQueue
+                            46     
+                            47     
+                            48     
+                            49     
+                            50     
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:36  05/08/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+001E EBF1                   51             JMP     Forever                 ;sit in an infinite loop, nothing to
+                            52                                             ;   do in the background routine
+                            53     
+                            54     
+                            55     
+                            56     
+                            57     
+                            58     
+                            59     
+0020 F4                     60             HLT                             ;never executed (hopefully)
+                            61     
+                            62     
+                            63     
+----                        64     CODE ENDS
+                            65     
+----                        66     DATA    SEGMENT PUBLIC  'DATA'
+                            67     
+                            68     
+                            69     
+                            70     
+----                        71     DATA    ENDS
+                            72     
+                            73     
+                            74     
+                            75     
+                            76     ;the stack
+                            77     
+----                        78     STACK           SEGMENT STACK  'STACK'
+                            79     
+0000 (80                    80                     DB      80 DUP ('Stack ')       ;240 words
+     537461636B20
+     )
+                            81     
+01E0                        82     TopOfStack      LABEL   WORD
+                            83     
+----                        84     STACK           ENDS
+                            85     
+                            86     
+                            87     
+                            88             END     START
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

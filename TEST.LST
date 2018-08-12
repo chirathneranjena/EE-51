@@ -1,0 +1,89 @@
+8086/87/88/186 MACRO ASSEMBLER    ANONYMOUS                                                13:26:57  02/07/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE ANONYMOUS
+OBJECT MODULE PLACED IN TEST.OBJ
+ASSEMBLER INVOKED BY:  C:\ASM\ASM86.EXE TEST.ASM
+
+
+LOC  OBJ                  LINE     SOURCE
+
+----                         1     PROGRAM SEGMENT PUBLIC 'CODE'
+                             2     
+                             3             ASSUME  CS:PROGRAM, DS:DATA, ES:DATA, SS:STACK
+                             4     
+0000                         5     CheckF:
+0000 833E020000     R        6             CMP  F,0                ; IF ( F >= 0) THEN
+0005 7C06                    7             JL   FgreatthanZero     ;   
+                             8             ;JGE FlessthanZero
+                             9     
+0007                        10     FlessthanZero:
+0007 BB0000                 11             MOV  BX, 0              ; B=0
+000A EB0C90                 12             JMP LoopCondition       ; ELSE
+                            13     
+000D                        14     FgreatthanZero:
+000D 8BC1                   15             MOV  AX, CX             ; B = 22 * C/F
+000F F73E0200       R       16             IDIV F
+0013 6BC016                 17             IMUL AX, 22
+*** ERROR #157 IN 17, iAPX186 INSTRUCTION REQUIRES $MOD186 CONTROL
+0016 8BD8                   18             MOV BX, AX
+                            19             ;JMP LoopCondition      ; END IF        
+                            20     
+0018                        21     LoopCondition:                  ; WHILE (E > 5)
+0018 833E000005     R       22            CMP  E,5        ;   AND (B > 7)
+001D 7E12                   23            JLE Final       ; If the conditions are met      
+001F 83FB07                 24            CMP  BX, 7      ; then execute the body of the
+0022 7E0D                   25            JLE Final       ; loop
+                            26            ;JMP LoopBody   ; else exit the loop
+                            27     
+0024                        28     LoopBody:
+0024 A10000         R       29            MOV  AX, E       ; E = E -1
+0027 2D0100                 30            SUB  AX, 1
+002A A30000         R       31            MOV  E, AX
+002D 2BDA                   32            SUB  BX, DX      ; B = E -D
+002F EBE7                   33            JMP LoopCondition
+                            34     
+0031                        35     Final:
+0031 A10000         R       36            MOV  AX, E        ; D = E - B
+0034 2BC3                   37            SUB  AX, BX
+0036 8BD0                   38            MOV  DX, AX
+                            39     
+----                        40     PROGRAM ENDS
+                            41     
+                            42     ;the data segment
+                            43     
+----                        44     DATA    SEGMENT  WORD  PUBLIC  'DATA'
+                            45     
+                            46     
+0000 ????                   47     E               DW      ?             
+                            48     
+0002 ????                   49     F               DW      ?
+8086/87/88/186 MACRO ASSEMBLER    ANONYMOUS                                                13:26:57  02/07/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            50     
+----                        51     DATA    ENDS
+                            52     
+                            53     
+                            54     
+----                        55     STACK           SEGMENT  WORD  STACK  'STACK'
+                            56     
+                            57     
+0000 (80                    58                     DB      80 DUP ('Stack   ')             ;320 words
+     537461636B2020
+     20
+     )
+                            59     
+0280                        60     TopOfStack      LABEL   WORD
+                            61     
+                            62     
+----                        63     STACK           ENDS
+                            64     
+                            65     
+                            66     
+                            67             END     CheckF
+*** ERROR #151 IN 67, NO NAME DIRECTIVE ENCOUNTERED, DEFAULT MODULE NAME USED
+
+ASSEMBLY COMPLETE, 2 ERRORS FOUND

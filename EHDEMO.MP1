@@ -1,0 +1,20 @@
+
+DOS 7.10 (038-N) 8086 LINKER, V2.7
+
+INPUT FILES: EHDEMO.OBJ
+OUTPUT FILE: EHDEMO.LNK
+CONTROLS SPECIFIED IN INVOCATION COMMAND:
+DATE:  02/15/:2  TIME:  16:15:11
+
+
+LINK MAP OF MODULE EHDEMO
+
+LOGICAL SEGMENTS INCLUDED:
+LENGTH ADDRESS ALIGN  SEGMENT         CLASS           OVERLAY
+ 0000H ------    G    ??SEG                                         
+ 011CH ------    G    PROGRAM         CODE                          
+ 0003H ------    G    DATA            DATA                          
+ 01E0H ------    G    STACK           STACK                         
+
+INPUT MODULES INCLUDED:
+EHDEMO.OBJ(EHDEMO)

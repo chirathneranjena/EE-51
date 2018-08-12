@@ -1,0 +1,171 @@
+8086/87/88/186 MACRO ASSEMBLER    H2S                                                      20:55:54  02/09/:2  PAGE    1
+
+
+DOS 7.10 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE H2S
+OBJECT MODULE PLACED IN H2S.OBJ
+ASSEMBLER INVOKED BY:  C:\ASM\ASM86.EXE H2S.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     NAME H2S
+                             2     
+----                         3     PROGRAM SEGMENT PUBLIC 'CODE'
+                             4     
+                             5       ASSUME CS:PROGRAM, DS:DATA, ES:DATA, SS:STACK
+                             6     
+                             7     
+0000                         8     Dec2StringStart:
+                             9     
+0000 B8----         R       10             MOV     AX, STACK                       ;Initialize Stack
+0003 8ED0                   11             MOV     SS, AX
+0005 BC800290       R       12             MOV     SP, OFFSET(TopOfStack)
+                            13     
+0009 B8----         R       14             MOV     AX, DATA
+000C 8ED8                   15             MOV     DS, AX
+                            16     
+000E FC                     17             CLD
+                            18     
+000F                        19     InputLoop:
+                            20     
+000F BF020090       R       21             MOV     DI, OFFSET String
+0013 B8----         R       22             MOV     AX, SEG String
+0016 8EC0                   23             MOV     ES, AX                          ; Initialize Var String
+                            24     
+0018 BB0000                 25             MOV     BX, 0                           ; Error = False
+001B B90010                 26             MOV     CX, 1000H                       ; Pwr16 = 1000H
+                            27     
+001E 813E0000611E   R       28             CMP     I, 7777                         ; If I = 7777 Stop Program
+0024 7458                   29             JE      EndInputLoop                    ; Otherwise Store String
+                            30             ;JNE    StartTrace                      ; in memory
+                            31     
+0026                        32     StartTrace:
+                            33     
+0026 83FB00                 34             CMP     BX, 0                           ; WHILE (Error = False)
+0029 754F                   35             JNE     StopTrace                       ;  AND
+002B 83F900                 36             CMP     CX, 0                           ;    (Pwr16 > 0)
+002E 7E4A                   37             JLE     StopTrace
+                            38             ;JG     CheckDigit
+                            39     
+0030                        40     CheckDigit:
+                            41     
+0030 A10000         R       42             MOV     AX, I                           ;   digit = I / pwr16
+0033 BA0000                 43             MOV     DX, 0
+0036 F7F1                   44             DIV     CX
+0038 3D1000                 45             CMP     AX, 10H                         ;   IF (digit >= 10H) THEN
+003B 7D02                   46             JGE     DigitError                      ;       
+003D 7C06                   47             JL      CheckHexNumber
+                            48     
+003F                        49     DigitError:
+                            50     
+8086/87/88/186 MACRO ASSEMBLER    H2S                                                      20:55:54  02/09/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+003F BB0100                 51             MOV     BX, 1                           ;     Error = True
+0042 EB3490                 52             JMP     TraceNext                       ;
+                            53                                                     ;   ELSE
+0045                        54     CheckHexNumber:
+                            55     
+0045 3D0A00                 56             CMP     AX, 10                          ; IF (digit > 10) THEN
+0048 7D02                   57             JGE     StoreHexNumber                  ;   
+004A 7C0A                   58             JL      StoreDecNumber                  ;
+                            59     
+004C                        60     StoreHexNumber:
+                            61                                                     ;   Covert Digit to ASCII
+004C 2D0A00                 62             SUB     AX, 10                          ;   Store Hex Number ASCII Code
+004F 054100                 63             ADD     AX, 41H
+0052 AB                     64             STOSW
+0053 EB0590                 65             JMP CorrectIandPwr16                    ; ELSE
+                            66     
+                            67     
+0056                        68     StoreDecNumber:
+                            69     
+0056 053000                 70             ADD     AX, 30H                         ;     Convert digit to ASCII
+0059 AB                     71             STOSW                                   ;     Store ASCII Code
+                            72             ;JMP    CorrectIandPwr16
+                            73     
+005A                        74     CorrectIandPwr16:
+                            75     
+005A A10000         R       76             MOV     AX, I                           ;     I = I MOD pwr16
+005D BA0000                 77             MOV     DX, 0
+0060 F7F1                   78             DIV     CX
+0062 89160000       R       79             MOV     I, DX
+                            80     
+0066 8BC1                   81             MOV     AX, CX                          ;     Pwr16 = Pwr16/16
+0068 BA0000                 82             MOV     DX, 0
+006B BB1000                 83             MOV     BX, 10H
+006E F7F3                   84             DIV     BX
+0070 8BC8                   85             MOV     CX, AX
+0072 BB0000                 86             MOV     BX, 0                           ;     Error = False
+0075 EB0190                 87             JMP     TraceNext                            
+                            88     
+0078                        89     TraceNext:
+                            90     
+0078 EBAC                   91             JMP     StartTrace                      ;   ENDIF
+                            92                                                     ; END WHILE
+                            93     
+007A                        94     StopTrace:
+                            95     
+007A B80000                 96             MOV     AX, 0H                          ; Store Null at the end of
+007D AB                     97             STOSW                                   ; string
+                            98             ;JMP EndInputLoop
+                            99     
+007E                       100     EndInputLoop:
+                           101     
+007E 813E0000611E   R      102             CMP     I, 7777                         ; I (I # 7777) Then go back
+0084 7589                  103             JNE     InputLoop                       ; to the start of the program
+                           104             ;JE     EndDec2String
+                           105     
+8086/87/88/186 MACRO ASSEMBLER    H2S                                                      20:55:54  02/09/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0086                       106     EndDec2String:
+                           107     
+0086 90                    108             NOP
+0087 90                    109             NOP
+0088 90                    110             NOP
+                           111     
+----                       112     PROGRAM ENDS
+                           113             
+                           114     
+                           115     ;the data segment
+                           116     
+----                       117     DATA    SEGMENT  WORD  PUBLIC  'DATA'
+                           118     
+                           119     
+0000 ????                  120     I               DW      ?               ;number to Convert
+                           121     
+0002 (15                   122     String          DW      15 DUP(?)       ;prime factors (at most log2 I)
+     ????
+     )
+                           123     
+                           124     
+----                       125     DATA    ENDS
+                           126     
+                           127     
+                           128     
+                           129     
+                           130     ;the stack
+                           131     
+----                       132     STACK           SEGMENT  WORD  STACK  'STACK'
+                           133     
+                           134     
+0000 (80                   135                     DB      80 DUP ('Stack   ')             ;320 words
+     537461636B2020
+     20
+     )
+                           136     
+0280                       137     TopOfStack      LABEL   WORD
+                           138     
+                           139     
+----                       140     STACK           ENDS
+                           141     
+                           142     
+                           143     
+                           144     END    Dec2StringStart
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

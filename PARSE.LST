@@ -1,0 +1,1543 @@
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE PARSING
+OBJECT MODULE PLACED IN PARSE.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE PARSE.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     NAME Parsing
+                             2     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             3     ;                                                                            ;
+                             4     ;                                Parsing                                     ;
+                             5     ;                   Serial Processing Routines                               ;
+                             6     ;                                                                            ;
+                             7     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             8     
+                             9     ; Description:Function involved with handling downloaded commands to the RoboCrane(TM
+                                   )
+                            10     ;               Over the serial channel
+                            11     ;               ParseSerialChar - The function processors the passed character
+                            12     ;                                 to a given criteria and returns the status of the 
+                            13     ;                                 parsing operation in AX
+                            14     ;
+                            15     ; Input: Input Character
+                            16     ;               P - path start command
+                            17     ;               E - doenload exit command
+                            18     ;               A - Absolute Rotation   
+                            19     ;               R - Relative Rotation
+                            20     ;               Z - Absolute Vertical movement
+                            21     ;               V - Relative vertical movement
+                            22     ;               N - Turn on magnet
+                            23     ;               F - Turn Off Magnet
+                            24     ;       
+                            25     ; Output: Error Status  
+                            26     ;                       Zero(0) - No Error
+                            27     ;                       High bit set - Error
+                            28     ;                       One(1) - End of the path
+                            29     ;
+                            30     ; User Interface:   None
+                            31     ; Error Handling:   None.
+                            32     ;
+                            33     ; Algorithms:       None
+                            34     ; Data Structures:  None.
+                            35     ;
+                            36     ; Revision History:
+                            37     ;       Chirath Neranjena       08 Mar 2002     Creation
+                            38     
+                            39     CGROUP  GROUP   CODE
+                            40     
+                            41     
+                            42 +1  $INCLUDE(PARSE.INC)
+                      =1    43     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    44     ;                                                                            ;
+                      =1    45     ;                                  Parse.INC                                 ;
+                      =1    46     ;                                    PARSE                                   ;
+                      =1    47     ;                                 Include File                               ;
+                      =1    48     ;                                                                            ;
+                      =1    49     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1    50     
+                      =1    51     ; This file contains the definitions for the State table for serial parsing
+                      =1    52     ; Program, (PARSE.ASM)
+                      =1    53     ;
+                      =1    54     ; Revision History:
+                      =1    55     ;    03/16/2002  Chirath Neranjena      initial revision
+                      =1    56     
+                      =1    57     
+                      =1    58     ; States
+  0000                =1    59     PathBegin               EQU     0
+  0001                =1    60     PathJustStarted         EQU     1
+  0002                =1    61     PathStartedDone         EQU     2
+  0003                =1    62     AStarted                EQU     3
+  0004                =1    63     AStartedDone            EQU     4
+  0005                =1    64     RStarted                EQU     5
+  0006                =1    65     RStartedDone            EQU     6
+  0007                =1    66     ZStarted                EQU     7
+  0008                =1    67     ZStartedDone            EQU     8
+  0009                =1    68     VStarted                EQU     9
+  000A                =1    69     VStartedDone            EQU     10
+  000B                =1    70     ASecond                 EQU     11
+  000C                =1    71     ASecondDone             EQU     12
+  000D                =1    72     RSecond                 EQU     13
+  000E                =1    73     RSecondDone             EQU     14
+  000F                =1    74     ZSecond                 EQU     15
+  0010                =1    75     ZSecondDone             EQU     16
+  0011                =1    76     VSecond                 EQU     17
+  0012                =1    77     VSecondDone             EQU     18
+  0013                =1    78     StepStart               EQU     19
+                      =1    79     
+                      =1    80     
+                      =1    81     ; Number of States
+  0015                =1    82     NoStateChar             EQU     21
+                      =1    83     
+                      =1    84     ; ASCII value of zero
+  0030                =1    85     ZeroASCII               EQU     48
+                      =1    86     
+                      =1    87     ;Misc
+  0000                =1    88     Absolute                EQU     0
+  0001                =1    89     Relative                EQU     1
+                      =1    90     
+  0001                =1    91     True                    EQU     1
+  0000                =1    92     UnChange                EQU     0
+ -0001                =1    93     False                   EQU     -1
+                      =1    94     
+ -0001                =1    95     Negative                EQU     -1
+  0001                =1    96     Positive                EQU     1
+                            97     
+                            98     EXTRN   BeginPath       :NEAR
+                            99     EXTRN   StorePathStep   :NEAR
+                           100     
+----                       101     CODE SEGMENT PUBLIC 'CODE'
+                           102     
+                           103             ASSUME  CS: CGROUP, DS: DATA
+                           104     
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           105     
+                           106     
+                           107     ; SerialParseChar
+                           108     ;
+                           109     ; Description:      Serial Processing
+                           110     ;
+                           111     ; Arguments:        Input Character
+                           112     ; Return Value:     Error Status
+                           113     ;
+                           114     ; Local Variables:  
+                           115     ;       NewChar - Stores the current Character being processed
+                           116     ;       State   - Holds the current State in Processing
+                           117     ;               PathBegin       - 0 
+                           118     ;               PathJustStarted - 1 
+                           119     ;               PathStartedDone - 2 
+                           120     ;               AStarted        - 3 
+                           121     ;               AStartedDone    - 4  
+                           122     ;               RStarted        - 5 
+                           123     ;               RStartedDone    - 6 
+                           124     ;               ZStarted        - 7 
+                           125     ;               ZStartedDone    - 8 
+                           126     ;               VStarted        - 9 
+                           127     ;               VStartedDone    - 10 
+                           128     ;               ASecond         - 11
+                           129     ;               ASecondDone     - 12
+                           130     ;               RSecond         - 13
+                           131     ;               RSecondDone     - 14
+                           132     ;               ZSecond         - 15
+                           133     ;               ZSecondDone     - 16
+                           134     ;               VSecond         - 17
+                           135     ;               VSecondDone     - 18
+                           136     ;               StepStart       - 19
+                           137     ;
+                           138     ;       PathNum - Path number in processing
+                           139     ;       Angle   - Angle of Rotation
+                           140     ;       Vert    - magnitude of vertical movement        
+                           141     ;       ArFlag  - interpretation of Angle / Abs or Rel
+                           142     ;       VrFlag  - interpretation of Vertical movement / Abs or Rel
+                           143     ;       RotSign - holds whether angle is positive or negative 
+                           144     ;       VertSign- holds whether vert is positive ot negative
+                           145     ;
+                           146     ;       Magnet  - magnet on / off
+                           147     ;
+                           148     ; Shared Variables: None.
+                           149     ; Global Variables: None
+                           150     ;                   
+                           151     ;                   
+                           152     ;
+                           153     ; Input:            Input Character
+                           154     ; Output:           Error Status
+                           155     ;
+                           156     ; Error Handling:   Ignores invalid characters and returns error
+                           157     ;
+                           158     ; Algorithms:       None.
+                           159     ;                   
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           160     ;                   
+                           161     ; Data Structures:  None.
+                           162     ;
+                           163     ; Registers Used:   AX, BX, CX, DX, ES, SI
+                           164     ; Stack Depth:      0 words
+                           165     ;
+                           166     ; Author:           Chirath Neranjena
+                           167     ; Last Modified:    Mar 16 2002
+                           168     
+                           169     
+0000                       170     ParseSerialChar         PROC    NEAR
+                           171                             PUBLIC  ParseSerialChar
+                           172     
+0000 53                    173             PUSH    BX                      ; Save Registers
+0001 51                    174             PUSH    CX
+0002 52                    175             PUSH    DX
+0003 06                    176             PUSH    ES
+0004 56                    177             PUSH    SI
+                           178     
+0005                       179     ParseStart:
+                           180     
+0005 B400                  181             MOV     AH, 0                   ; Store Character in Variable
+0007 A20000         R      182             MOV     NewChar, AL
+                           183     
+000A 3C20                  184             CMP     AL, 20H                 ; If Character is 'space' the nothing to proc
+                                   ess
+000C 7448                  185             JE      NoErrorOne              ; exit with no error return
+                           186     
+000E BBA60590       R      187             MOV     BX, OFFSET ASCIITable   ; get the column number of the state table
+0012 2ED7                  188             XLAT    CS:ASCIITable
+                           189     
+0014 3C00                  190             CMP     AL, 0                   ; if column number = 0 then invalid character
+0016 742C                  191             JE      ParseErrorOne           ; exit with error
+                           192     
+                           193            
+                           194     
+0018 B90000                195             MOV     CX, 0                   ; save value of AL
+001B 8AC8                  196             MOV     CL, AL
+                           197     
+001D A00100         R      198             MOV     AL, State               ; Calculate the Offset of the state table
+0020 BB1500                199             MOV     BX, NoStateChar         ;  Offset = Current State * No of States + Co
+                                   lumn number
+0023 F7EB                  200             IMUL    BX                      ;
+0025 03C1                  201             ADD     AX, CX                  ;
+0027 BB0200                202             MOV     BX, 2                   ;
+002A F7E3                  203             MUL     BX                      ;
+002C 8BD8                  204             MOV     BX, AX                  ;
+                           205             
+                           206     
+002E B8----         R      207             MOV     AX, SEG StateTable      ; Get Segment value of the state table
+0031 8EC0                  208             MOV     ES, AX
+                           209     
+0033 B82606         R      210             MOV     AX, OFFSET StateTable   ; get the offset of state table
+0036 03C3                  211             ADD     AX, BX                  ; add the new offset
+0038 8BF0                  212             MOV     SI, AX
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           213     
+003A 4E                    214             DEC     SI
+003B 268A3C                215             MOV     BH, ES:[SI]             ; Get the offset of the needed command
+003E 4E                    216             DEC     SI                      ;  given in the state table
+003F 268A1C                217             MOV     BL, ES:[SI]
+                           218     
+0042 FFE3                  219             JMP     BX                      ; jump to that command
+                           220     
+0044                       221     ParseErrorOne:
+                           222     
+0044 B8FFFF                223             MOV     AX, -1                  ; exit parsing with error
+0047 C60601001390   R      224             MOV     State, StepStart
+004D C7061400FFFF   R      225             MOV     MagnetDone, False
+0053 E94A05                226             JMP     ParseEnd
+                           227     
+0056                       228     NoErrorOne:
+                           229     
+0056 B80000                230             MOV     AX, 0                   ; exit parsing with no error
+0059 E94405                231             JMP     ParseEnd
+                           232     
+005C                       233     PathInit:
+                           234     
+005C C60601000190   R      235             MOV     State, PathJustStarted  ; change state to handle new path
+0062 C60602000090   R      236             MOV     PathNum, 0
+0068 E92305                237             JMP     NoError
+                           238     
+006B                       239     GetFirstPathNum:
+                           240             
+006B B80000                241             MOV     AX, 0
+006E A00000         R      242             MOV     AL, NewChar             ; calculate the real numerical value
+0071 2D3000                243             SUB     AX, ZeroASCII           ;  from ascii number
+0074 A20200         R      244             MOV     PathNum, AL             ;  path number = ascii value - ascii value fo
+                                   r zero
+0077 C70603000000   R      245             MOV     NUMCntr, 0
+                           246     
+007D C60601000290   R      247             MOV     State, PathStartedDone  ; path completed, ready for new commands
+0083 E90805                248             JMP     NoError                 
+                           249     
+0086                       250     GetPathNum:
+                           251             
+                           252     
+0086 A00200         R      253             MOV     AL, PathNum             ; calculate the real numerical value
+0089 BA0A00                254             MOV     DX, 10                  ;  for path number
+008C F7E2                  255             MUL     DX                      ;  new path value = 10 * old path value
+008E 8AD8                  256             MOV     BL, AL                  ;                       +
+0090 A00000         R      257             MOV     AL, NewChar             ;                   New value - Zero ascii va
+                                   lue 
+0093 2C30                  258             SUB     AL, ZeroASCII
+0095 02C3                  259             ADD     AL, BL
+                           260     
+0097 A20200         R      261             MOV     PathNum, AL
+009A E9F104                262             JMP     NoError
+                           263     
+009D                       264     AAfterPath:
+                           265             
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+009D A00200         R      266             MOV     AL, PathNum             
+00A0 E80000         E      267             CALL    BeginPath
+                           268     
+00A3 C60601000390   R      269             MOV     State, AStarted         ; Change State to receive angle
+00A9 C70605000000   R      270             MOV     Angle, 0                ; Initialize angle = 0
+00AF C60609000090   R      271             MOV     ArFlag, Absolute        ; Initialize interpretation = absolute  
+00B5 E9D604                272             JMP     NoError
+                           273     
+00B8                       274     RAfterPath:
+                           275     
+00B8 A00200         R      276             Mov     AL, PathNum
+00BB E80000         E      277             CALL    BeginPath
+                           278     
+00BE C60601000590   R      279             MOV     State, RStarted         ; Change State to receive angle
+00C4 C70605000000   R      280             MOV     Angle, 0                ; Initialize angle = 0
+00CA C60609000190   R      281             MOV     ArFlag, Relative        ; Initialize interpretation = absolute
+00D0 E9BB04                282             JMP     NoError
+                           283     
+00D3                       284     ZAfterPath:
+                           285     
+00D3 A00200         R      286             MOV     AL, PathNum
+00D6 E80000         E      287             CALL    BeginPath
+                           288     
+00D9 C60601000790   R      289             MOV     State, ZStarted         ; Change State to receive vert
+00DF C70607000000   R      290             MOV     Vert, 0                 ; Initialize vert = 0
+00E5 C6060A000090   R      291             MOV     VrFlag, Absolute        ; Initialize interpretation = absolute
+00EB E9A004                292             JMP     NoError
+                           293     
+                           294     
+00EE                       295     VAfterPath:
+                           296     
+00EE A00200         R      297             MOV     AL, PathNum
+00F1 E80000         E      298             CALL    BeginPath
+                           299     
+00F4 C60601000990   R      300             MOV     State, VStarted         ; Change State to receive vert
+00FA C70607000000   R      301             MOV     Vert, 0                 ; Initialize vert = 0
+0100 C6060A000190   R      302             MOV     VrFlag, Relative        ; Initialize interpretation = vert
+0106 E98504                303             JMP     NoError
+                           304     
+0109                       305     NAfterPath:
+                           306     
+0109 A00200         R      307             MOV     AL, PathNum
+010C E80000         E      308             CALL    BeginPath
+010F C60613000190   R      309             MOV     Magnet, True            ; set magnet = on
+0115 C70614000100   R      310             MOV     MagnetDone, true        ; done with magnet handling for step
+011B E97004                311             JMP     NoError
+                           312     
+011E                       313     FAfterPath:
+                           314     
+011E A00200         R      315             MOV     AL, PathNum
+0121 E80000         E      316             CALL    BeginPath
+0124 C6061300FF90   R      317             MOV     Magnet, False           ; set magnet = false
+012A C70614000100   R      318             MOV     MagnetDone, true        ; done with magnet handling for step
+0130 E95B04                319             JMP     NoError
+                           320     
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0133                       321     CarrageReturnAfterPath:
+                           322     
+0133 A00200         R      323             MOV     AL, PathNum             ; Begin path
+0136 E80000         E      324             CALL    BeginPath
+                           325     
+                           326     
+0139 C70607000000   R      327             MOV     Vert, 0                 ; Reset All values
+013F C70605000000   R      328             MOV     Angle, 0
+                           329     
+0145 C60609000190   R      330             MOV     ArFlag, True
+014B C6060A000190   R      331             MOV     VrFlag, True
+                           332     
+0151 C60613000090   R      333             MOV     Magnet, Unchange
+0157 C7061400FFFF   R      334             MOV     MagnetDone, False
+                           335     
+015D C7060B000100   R      336             MOV     RotSign, Positive
+0163 C7060D000100   R      337             MOV     VertSign, Positive
+                           338     
+0169 C7060F00FFFF   R      339             MOV     RotSignDone, False
+016F C7061100FFFF   R      340             MOV     VertSignDone, False
+                           341     
+0175 C60601001390   R      342             MOV     State, StepStart        ;change state for a new step
+                           343     
+017B E91004                344             JMP     NoError
+                           345     
+                           346     
+017E                       347     CarrageReturn:
+                           348     
+017E 833E0B00FF     R      349             CMP     RotSign, Negative       ; if angle is negative
+0183 7508                  350             JNE     NegVertCheck            ;  calculate the negative value
+0185 A10500         R      351             MOV     AX, Angle
+0188 F7D8                  352             NEG     AX
+018A A30500         R      353             MOV     Angle, AX
+                           354     
+018D                       355     NegVertCheck:
+                           356             
+018D 833E0D00FF     R      357             CMP     VertSign, Negative      ; if vert is negative 
+0192 7508                  358             JNE     StorePathNow            ;   calculate the negative value
+0194 A10700         R      359             MOV     AX, Vert
+0197 F7D8                  360             NEG     AX
+0199 A30700         R      361             MOV     Vert, AX
+                           362     
+019C                       363     StorePathNow:
+                           364     
+019C 8B1E0700       R      365             MOV     BX, Vert                ; setup the registers
+01A0 8A0E0A00       R      366             MOV     CL, VrFlag
+01A4 8B160500       R      367             MOV     DX, Angle
+01A8 8A2E0900       R      368             MOV     CH, ArFlag
+01AC A01300         R      369             MOV     AL, Magnet
+                           370             
+01AF E80000         E      371             CALL    StorePathStep           ; store path
+                           372     
+                           373     
+01B2 C70607000000   R      374             MOV     Vert, 0                 ; reset all values
+01B8 C70605000000   R      375             MOV     Angle, 0
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           376     
+01BE C60609000190   R      377             MOV     ArFlag, True
+01C4 C6060A000190   R      378             MOV     VrFlag, True
+                           379     
+01CA C60613000090   R      380             MOV     Magnet, Unchange
+01D0 C7061400FFFF   R      381             MOV     MagnetDone, False
+                           382     
+01D6 C7060B000100   R      383             MOV     RotSign, Positive
+01DC C7060D000100   R      384             MOV     VertSign, Positive
+                           385     
+01E2 C7060F00FFFF   R      386             MOV     RotSignDone, False
+01E8 C7061100FFFF   R      387             MOV     VertSignDone, False
+                           388     
+01EE C60601001390   R      389             MOV     State, StepStart        ; change state for a new step   
+                           390     
+01F4 E99703                391             JMP     NoError
+                           392     
+01F7                       393     PathDone:
+01F7 833E140001     R      394             CMP     MagnetDone, True
+01FC 7570                  395             JNE     PathDoneNewPath
+                           396     
+01FE 833E0B00FF     R      397             CMP     RotSign, Negative       ; if angle is negative
+0203 7508                  398             JNE     PathNegVertCheck        ;  calculate the negative value
+0205 A10500         R      399             MOV     AX, Angle
+0208 F7D8                  400             NEG     AX
+020A A30500         R      401             MOV     Angle, AX
+                           402     
+020D                       403     PathNegVertCheck:
+                           404             
+020D 833E0D00FF     R      405             CMP     VertSign, Negative      ; if vert is negative 
+0212 7508                  406             JNE     PathStorePathNow        ;   calculate the negative value
+0214 A10700         R      407             MOV     AX, Vert
+0217 F7D8                  408             NEG     AX
+0219 A30700         R      409             MOV     Vert, AX
+                           410     
+021C                       411     PathStorePathNow:
+                           412     
+021C 8B1E0700       R      413             MOV     BX, Vert
+0220 8A0E0A00       R      414             MOV     CL, VrFlag
+0224 8B160500       R      415             MOV     DX, Angle
+0228 8A2E0900       R      416             MOV     CH, ArFlag
+022C A01300         R      417             MOV     AL, Magnet
+                           418             
+022F E80000         E      419             CALL    StorePathStep           ; store path
+                           420             
+0232 C70607000000   R      421             MOV     Vert, 0                 ; Reset All values
+0238 C70605000000   R      422             MOV     Angle, 0
+                           423     
+023E C60609000190   R      424             MOV     ArFlag, True
+0244 C6060A000190   R      425             MOV     VrFlag, True
+                           426     
+024A C60613000090   R      427             MOV     Magnet, Unchange
+0250 C7061400FFFF   R      428             MOV     MagnetDone, False
+                           429     
+0256 C7060B000100   R      430             MOV     RotSign, Positive
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+025C C7060D000100   R      431             MOV     VertSign, Positive
+                           432     
+0262 C7060F00FFFF   R      433             MOV     RotSignDone, False
+0268 C7061100FFFF   R      434             MOV     VertSignDone, False
+                           435     
+026E                       436     PathDoneNewPath:
+                           437     
+026E C60602000090   R      438             MOV     PathNum, 0
+0274 C60601000190   R      439             MOV     State, PathJustStarted  ; Change state for a new path
+                           440     
+027A E91103                441             JMP     NoError
+                           442     
+027D                       443     RotateSignPositive:
+                           444     
+027D 833E0F0001     R      445             CMP     RotSignDone, True
+0282 7425                  446             JE      ParseErrorTwo           ; remember that angle is negative
+0284 C7060B000100   R      447             MOV     RotSign, Positive
+028A C7060F000100   R      448             MOV     RotSignDone, True
+0290 E9FB02                449             JMP     NoError
+                           450     
+0293                       451     RotateSignNegative:
+                           452     
+0293 833E0F0001     R      453             CMP     RotSignDone, True
+0298 740F                  454             JE      ParseErrorTwo           ; remember that vert is negative
+029A C7060B00FFFF   R      455             MOV     RotSign, Negative
+02A0 C7060F000100   R      456             MOV     RotSignDone, True
+02A6 E9E502                457             JMP     NoError
+                           458     
+02A9                       459     ParseErrorTwo:
+                           460     
+02A9 B8FFFF                461             MOV     AX, -1                  ; exit with error
+02AC C7061400FFFF   R      462             MOV     MagnetDone, False
+02B2 C60601001390   R      463             MOV     State, StepStart
+02B8 E9E502                464             JMP     ParseEnd
+                           465     
+02BB                       466     GetFirstRotNumA:
+                           467     
+02BB B80000                468             MOV     AX, 0
+02BE A00000         R      469             MOV     AL, NewChar
+02C1 2C30                  470             SUB     AL, ZeroASCII           ; get the first rotation digit
+02C3 A30500         R      471             MOV     Angle, AX
+02C6 C60601000490   R      472             MOV     State, AStartedDone
+02CC C70603000000   R      473             MOV     NumCntr, 0
+02D2 E9B902                474             JMP     NoError
+                           475     
+02D5                       476     GetRotNum:
+                           477     
+                           478             
+02D5 BB0000                479             MOV     BX, 0
+02D8 8A1E0000       R      480             MOV     BL, NewChar
+02DC 80EB30                481             SUB     BL, ZeroASCII           ; get the rest of the rotation digits
+02DF A10500         R      482             MOV     AX, Angle
+02E2 B90A00                483             MOV     CX, 10
+02E5 BA0000                484             MOV     DX, 0
+02E8 F7E1                  485             MUL     CX
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+02EA 83FA00                486             CMP     DX, 0                   ;  if angle > 65536 then
+02ED 75BA                  487             JNE     ParseErrorTwo           ;    error
+02EF 03C3                  488             ADD     AX, BX
+02F1 A30500         R      489             MOV     Angle, AX
+                           490     
+02F4 833E0B00FF     R      491             CMP     RotSign, Negative       ; if rot sign is not negative 
+02F9 740B                  492             JE      RotNumNegCheck          ;   check for overflow of the
+02FB 250080                493             AND     AX, 08000H              ;    positive number
+02FE 3D0080                494             CMP     AX, 08000H
+0301 74A6                  495             JE      ParseErrorTwo
+0303 E98802                496             JMP     NoError
+                           497     
+0306                       498     RotNumNegCheck:
+0306 3D0080                499             CMP     AX, 08000H              ;   check for overflow of the negative number
+                                      
+0309 740B                  500             JE      NoErrorTwo
+030B 250080                501             AND     AX, 08000H
+030E 3D0080                502             CMP     AX, 08000H
+0311 7496                  503             JE      ParseErrorTwo
+0313 E97802                504             JMP     NoError
+                           505     
+0316                       506     NoErrorTwo:
+                           507     
+0316 B80000                508             MOV     AX, 0                   ; no error
+0319 E98402                509             JMP     ParseEnd                ; exit
+                           510     
+                           511     
+031C                       512     ZAfterRot:
+                           513             
+031C C70607000000   R      514             MOV     Vert, 0
+0322 C6060A000090   R      515             MOV     VrFlag, Absolute        ; change state to accept  
+0328 C60601000F90   R      516             MOV     State, ZSecond          ;  an absolute vertical movement
+032E E95D02                517             JMP     NoError
+                           518     
+0331                       519     VAfterRot:
+                           520             
+0331 C70607000000   R      521             MOV     Vert, 0
+0337 C6060A000190   R      522             MOV     VrFlag, Relative        ; change state to accept  
+033D C60601000F90   R      523             MOV     State, ZSecond          ;  an relative vertical movement
+0343 E94802                524             JMP     NoError
+                           525     
+0346                       526     NForAll:
+                           527     
+0346 833E140001     R      528             CMP     MagnetDone, True        ; if magnet not already doen for the step
+                                      
+034B 746B                  529             JE      ParseErrorThree           ; turn on magnet
+034D C60613000190   R      530             MOV     Magnet, True            ; remember we are done with magnet for the st
+                                   ep
+0353 C70614000100   R      531             MOV     MagnetDone, True
+0359 E93202                532             JMP     NoError
+                           533     
+035C                       534     FForAll:
+                           535     
+035C 833E140001     R      536             CMP     MagnetDone, True        ; if magnet not already doen for the step
+0361 7455                  537             JE      ParseErrorThree         ; turn off magnet
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0363 C6061300FF90   R      538             MOV     Magnet, False           ; remember we are done with magnet for the st
+                                   ep
+0369 C70614000100   R      539             MOV     MagnetDone, True
+036F E91C02                540             JMP     NoError
+                           541     
+0372                       542     GetFirstRotNumR:
+                           543     
+0372 B80000                544             MOV     AX, 0
+0375 A00000         R      545             MOV     AL, NewChar
+0378 2C30                  546             SUB     AL, ZeroASCII           ; get the first digit of rotation 
+037A A30500         R      547             MOV     Angle, AX               ;  for relative rotation        
+037D C60601000690   R      548             MOV     State, RStartedDone
+0383 C70603000000   R      549             MOV     NumCntr, 0
+0389 E90202                550             JMP     NoError
+                           551     
+038C                       552     VertSignPositive:
+                           553     
+038C 833E110001     R      554             CMP     VertSignDone, True
+0391 7425                  555             JE      ParseErrorThree         ; remember vert sign is positive
+0393 C7060D000100   R      556             MOV     VertSign, Positive
+0399 C70611000100   R      557             MOV     VertSignDone, True
+039F E9EC01                558             JMP     NoError
+                           559     
+03A2                       560     VertSignNegative:
+                           561     
+03A2 833E110001     R      562             CMP     VertSignDone, True
+03A7 740F                  563             JE      ParseErrorThree         ; remember vert sign is negative
+03A9 C7060D00FFFF   R      564             MOV     VertSign, Negative      
+03AF C70611000100   R      565             MOV     VertSignDone, True
+03B5 E9D601                566             JMP     NoError
+                           567     
+03B8                       568     ParseErrorThree:
+                           569     
+03B8 B8FFFF                570             MOV     AX, -1                  ; error
+03BB C7061400FFFF   R      571             MOV     MagnetDone, False
+03C1 C60601001390   R      572             MOV     State, StepStart
+03C7 E9D601                573             JMP     ParseEnd                ; exit
+                           574     
+03CA                       575     GetFirstVertNumZ:
+                           576     
+03CA B80000                577             MOV     AX, 0
+03CD A00000         R      578             MOV     AL, NewChar
+03D0 2C30                  579             SUB     AL, ZeroASCII           ; get first digit for absolute vert
+03D2 A30700         R      580             MOV     Vert, AX
+03D5 C60601000890   R      581             MOV     State, ZStartedDone
+03DB C70603000000   R      582             MOV     NumCntr, 0
+03E1 E9AA01                583             JMP     NoError
+                           584     
+03E4                       585     GetFirstVertNumV:
+                           586     
+03E4 B80000                587             MOV     AX, 0
+03E7 A00000         R      588             MOV     AL, NewChar
+03EA 2C30                  589             SUB     AL, ZeroASCII           ; get first digit for relative vert
+03EC A30700         R      590             MOV     Vert, AX
+03EF C60601000A90   R      591             MOV     State, VStartedDone
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   12
+
+
+LOC  OBJ                  LINE     SOURCE
+
+03F5 C70603000000   R      592             MOV     NumCntr, 0
+03FB E99001                593             JMP     NoError
+                           594     
+03FE                       595     GetVertNum:
+                           596     
+03FE BB0000                597             MOV     BX, 0
+0401 8A1E0000       R      598             MOV     BL, NewChar
+0405 80EB30                599             SUB     BL, ZeroASCII           ; get the rest of vert digits
+0408 A10700         R      600             MOV     AX, Vert
+040B BA0000                601             MOV     DX, 0
+040E B90A00                602             MOV     CX, 10
+0411 F7E1                  603             MUL     CX                      ; if vert > 65536 then
+0413 83FA00                604             CMP     DX, 0                   ;   error
+0416 75A0                  605             JNE     ParseErrorThree
+0418 03C3                  606             ADD     AX, BX
+041A A30700         R      607             MOV     Vert, AX
+                           608     
+041D 833E0D00FF     R      609             CMP     VertSign, Negative
+0422 740B                  610             JE      VertNumNegCheck         ; if vert is not negative
+0424 250080                611             AND     AX, 08000H
+0427 3D0080                612             CMP     AX, 08000H              ; do positive vert overflow check
+042A 748C                  613             JE      ParseErrorThree
+042C E95F01                614             JMP     NoError
+                           615     
+042F                       616     VertNumNegCheck:
+042F 3D0080                617             CMP     AX, 08000H
+0432 740B                  618             JE      NoErrorThree            ;  else do negative overflow check
+0434 250080                619             AND     AX, 08000H
+0437 3D0080                620             CMP     AX, 08000H
+043A 7409                  621             JE      ParseErrorFour
+043C E94F01                622             JMP     NoError
+                           623     
+043F                       624     NoErrorThree:
+                           625     
+043F B80000                626             MOV     AX, 0                   ; no error
+0442 E95B01                627             JMP     ParseEnd                ; exit
+                           628     
+0445                       629     ParseErrorFour:
+                           630     
+0445 B8FFFF                631             MOV     AX, -1                  ; error
+0448 C7061400FFFF   R      632             MOV     MagnetDone, False
+044E C60601001390   R      633             MOV     State, StepStart
+0454 E94901                634             JMP     ParseEnd                ; exit
+                           635     
+0457                       636     AAfterVert:
+                           637             
+0457 C70605000000   R      638             MOV     Angle, 0
+045D C60609000090   R      639             MOV     ArFlag, Absolute        ; get ready for rotation (abs) after 
+0463 C60601000B90   R      640             MOV     State, ASecond          ;  a vertical movement
+0469 E92201                641             JMP     NoError
+                           642     
+046C                       643     RAfterVert:
+                           644             
+046C C70605000000   R      645             MOV     Angle, 0                
+0472 C60609000190   R      646             MOV     ArFlag, Relative        ; get ready for rotation (rel) after
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   13
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0478 C60601000D90   R      647             MOV     State, RSecond          ;   a vertical movement
+047E E90D01                648             JMP     NoError
+                           649     
+0481                       650     GetSecondRotNumA:
+                           651     
+0481 B80000                652             MOV     AX, 0
+0484 A00000         R      653             MOV     AL, NewChar
+0487 2C30                  654             SUB     AL, ZeroASCII           ; get the angle for a second call to A
+0489 A30500         R      655             MOV     Angle, AX
+048C C60601000C90   R      656             MOV     State, ASecondDone
+0492 C70603000000   R      657             MOV     NumCntr, 0
+0498 E9F300                658             JMP     NoError 
+                           659     
+049B                       660     GetSecondRotNumR:
+                           661     
+049B B80000                662             MOV     AX, 0
+049E A00000         R      663             MOV     AL, NewChar
+04A1 2C30                  664             SUB     AL, ZeroASCII           ; get the angle for a second call to R
+04A3 A30500         R      665             MOV     Angle, AX
+04A6 C60601000E90   R      666             MOV     State, RSecondDone
+04AC C70603000000   R      667             MOV     NumCntr, 0
+04B2 E9D900                668             JMP     NoError         
+                           669     
+04B5                       670     GetSecondVertNumZ:
+                           671     
+04B5 B80000                672             MOV     AX, 0
+04B8 A00000         R      673             MOV     AL, NewChar
+04BB 2C30                  674             SUB     AL, ZeroASCII           ; get the angle for a second call to Z
+04BD A30700         R      675             MOV     Vert, AX
+04C0 C60601001090   R      676             MOV     State, ZSecondDone
+04C6 C70603000000   R      677             MOV     NumCntr, 0
+04CC E9BF00                678             JMP     NoError
+                           679     
+04CF                       680     GetSecondVertNumV:
+                           681     
+04CF B80000                682             MOV     AX, 0
+04D2 A00000         R      683             MOV     AL, NewChar
+04D5 2C30                  684             SUB     AL, ZeroASCII           ; get the angle for a second call to V
+04D7 A30700         R      685             MOV     Vert, AX
+04DA C60601001290   R      686             MOV     State, VSecondDone
+04E0 C70603000000   R      687             MOV     NumCntr, 0
+04E6 E9A500                688             JMP     NoError
+                           689     
+04E9                       690     AStart:
+                           691     
+04E9 C60601000390   R      692             MOV     State, AStarted
+04EF C70605000000   R      693             MOV     Angle, 0                ; change state to accept rotation (abs)
+04F5 C60609000090   R      694             MOV     ArFlag, Absolute        ;  at the start of step 
+04FB E99000                695             JMP     NoError
+                           696     
+04FE                       697     RStart:
+                           698     
+04FE C60601000590   R      699             MOV     State, RStarted
+0504 C70605000000   R      700             MOV     Angle, 0                ; change state to accept rotation (rel)
+050A C60609000190   R      701             MOV     ArFlag, Relative        ;  at the start of step 
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   14
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0510 EB7C90                702             JMP     NoError
+                           703     
+0513                       704     ZStart:
+                           705     
+0513 C60601000790   R      706             MOV     State, ZStarted
+0519 C70607000000   R      707             MOV     Vert, 0                 ; change state to accept vertical mov (abs)
+051F C6060A000090   R      708             MOV     VrFlag, Absolute        ;  at the start of step 
+0525 EB6790                709             JMP     NoError
+                           710     
+                           711     
+0528                       712     VStart:
+                           713     
+0528 C60601000990   R      714             MOV     State, VStarted
+052E C70607000000   R      715             MOV     Vert, 0                 ; change state to accept vert move (rel)
+0534 C6060A000190   R      716             MOV     VrFlag, Relative        ;  at the start of step                 
+053A EB5290                717             JMP     NoError 
+                           718     
+053D                       719     Exit:
+053D C70607000000   R      720             MOV     Vert, 0                 ; reset all values
+0543 C70605000000   R      721             MOV     Angle, 0
+                           722     
+0549 C60613000090   R      723             MOV     Magnet, Unchange
+054F C7061400FFFF   R      724             MOV     MagnetDone, False
+                           725     
+0555 C7060B000100   R      726             MOV     RotSign, Positive
+055B C7060D000100   R      727             MOV     VertSign, Positive
+                           728     
+0561 C7060F00FFFF   R      729             MOV     RotSignDone, False
+0567 C7061100FFFF   R      730             MOV     VertSignDone, False
+                           731     
+056D C60602000090   R      732             MOV     PathNum, 0
+                           733     
+0573 C60601000090   R      734             MOV     State, PathBegin        ; change state to accpet new path
+                           735     
+0579 EB1990                736             JMP     PathEnd
+                           737     
+057C                       738     ParseError:
+                           739     
+057C B8FFFF                740             MOV     AX, -1                  ; error
+057F C7061400FFFF   R      741             MOV     MagnetDone, False
+0585 C60601001390   R      742             MOV     State, StepStart
+058B EB1390                743             JMP     ParseEnd                ; exit
+                           744     
+058E                       745     NoError:
+                           746     
+058E B80000                747             MOV     AX, 0                   ; no error
+0591 EB0D90                748             JMP     ParseEnd                ; exit
+                           749     
+0594                       750     PathEnd:
+                           751     
+0594 B80100                752             MOV     AX, 1                   ; path end
+0597 C60601000090   R      753             MOV     State, PathBegin
+059D EB0190                754             JMP     ParseEnd                ; exit
+                           755     
+05A0                       756     ParseEnd:
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   15
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           757     
+05A0 5E                    758             POP     SI                      ; restore registers
+05A1 07                    759             POP     ES
+05A2 5A                    760             POP     DX
+05A3 59                    761             POP     CX
+05A4 5B                    762             POP     BX
+                           763     
+05A5 C3                    764             RET
+                           765     
+                           766     ParseSerialChar         ENDP
+                           767     
+                           768     
+                           769     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           770     ;                                                                     ; 
+                           771     ; ASCII Table carrying the state table column values for ASCIII Values;
+                           772     ;                                                                     ; 
+                           773     ;                                                                     ;
+                           774     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           775     
+05A6                       776     ASCIITable   LABEL   BYTE
+                           777                  PUBLIC  ASCIITable
+                           778     
+05A6 00                    779             DB      0               ;NUL                    0
+05A7 00                    780             DB      0               ;SOH                    1
+05A8 00                    781             DB      0               ;STX                    2
+05A9 00                    782             DB      0               ;ETX                    3
+05AA 00                    783             DB      0               ;EOT                    4
+05AB 00                    784             DB      0               ;ENQ                    5
+05AC 00                    785             DB      0               ;ACK                    6
+05AD 00                    786             DB      0               ;BEL                    7
+05AE 00                    787             DB      0               ;backspace              8
+05AF 00                    788             DB      0               ;TAB                    9
+05B0 00                    789             DB      0               ;new line               10
+05B1 00                    790             DB      0               ;vertical tab           11
+05B2 00                    791             DB      0               ;form feed              12
+05B3 01                    792             DB      1               ;carriage return        13
+05B4 00                    793             DB      0               ;SO                     14
+05B5 00                    794             DB      0               ;SI                     15                      
+05B6 00                    795             DB      0               ;DLE                    16
+05B7 00                    796             DB      0               ;DC1                    17
+05B8 00                    797             DB      0               ;DC2                    18
+05B9 00                    798             DB      0               ;DC3                    19
+05BA 00                    799             DB      0               ;DC4                    20
+05BB 00                    800             DB      0               ;NAK                    21
+05BC 00                    801             DB      0               ;SYN                    22
+05BD 00                    802             DB      0               ;ETB                    23
+05BE 00                    803             DB      0               ;CAN                    24
+05BF 00                    804             DB      0               ;EM                     25
+05C0 00                    805             DB      0               ;SUB                    26
+05C1 00                    806             DB      0               ;escape                 27
+05C2 00                    807             DB      0               ;FS                     28
+05C3 00                    808             DB      0               ;GS                     29
+05C4 00                    809             DB      0               ;AS                     30
+05C5 00                    810             DB      0               ;US                     31
+                           811     
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   16
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           812     ;       DB      .gfedcba                ;ASCII character
+                           813     
+05C6 00                    814             DB      0               ;space                  32
+05C7 00                    815             DB      0               ;!                      33
+05C8 00                    816             DB      0               ;"                      34
+05C9 00                    817             DB      0               ;#                      35
+05CA 00                    818             DB      0               ;$                      36
+05CB 00                    819             DB      0               ;percent symbol         37      
+05CC 00                    820             DB      0               ;&                      38
+05CD 00                    821             DB      0               ;'                      39
+05CE 00                    822             DB      0               ;(                      40
+05CF 00                    823             DB      0               ;)                      41
+05D0 00                    824             DB      0               ;*                      42
+05D1 02                    825             DB      2               ;+                      43
+05D2 00                    826             DB      0               ;,                      44
+05D3 03                    827             DB      3               ;-                      45
+05D4 00                    828             DB      0               ;.                      46
+05D5 00                    829             DB      0               ;/                      47
+05D6 04                    830             DB      4               ;0                      48
+05D7 05                    831             DB      5               ;1                      49
+05D8 06                    832             DB      6               ;2                      50
+05D9 07                    833             DB      7               ;3                      51
+05DA 08                    834             DB      8               ;4                      52
+05DB 09                    835             DB      9               ;5                      53
+05DC 0A                    836             DB     10               ;6                      54
+05DD 0B                    837             DB     11               ;7                      55
+05DE 0C                    838             DB     12               ;8                      56
+05DF 0D                    839             DB     13               ;9                      57
+05E0 00                    840             DB      0               ;:                      58
+05E1 00                    841             DB      0               ;;                      59
+05E2 00                    842             DB      0               ;<                      60
+05E3 00                    843             DB      0               ;=                      61
+05E4 00                    844             DB      0               ;>                      62
+05E5 00                    845             DB      0               ;?                      63
+                           846     
+                           847     ;       DB      .gfedcba                ;ASCII character
+                           848     
+05E6 00                    849             DB      0               ;@                      64
+05E7 0E                    850             DB     14               ;A                      65
+05E8 00                    851             DB      0               ;B                      66
+05E9 00                    852             DB      0               ;C                      67
+05EA 00                    853             DB      0               ;D                      68
+05EB 15                    854             DB     21               ;E                      69
+05EC 13                    855             DB     19               ;F                      70
+05ED 00                    856             DB      0               ;G                      71
+05EE 00                    857             DB      0               ;H                      72
+05EF 00                    858             DB      0               ;I                      73
+05F0 00                    859             DB      0               ;J                      74
+05F1 00                    860             DB      0               ;K                      75
+05F2 00                    861             DB      0               ;L                      76
+05F3 00                    862             DB      0               ;M                      77
+05F4 12                    863             DB     18               ;N                      78
+05F5 00                    864             DB      0               ;O                      79
+05F6 14                    865             DB     20               ;P                      80
+05F7 00                    866             DB      0               ;Q                      81
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   17
+
+
+LOC  OBJ                  LINE     SOURCE
+
+05F8 0F                    867             DB     15               ;R                      82
+05F9 00                    868             DB      0               ;S                      83
+05FA 00                    869             DB      0               ;T                      84
+05FB 00                    870             DB      0               ;U                      85
+05FC 11                    871             DB     17               ;V                      86
+05FD 00                    872             DB      0               ;W                      87
+05FE 00                    873             DB      0               ;X                      88
+05FF 00                    874             DB      0               ;Y                      89
+0600 10                    875             DB     16               ;Z                      90
+0601 00                    876             DB      0               ;[                      91
+0602 00                    877             DB      0               ;\                      92
+0603 00                    878             DB      0               ;]                      93
+0604 00                    879             DB      0               ;^                      94
+0605 00                    880             DB      0              ;_                       95
+                           881                             
+                           882     ;       DB      .gfedcba                ;ASCII character
+                           883     
+0606 00                    884             DB      0               ;`                      96
+0607 0E                    885             DB     14               ;a                      97
+0608 00                    886             DB      0               ;b                      98
+0609 00                    887             DB      0               ;c                      99
+060A 00                    888             DB      0               ;d                      100
+060B 15                    889             DB     21               ;e                      101
+060C 13                    890             DB     19               ;f                      102
+060D 00                    891             DB      0               ;g                      103
+060E 00                    892             DB      0               ;h                      104
+060F 00                    893             DB      0               ;i                      105
+0610 00                    894             DB      0               ;j                      106
+0611 00                    895             DB      0               ;k                      107
+0612 00                    896             DB      0               ;l                      108
+0613 00                    897             DB      0               ;m                      109
+0614 12                    898             DB     18               ;n                      110
+0615 00                    899             DB      0               ;o                      111
+0616 14                    900             DB     20               ;p                      112
+0617 00                    901             DB      0               ;q                      113
+0618 0F                    902             DB     15               ;r                      114
+0619 00                    903             DB      0               ;s                      115
+061A 00                    904             DB      0               ;t                      116
+061B 00                    905             DB      0               ;u                      117
+061C 11                    906             DB     17               ;v                      118
+061D 00                    907             DB      0               ;w                      119
+061E 00                    908             DB      0               ;x                      120
+061F 00                    909             DB      0               ;y                      121
+0620 10                    910             DB     16               ;z                      122
+0621 00                    911             DB      0               ;{                      123
+0622 00                    912             DB      0               ;|                      124
+0623 00                    913             DB      0               ;}                      125
+0624 00                    914             DB      0               ;~                      126
+0625 00                    915             DB      0               ;rubout                 127
+                           916     
+                           917     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           918     ;                                                                     ; 
+                           919     ; State Table                                                         ;
+                           920     ;                                                                     ; 
+                           921     ;                                                                     ;
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   18
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           922     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           923     
+0626                       924     StateTable   LABEL   BYTE
+                           925                  PUBLIC  StateTable
+                           926     
+                           927     
+0626 7C05           R      928             DW      OFFSET ParseError               ; path Begin
+0628 7C05           R      929             DW      OFFSET ParseError       
+062A 7C05           R      930             DW      OFFSET ParseError
+062C 7C05           R      931             DW      OFFSET ParseError
+062E 7C05           R      932             DW      OFFSET ParseError
+0630 7C05           R      933             DW      OFFSET ParseError
+0632 7C05           R      934             DW      OFFSET ParseError
+0634 7C05           R      935             DW      OFFSET ParseError
+0636 7C05           R      936             DW      OFFSET ParseError
+0638 7C05           R      937             DW      OFFSET ParseError
+063A 7C05           R      938             DW      OFFSET ParseError
+063C 7C05           R      939             DW      OFFSET ParseError
+063E 7C05           R      940             DW      OFFSET ParseError
+0640 7C05           R      941             DW      OFFSET ParseError
+0642 7C05           R      942             DW      OFFSET ParseError
+0644 7C05           R      943             DW      OFFSET ParseError
+0646 7C05           R      944             DW      OFFSET ParseError
+0648 7C05           R      945             DW      OFFSET ParseError
+064A 7C05           R      946             DW      OFFSET ParseError
+064C 5C00           R      947             DW      OFFSET PathInit
+064E 7C05           R      948             DW      OFFSET ParseError
+                           949             
+0650 7C05           R      950             DW      OFFSET ParseError               ; path just started
+0652 7C05           R      951             DW      OFFSET ParseError
+0654 7C05           R      952             DW      OFFSET ParseError
+0656 6B00           R      953             DW      OFFSET GetFirstPathNum
+0658 6B00           R      954             DW      OFFSET GetFirstPathNum
+065A 6B00           R      955             DW      OFFSET GetFirstPathNum
+065C 6B00           R      956             DW      OFFSET GetFirstPathNum
+065E 6B00           R      957             DW      OFFSET GetFirstPathNum
+0660 6B00           R      958             DW      OFFSET GetFirstPathNum
+0662 6B00           R      959             DW      OFFSET GetFirstPathNum
+0664 6B00           R      960             DW      OFFSET GetFirstPathNum
+0666 6B00           R      961             DW      OFFSET GetFirstPathNum
+0668 6B00           R      962             DW      OFFSET GetFirstPathNum
+066A 7C05           R      963             DW      OFFSET ParseError
+066C 7C05           R      964             DW      OFFSET ParseError
+066E 7C05           R      965             DW      OFFSET ParseError
+0670 7C05           R      966             DW      OFFSET ParseError
+0672 7C05           R      967             DW      OFFSET ParseError
+0674 7C05           R      968             DW      OFFSET ParseError
+0676 7C05           R      969             DW      OFFSET ParseError
+0678 7C05           R      970             DW      OFFSET ParseError
+                           971     
+067A 3301           R      972             DW      OFFSET CarrageReturnAfterPath           ; path started done
+067C 7C05           R      973             DW      OFFSET ParseError
+067E 7C05           R      974             DW      OFFSET ParseError
+0680 8600           R      975             DW      OFFSET GetPathNum
+0682 8600           R      976             DW      OFFSET GetPathNum
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   19
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0684 8600           R      977             DW      OFFSET GetPathNum
+0686 8600           R      978             DW      OFFSET GetPathNum
+0688 8600           R      979             DW      OFFSET GetPathNum
+068A 8600           R      980             DW      OFFSET GetPathNum
+068C 8600           R      981             DW      OFFSET GetPathNum
+068E 8600           R      982             DW      OFFSET GetPathNum
+0690 8600           R      983             DW      OFFSET GetPathNum
+0692 8600           R      984             DW      OFFSET GetPathNum
+0694 9D00           R      985             DW      OFFSET AAfterPath       
+0696 B800           R      986             DW      OFFSET RAfterPath
+0698 D300           R      987             DW      OFFSET ZAfterPath
+069A EE00           R      988             DW      OFFSET VAfterPath
+069C 0901           R      989             DW      OFFSET NAfterPath
+069E 1E01           R      990             DW      OFFSET FAfterPath
+06A0 F701           R      991             DW      OFFSET PathDone
+06A2 7C05           R      992             DW      OFFSET PArseError
+                           993     
+06A4 7C05           R      994             DW      OFFSET ParseError               ; A started
+06A6 7D02           R      995             DW      OFFSET RotateSignPositive
+06A8 9302           R      996             DW      OFFSET RotateSignNegative
+06AA BB02           R      997             DW      OFFSET GetFirstRotNumA
+06AC BB02           R      998             DW      OFFSET GetFirstRotNumA          
+06AE BB02           R      999             DW      OFFSET GetFirstRotNumA
+06B0 BB02           R     1000             DW      OFFSET GetFirstRotNumA
+06B2 BB02           R     1001             DW      OFFSET GetFirstRotNumA
+06B4 BB02           R     1002             DW      OFFSET GetFirstRotNumA
+06B6 BB02           R     1003             DW      OFFSET GetFirstRotNumA
+06B8 BB02           R     1004             DW      OFFSET GetFirstRotNumA
+06BA BB02           R     1005             DW      OFFSET GetFirstRotNumA
+06BC BB02           R     1006             DW      OFFSET GetFirstRotNumA
+06BE 7C05           R     1007             DW      OFFSET ParseError
+06C0 7C05           R     1008             DW      OFFSET ParseError
+06C2 7C05           R     1009             DW      OFFSET ParseError
+06C4 7C05           R     1010             DW      OFFSET ParseError
+06C6 7C05           R     1011             DW      OFFSET ParseError
+06C8 7C05           R     1012             DW      OFFSET ParseError
+06CA 7C05           R     1013             DW      OFFSET ParseError
+06CC 7C05           R     1014             DW      OFFSET ParseError
+                          1015     
+06CE 7E01           R     1016             DW      OFFSET CarrageReturn                    ; A Started Done
+06D0 7C05           R     1017             DW      OFFSET ParseError               
+06D2 7C05           R     1018             DW      OFFSET ParseError
+06D4 D502           R     1019             DW      OFFSET GetRotNum        
+06D6 D502           R     1020             DW      OFFSET GetRotNum        
+06D8 D502           R     1021             DW      OFFSET GetRotNum                
+06DA D502           R     1022             DW      OFFSET GetRotNum        
+06DC D502           R     1023             DW      OFFSET GetRotNum        
+06DE D502           R     1024             DW      OFFSET GetRotNum        
+06E0 D502           R     1025             DW      OFFSET GetRotNum        
+06E2 D502           R     1026             DW      OFFSET GetRotNum        
+06E4 D502           R     1027             DW      OFFSET GetRotNum        
+06E6 D502           R     1028             DW      OFFSET GetRotNum        
+06E8 7C05           R     1029             DW      OFFSET ParseError
+06EA 7C05           R     1030             DW      OFFSET ParseError
+06EC 1C03           R     1031             DW      OFFSET ZAfterRot
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   20
+
+
+LOC  OBJ                  LINE     SOURCE
+
+06EE 3103           R     1032             DW      OFFSET VAfterRot
+06F0 4603           R     1033             DW      OFFSET NForAll
+06F2 5C03           R     1034             DW      OFFSET FForAll
+06F4 F701           R     1035             DW      OFFSET PathDone
+06F6 7C05           R     1036             DW      OFFSET ParseError
+                          1037     
+06F8 7C05           R     1038             DW      OFFSET ParseError                       ; R Started
+06FA 7D02           R     1039             DW      OFFSET RotateSignPositive
+06FC 9302           R     1040             DW      OFFSET RotateSignNegative
+06FE 7203           R     1041             DW      OFFSET GetFirstRotNumR
+0700 7203           R     1042             DW      OFFSET GetFirstRotNumR
+0702 7203           R     1043             DW      OFFSET GetFirstRotNumR
+0704 7203           R     1044             DW      OFFSET GetFirstRotNumR
+0706 7203           R     1045             DW      OFFSET GetFirstRotNumR
+0708 7203           R     1046             DW      OFFSET GetFirstRotNumR
+070A 7203           R     1047             DW      OFFSET GetFirstRotNumR
+070C 7203           R     1048             DW      OFFSET GetFirstRotNumR
+070E 7203           R     1049             DW      OFFSET GetFirstRotNumR
+0710 7203           R     1050             DW      OFFSET GetFirstRotNumR
+0712 7C05           R     1051             DW      OFFSET ParseError
+0714 7C05           R     1052             DW      OFFSET ParseError
+0716 7C05           R     1053             DW      OFFSET ParseError
+0718 7C05           R     1054             DW      OFFSET ParseError
+071A 7C05           R     1055             DW      OFFSET ParseError
+071C 7C05           R     1056             DW      OFFSET ParseError
+071E 7C05           R     1057             DW      OFFSET ParseError
+0720 7C05           R     1058             DW      OFFSET ParseError
+                          1059     
+0722 7E01           R     1060             DW      OFFSET CarrageReturn                            ; R Started Done
+0724 7C05           R     1061             DW      OFFSET ParseError
+0726 7C05           R     1062             DW      OFFSET ParseError
+0728 D502           R     1063             DW      OFFSET GetRotNum
+072A D502           R     1064             DW      OFFSET GetRotNum
+072C D502           R     1065             DW      OFFSET GetRotNum
+072E D502           R     1066             DW      OFFSET GetRotNum
+0730 D502           R     1067             DW      OFFSET GetRotNum
+0732 D502           R     1068             DW      OFFSET GetRotNum
+0734 D502           R     1069             DW      OFFSET GetRotNum
+0736 D502           R     1070             DW      OFFSET GetRotNum
+0738 D502           R     1071             DW      OFFSET GetRotNum
+073A D502           R     1072             DW      OFFSET GetRotNum
+073C 7C05           R     1073             DW      OFFSET ParseError
+073E 7C05           R     1074             DW      OFFSET ParseError
+0740 1C03           R     1075             DW      OFFSET ZAfterRot
+0742 3103           R     1076             DW      OFFSET VAfterRot
+0744 4603           R     1077             DW      OFFSET NForAll
+0746 5C03           R     1078             DW      OFFSET FForAll
+0748 F701           R     1079             DW      OFFSET PathDone
+074A 7C05           R     1080             DW      OFFSET ParseError
+                          1081     
+074C 7C05           R     1082             DW      OFFSET ParseError                       ; Z Started
+074E 8C03           R     1083             DW      OFFSET VertSignPositive
+0750 A203           R     1084             DW      OFFSET VertSignNegative
+0752 CA03           R     1085             DW      OFFSET GetFirstVertNumZ
+0754 CA03           R     1086             DW      OFFSET GetFirstVertNumZ 
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   21
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0756 CA03           R     1087             DW      OFFSET GetFirstVertNumZ
+0758 CA03           R     1088             DW      OFFSET GetFirstVertNumZ 
+075A CA03           R     1089             DW      OFFSET GetFirstVertNumZ
+075C CA03           R     1090             DW      OFFSET GetFirstVertNumZ
+075E CA03           R     1091             DW      OFFSET GetFirstVertNumZ
+0760 CA03           R     1092             DW      OFFSET GetFirstVertNumZ
+0762 CA03           R     1093             DW      OFFSET GetFirstVertNumZ
+0764 CA03           R     1094             DW      OFFSET GetFirstVertNumZ
+0766 7C05           R     1095             DW      OFFSET ParseError
+0768 7C05           R     1096             DW      OFFSET ParseError
+076A 7C05           R     1097             DW      OFFSET ParseError
+076C 7C05           R     1098             DW      OFFSET ParseError
+076E 7C05           R     1099             DW      OFFSET ParseError
+0770 7C05           R     1100             DW      OFFSET ParseError
+0772 7C05           R     1101             DW      OFFSET ParseError
+0774 7C05           R     1102             DW      OFFSET ParseError
+                          1103     
+0776 7E01           R     1104             DW      OFFSET CarrageReturn                    ; Z Started Done
+0778 7C05           R     1105             DW      OFFSET ParseError
+077A 7C05           R     1106             DW      OFFSET ParseError
+077C FE03           R     1107             DW      OFFSET GetVertNum
+077E FE03           R     1108             DW      OFFSET GetVertNum
+0780 FE03           R     1109             DW      OFFSET GetVertNum
+0782 FE03           R     1110             DW      OFFSET GetVertNum
+0784 FE03           R     1111             DW      OFFSET GetVertNum
+0786 FE03           R     1112             DW      OFFSET GetVertNum
+0788 FE03           R     1113             DW      OFFSET GetVertNum
+078A FE03           R     1114             DW      OFFSET GetVertNum
+078C FE03           R     1115             DW      OFFSET GetVertNum
+078E FE03           R     1116             DW      OFFSET GetVertNum
+0790 5704           R     1117             DW      OFFSET AAfterVert
+0792 6C04           R     1118             DW      OFFSET RAfterVert
+0794 7C05           R     1119             DW      OFFSET ParseError
+0796 7C05           R     1120             DW      OFFSET ParseError
+0798 4603           R     1121             DW      OFFSET NForAll
+079A 5C03           R     1122             DW      OFFSET FForAll
+079C F701           R     1123             DW      OFFSET PathDone
+079E 7C05           R     1124             DW      OFFSET ParseError
+                          1125     
+07A0 7C05           R     1126             DW      OFFSET ParseError               ; V Started
+07A2 8C03           R     1127             DW      OFFSET VertSignPositive
+07A4 A203           R     1128             DW      OFFSET VertSignNegative
+07A6 E403           R     1129             DW      OFFSET GetFirstVertNumV
+07A8 E403           R     1130             DW      OFFSET GetFirstVertNumV
+07AA E403           R     1131             DW      OFFSET GetFirstVertNumV 
+07AC E403           R     1132             DW      OFFSET GetFirstVertNumV
+07AE E403           R     1133             DW      OFFSET GetFirstVertNumV
+07B0 E403           R     1134             DW      OFFSET GetFirstVertNumV
+07B2 E403           R     1135             DW      OFFSET GetFirstVertNumV
+07B4 E403           R     1136             DW      OFFSET GetFirstVertNumV
+07B6 E403           R     1137             DW      OFFSET GetFirstVertNumV
+07B8 E403           R     1138             DW      OFFSET GetFirstVertNumV
+07BA 7C05           R     1139             DW      OFFSET ParseError
+07BC 7C05           R     1140             DW      OFFSET ParseError
+07BE 7C05           R     1141             DW      OFFSET ParseError
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   22
+
+
+LOC  OBJ                  LINE     SOURCE
+
+07C0 7C05           R     1142             DW      OFFSET ParseError
+07C2 7C05           R     1143             DW      OFFSET ParseError
+07C4 7C05           R     1144             DW      OFFSET ParseError
+07C6 7C05           R     1145             DW      OFFSET ParseError
+07C8 7C05           R     1146             DW      OFFSET ParseError
+                          1147     
+07CA 7E01           R     1148             DW      OFFSET CarrageReturn                    ; V Started Done
+07CC 7C05           R     1149             DW      OFFSET ParseError
+07CE 7C05           R     1150             DW      OFFSET ParseError
+07D0 FE03           R     1151             DW      OFFSET GetVertNum
+07D2 FE03           R     1152             DW      OFFSET GetVertNum
+07D4 FE03           R     1153             DW      OFFSET GetVertNum
+07D6 FE03           R     1154             DW      OFFSET GetVertNum
+07D8 FE03           R     1155             DW      OFFSET GetVertNum
+07DA FE03           R     1156             DW      OFFSET GetVertNum
+07DC FE03           R     1157             DW      OFFSET GetVertNum
+07DE FE03           R     1158             DW      OFFSET GetVertNum
+07E0 FE03           R     1159             DW      OFFSET GetVertNum
+07E2 FE03           R     1160             DW      OFFSET GetVertNum
+07E4 5704           R     1161             DW      OFFSET AAfterVert
+07E6 6C04           R     1162             DW      OFFSET RAfterVert
+07E8 7C05           R     1163             DW      OFFSET ParseError
+07EA 7C05           R     1164             DW      OFFSET ParseError
+07EC 4603           R     1165             DW      OFFSET NForAll
+07EE 5C03           R     1166             DW      OFFSET FForAll
+07F0 F701           R     1167             DW      OFFSET PathDone
+07F2 7C05           R     1168             DW      OFFSET ParseError
+                          1169     
+07F4 7C05           R     1170             DW      OFFSET ParseError                       ; A Second
+07F6 7D02           R     1171             DW      OFFSET RotateSignPositive
+07F8 9302           R     1172             DW      OFFSET RotateSignNegative
+07FA 8104           R     1173             DW      OFFSET GetSecondRotNumA
+07FC 8104           R     1174             DW      OFFSET GetSecondRotNumA
+07FE 8104           R     1175             DW      OFFSET GetSecondRotNumA
+0800 8104           R     1176             DW      OFFSET GetSecondRotNumA
+0802 8104           R     1177             DW      OFFSET GetSecondRotNumA
+0804 8104           R     1178             DW      OFFSET GetSecondRotNumA
+0806 8104           R     1179             DW      OFFSET GetSecondRotNumA
+0808 8104           R     1180             DW      OFFSET GetSecondRotNumA
+080A 8104           R     1181             DW      OFFSET GetSecondRotNumA
+080C 8104           R     1182             DW      OFFSET GetSecondRotNumA
+080E 7C05           R     1183             DW      OFFSET ParseError       
+0810 7C05           R     1184             DW      OFFSET ParseError       
+0812 7C05           R     1185             DW      OFFSET ParseError
+0814 7C05           R     1186             DW      OFFSET ParseError
+0816 7C05           R     1187             DW      OFFSET ParseError
+0818 7C05           R     1188             DW      OFFSET ParseError
+081A 7C05           R     1189             DW      OFFSET ParseError
+081C 7C05           R     1190             DW      OFFSET ParseError
+                          1191     
+081E 7E01           R     1192             DW      OFFSET CarrageReturn                            ; A Second Done
+0820 7C05           R     1193             DW      OFFSET ParseError
+0822 7C05           R     1194             DW      OFFSET ParseError
+0824 D502           R     1195             DW      OFFSET GetRotNum
+0826 D502           R     1196             DW      OFFSET GetRotNum        
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   23
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0828 D502           R     1197             DW      OFFSET GetRotNum
+082A D502           R     1198             DW      OFFSET GetRotNum
+082C D502           R     1199             DW      OFFSET GetRotNum
+082E D502           R     1200             DW      OFFSET GetRotNum
+0830 D502           R     1201             DW      OFFSET GetRotNum
+0832 D502           R     1202             DW      OFFSET GetRotNum
+0834 D502           R     1203             DW      OFFSET GetRotNum
+0836 D502           R     1204             DW      OFFSET GetRotNum
+0838 7C05           R     1205             DW      OFFSET ParseError
+083A 7C05           R     1206             DW      OFFSET ParseError
+083C 7C05           R     1207             DW      OFFSET ParseError
+083E 7C05           R     1208             DW      OFFSET ParseError
+0840 4603           R     1209             DW      OFFSET NForAll
+0842 5C03           R     1210             DW      OFFSET FForAll
+0844 F701           R     1211             DW      OFFSET PathDone
+0846 7C05           R     1212             DW      OFFSET ParseError
+                          1213     
+0848 7C05           R     1214             DW      OFFSET ParseError                               ; R Second
+084A 7D02           R     1215             DW      OFFSET RotateSignPositive
+084C 9302           R     1216             DW      OFFSET RotateSignNegative
+084E 9B04           R     1217             DW      OFFSET GetSecondRotNumR
+0850 9B04           R     1218             DW      OFFSET GetSecondRotNumR
+0852 9B04           R     1219             DW      OFFSET GetSecondRotNumR
+0854 9B04           R     1220             DW      OFFSET GetSecondRotNumR
+0856 9B04           R     1221             DW      OFFSET GetSecondRotNumR
+0858 9B04           R     1222             DW      OFFSET GetSecondRotNumR
+085A 9B04           R     1223             DW      OFFSET GetSecondRotNumR
+085C 9B04           R     1224             DW      OFFSET GetSecondRotNumR
+085E 9B04           R     1225             DW      OFFSET GetSecondRotNumR
+0860 9B04           R     1226             DW      OFFSET GetSecondRotNumR
+0862 7C05           R     1227             DW      OFFSET ParseError
+0864 7C05           R     1228             DW      OFFSET ParseError
+0866 7C05           R     1229             DW      OFFSET ParseError
+0868 7C05           R     1230             DW      OFFSET ParseError
+086A 7C05           R     1231             DW      OFFSET ParseError
+086C 7C05           R     1232             DW      OFFSET ParseError
+086E 7C05           R     1233             DW      OFFSET ParseError
+0870 7C05           R     1234             DW      OFFSET ParseError
+                          1235     
+0872 7E01           R     1236             DW      OFFSET CarrageReturn                            ; R Second Done
+0874 7C05           R     1237             DW      OFFSET ParseError
+0876 7C05           R     1238             DW      OFFSET ParseError
+0878 D502           R     1239             DW      OFFSET GetRotNum
+087A D502           R     1240             DW      OFFSET GetRotNum
+087C D502           R     1241             DW      OFFSET GetRotNum
+087E D502           R     1242             DW      OFFSET GetRotNum
+0880 D502           R     1243             DW      OFFSET GetRotNum
+0882 D502           R     1244             DW      OFFSET GetRotNum
+0884 D502           R     1245             DW      OFFSET GetRotNum
+0886 D502           R     1246             DW      OFFSET GetRotNum
+0888 D502           R     1247             DW      OFFSET GetRotNum
+088A D502           R     1248             DW      OFFSET GetRotNum
+088C 7C05           R     1249             DW      OFFSET ParseError
+088E 7C05           R     1250             DW      OFFSET ParseError
+0890 7C05           R     1251             DW      OFFSET ParseError
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   24
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0892 7C05           R     1252             DW      OFFSET ParseError
+0894 4603           R     1253             DW      OFFSET NForAll          
+0896 5C03           R     1254             DW      OFFSET FForAll
+0898 F701           R     1255             DW      OFFSET PathDone
+089A 7C05           R     1256             DW      OFFSET ParseError
+                          1257     
+                          1258     
+089C 7C05           R     1259             DW      OFFSET ParseError                               ; Z Second
+089E 8C03           R     1260             DW      OFFSET VertSignPositive
+08A0 A203           R     1261             DW      OFFSET VertSignNegative
+08A2 B504           R     1262             DW      OFFSET GetSecondVertNumZ
+08A4 B504           R     1263             DW      OFFSET GetSecondVertNumZ
+08A6 B504           R     1264             DW      OFFSET GetSecondVertNumZ
+08A8 B504           R     1265             DW      OFFSET GetSecondVertNumZ
+08AA B504           R     1266             DW      OFFSET GetSecondVertNumZ
+08AC B504           R     1267             DW      OFFSET GetSecondVertNumZ
+08AE B504           R     1268             DW      OFFSET GetSecondVertNumZ
+08B0 B504           R     1269             DW      OFFSET GetSecondVertNumZ
+08B2 B504           R     1270             DW      OFFSET GetSecondVertNumZ
+08B4 B504           R     1271             DW      OFFSET GetSecondVertNumZ
+08B6 7C05           R     1272             DW      OFFSET ParseError
+08B8 7C05           R     1273             DW      OFFSET ParseError
+08BA 7C05           R     1274             DW      OFFSET ParseError
+08BC 7C05           R     1275             DW      OFFSET ParseError
+08BE 7C05           R     1276             DW      OFFSET ParseError
+08C0 7C05           R     1277             DW      OFFSET ParseError
+08C2 7C05           R     1278             DW      OFFSET ParseError
+08C4 7C05           R     1279             DW      OFFSET ParseError
+                          1280     
+08C6 7E01           R     1281             DW      OFFSET CarrageReturn                            ; Z Second Done
+08C8 7C05           R     1282             DW      OFFSET ParseError
+08CA 7C05           R     1283             DW      OFFSET ParseError
+08CC FE03           R     1284             DW      OFFSET GetVertNum
+08CE FE03           R     1285             DW      OFFSET GetVertNum
+08D0 FE03           R     1286             DW      OFFSET GetVertNum
+08D2 FE03           R     1287             DW      OFFSET GetVertNum
+08D4 FE03           R     1288             DW      OFFSET GetVertNum
+08D6 FE03           R     1289             DW      OFFSET GetVertNum
+08D8 FE03           R     1290             DW      OFFSET GetVertNum
+08DA FE03           R     1291             DW      OFFSET GetVertNum
+08DC FE03           R     1292             DW      OFFSET GetVertNum
+08DE FE03           R     1293             DW      OFFSET GetVertNum
+08E0 7C05           R     1294             DW      OFFSET ParseError
+08E2 7C05           R     1295             DW      OFFSET ParseError
+08E4 7C05           R     1296             DW      OFFSET ParseError
+08E6 7C05           R     1297             DW      OFFSET ParseError
+08E8 4603           R     1298             DW      OFFSET NForAll
+08EA 5C03           R     1299             DW      OFFSET FForAll
+08EC F701           R     1300             DW      OFFSET PathDone
+08EE 7C05           R     1301             DW      OFFSET ParseError
+                          1302     
+08F0 7C05           R     1303             DW      OFFSET ParseError                               ; V Second
+08F2 8C03           R     1304             DW      OFFSET VertSignPositive
+08F4 A203           R     1305             DW      OFFSET VertSignNegative
+08F6 CF04           R     1306             DW      OFFSET GetSecondVertNumV
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   25
+
+
+LOC  OBJ                  LINE     SOURCE
+
+08F8 CF04           R     1307             DW      OFFSET GetSecondVertNumV
+08FA CF04           R     1308             DW      OFFSET GetSecondVertNumV
+08FC CF04           R     1309             DW      OFFSET GetSecondVertNumV
+08FE CF04           R     1310             DW      OFFSET GetSecondVertNumV
+0900 CF04           R     1311             DW      OFFSET GetSecondVertNumV
+0902 CF04           R     1312             DW      OFFSET GetSecondVertNumV
+0904 CF04           R     1313             DW      OFFSET GetSecondVertNumV
+0906 CF04           R     1314             DW      OFFSET GetSecondVertNumV
+0908 CF04           R     1315             DW      OFFSET GetSecondVertNumV
+090A 7C05           R     1316             DW      OFFSET ParseError
+090C 7C05           R     1317             DW      OFFSET ParseError
+090E 7C05           R     1318             DW      OFFSET ParseError
+0910 7C05           R     1319             DW      OFFSET ParseError
+0912 7C05           R     1320             DW      OFFSET ParseError
+0914 7C05           R     1321             DW      OFFSET ParseError
+0916 7C05           R     1322             DW      OFFSET ParseError
+0918 7C05           R     1323             DW      OFFSET ParseError
+                          1324     
+091A 7E01           R     1325             DW      OFFSET CarrageReturn                            ; V Second Done
+091C 7C05           R     1326             DW      OFFSET ParseError
+091E 7C05           R     1327             DW      OFFSET ParseError
+0920 FE03           R     1328             DW      OFFSET GetVertNum
+0922 FE03           R     1329             DW      OFFSET GetVertNum
+0924 FE03           R     1330             DW      OFFSET GetVertNum
+0926 FE03           R     1331             DW      OFFSET GetVertNum
+0928 FE03           R     1332             DW      OFFSET GetVertNum
+092A FE03           R     1333             DW      OFFSET GetVertNum
+092C FE03           R     1334             DW      OFFSET GetVertNum
+092E FE03           R     1335             DW      OFFSET GetVertNum
+0930 FE03           R     1336             DW      OFFSET GetVertNum
+0932 FE03           R     1337             DW      OFFSET GetVertNum
+0934 7C05           R     1338             DW      OFFSET ParseError
+0936 7C05           R     1339             DW      OFFSET ParseError
+0938 7C05           R     1340             DW      OFFSET ParseError
+093A 7C05           R     1341             DW      OFFSET ParseError
+093C 4603           R     1342             DW      OFFSET NForAll
+093E 5C03           R     1343             DW      OFFSET FForAll
+0940 F701           R     1344             DW      OFFSET PathDone
+0942 7C05           R     1345             DW      OFFSET ParseError
+                          1346             
+0944 7E01           R     1347             DW      OFFSET CarrageReturn                             ; Step Start
+0946 7C05           R     1348             DW      OFFSET ParseError
+0948 7C05           R     1349             DW      OFFSET ParseError
+094A 7C05           R     1350             DW      OFFSET ParseError
+094C 7C05           R     1351             DW      OFFSET ParseError
+094E 7C05           R     1352             DW      OFFSET ParseError
+0950 7C05           R     1353             DW      OFFSET ParseError
+0952 7C05           R     1354             DW      OFFSET ParseError
+0954 7C05           R     1355             DW      OFFSET ParseError
+0956 7C05           R     1356             DW      OFFSET ParseError
+0958 7C05           R     1357             DW      OFFSET ParseError
+095A 7C05           R     1358             DW      OFFSET ParseError
+095C 7C05           R     1359             DW      OFFSET ParseError
+095E E904           R     1360             DW      OFFSET AStart   
+0960 FE04           R     1361             DW      OFFSET RStart   
+8086/87/88/186 MACRO ASSEMBLER    PARSING                                                  15:54:55  04/23/:2  PAGE   26
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0962 1305           R     1362             DW      OFFSET ZStart   
+0964 2805           R     1363             DW      OFFSET VStart   
+0966 4603           R     1364             DW      OFFSET NForAll
+0968 5C03           R     1365             DW      OFFSET FForAll
+096A F701           R     1366             DW      OFFSET PathDone
+096C 3D05           R     1367             DW      OFFSET Exit
+                          1368     
+----                      1369     CODE    ENDS
+                          1370     
+----                      1371     DATA    SEGMENT PUBLIC  'DATA'
+                          1372     
+0000 ??                   1373     NewChar                 DB      ?
+0001 00                   1374     State                   DB      0
+0002 ??                   1375     PathNum                 DB      ?
+0003 0000                 1376     NumCntr                 DW      0
+0005 0000                 1377     Angle                   DW      0
+0007 0000                 1378     Vert                    DW      0
+0009 00                   1379     ArFlag                  DB      0
+000A 00                   1380     VrFlag                  DB      0
+                          1381     
+000B ????                 1382     RotSign                 DW      ?
+000D ????                 1383     VertSign                DW      ?
+                          1384     
+000F ????                 1385     RotSignDone             DW      ?
+0011 ????                 1386     VertSignDone            DW      ?
+                          1387     
+0013 00                   1388     Magnet                  DB      0
+0014 ????                 1389     MagnetDone              DW      ?
+                          1390     
+                          1391     
+                          1392     
+                          1393     
+----                      1394     DATA    ENDS
+                          1395     
+                          1396     
+                          1397             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

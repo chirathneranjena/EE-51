@@ -1,0 +1,529 @@
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE SETTINGS
+OBJECT MODULE PLACED IN SETTINGS.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE SETTINGS.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     NAME Settings
+                             3     
+                             4     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             5     ;                                                                            ;
+                             6     ;                                 Settings                                   ;
+                             7     ;                             RoboCrane Settings                             ;
+                             8     ;                                                                            ;
+                             9     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            10     
+                            11     ; Description:      Functions involved with the setup of miscellanious
+                            12     ;                       Robocrane Settings
+                            13     ;                       User Changable Settings include
+                            14     ;                               - Setting the Baud Rate of the serial channel
+                            15     ;                               - Setting the Parity
+                            16     ;                               - Changing the Origin of absolute movements of 
+                            17     ;                                 Robocrane
+                            18     ;
+                            19     ;
+                            20     ; Input:            KeyPad
+                            21     ; Output:           None        
+                            22     ;
+                            23     ; User Interface:   KeyPad, Display
+                            24     ; Error Handling:   None.
+                            25     ;
+                            26     ; Algorithms:       None.
+                            27     ; Data Structures:  None.
+                            28     ;
+                            29     ; Revision History:
+                            30     ;       Chirath Neranjena       18 Mar 2002     Creation
+                            31     
+                            32     CGROUP  GROUP   CODE
+                            33     
+                            34     
+                            35 +1  $INCLUDE(SETTINGS.INC)
+                      =1    36     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    37     ;                                                                            ;
+                      =1    38     ;                                SETTINGS.INC                                ;
+                      =1    39     ;                                                                            ;
+                      =1    40     ;                                Include File                                ;
+                      =1    41     ;                                                                            ;
+                      =1    42     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    43     
+                      =1    44     ; This file contains the definitions for certain settings of Robocrane
+                      =1    45     ;
+                      =1    46     ; Revision History:
+                      =1    47     ;    18/03/2002    Chirath Neranjena  initial revision 
+                      =1    48     
+                      =1    49     
+                      =1    50     
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1    51     ;Serial Port Registers
+  0103                =1    52     Serial_LCR      EQU     103H            ; Lactch Control Register
+  0080                =1    53     Enable_DL_Acc   EQU     10000000B       ; Enable Access to MSB and LSB by setting DLA
+                                   B
+                      =1    54     
+  0100                =1    55     Serial_DL       EQU     100H            ; Serial MSB and LSB Data Latch Registers
+                      =1    56     
+                      =1    57     ; Baud Rate Divisors
+  03C0                =1    58     Baud_300        EQU     960              ; Baud rate divisor for 300 Baud rate
+  00F0                =1    59     Baud_1200       EQU     240              ; Baud rate divisor for 1200 Baud rate
+  0078                =1    60     Baud_2400       EQU     120              ; Baud rate divisor for 2400 Baud rate
+  003C                =1    61     Baud_4800       EQU      60              ; Baud rate divisor for 4800 Baud rate
+  001E                =1    62     Baud_9600       EQU      30              ; Baud rate divisor for 9600 Baud rate
+  000F                =1    63     Baud_19200      EQU      15              ; Baud rate divisor for 19200 Baud rate
+  0005                =1    64     Baud_57600      EQU       5              ; Baud rate divisor for 57600 Baud rate
+                      =1    65     
+                      =1    66     ;Parity Settings
+  001B                =1    67     EvenParity      EQU     00011011B       ; LCR Even Parity Value
+  000B                =1    68     OddParity       EQU     00001011B       ; LCR Odd Parity Value
+  002B                =1    69     MarkParity      EQU     00101011B       ; LCR Mark Parity Value
+  003B                =1    70     SetParity       EQU     00111011B       ; LCR Set Parity Value
+  0003                =1    71     NoParity        EQU     00000011B       ; LCR No Parity Value
+                      =1    72     
+                      =1    73     ;KepPad Key Values
+                      =1    74     ; Each key is named after its row and column numbers
+                      =1    75     
+  002E                =1    76     Key11           EQU     0002EH
+  002D                =1    77     Key12           EQU     0002DH
+  002B                =1    78     Key13           EQU     0002BH
+  0027                =1    79     Key14           EQU     00027H
+  001E                =1    80     Key21           EQU     0001EH
+  001D                =1    81     Key22           EQU     0001DH
+  001B                =1    82     Key23           EQU     0001BH
+  0017                =1    83     Key24           EQU     00017H
+  000E                =1    84     Key31           EQU     0000EH
+  000D                =1    85     Key32           EQU     0000DH
+  000B                =1    86     Key33           EQU     0000BH
+  0007                =1    87     Key34           EQU     00007H
+                      =1    88     
+                      =1    89     
+                      =1    90     
+                      =1    91     
+                            92     
+                            93     
+                            94     EXTRN   Display :NEAR
+                            95     EXTRN   GetKey  :NEAR
+                            96     EXTRN   ClearDisplay    :NEAR
+                            97     
+----                        98     CODE SEGMENT PUBLIC 'CODE'
+                            99     
+                           100             ASSUME  CS: CGROUP, DS: DATA
+                           101     
+                           102     ; SettingsMenu
+                           103     ;
+                           104     ; Description:      Function handles the certain settings of the Robocrane system
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           105     ;                       
+                           106     ;
+                           107     ; Arguments:        None.
+                           108     ; Return Value:     None.
+                           109     ;
+                           110     ; Local Variables:  None
+                           111     ;
+                           112     ; Shared Variables: None.
+                           113     ; Global Variables: CraneAngle, CraneVert
+                           114     ;                   
+                           115     ;                   
+                           116     ;
+                           117     ; Input:            KeyPad Input
+                           118     ; Output:           None.
+                           119     ;
+                           120     ; Error Handling:   None.
+                           121     ;
+                           122     ; Algorithms:       None.
+                           123     ;                   
+                           124     ;                   
+                           125     ; Data Structures:  None.
+                           126     ;
+                           127     ; Registers Used:   AX
+                           128     ; Stack Depth:      1 words
+                           129     ;
+                           130     ; Author:           Chirath Neranjena
+                           131     ; Last Modified:    Mar 18 2002
+                           132     
+0000                       133     SettingsMenu    PROC    NEAR
+                           134                     PUBLIC  SettingsMenu
+                           135     
+0000 50                    136             PUSH    AX
+                           137     
+                           138     
+0001                       139     SettingLoop:
+                           140     
+0001 B8----         R      141             MOV     AX, SEG StringBuffer    ; Display message to acknowledge menu entry
+0004 8EC0                  142             MOV     ES, AX
+0006 B80000         E      143             MOV     AX, OFFSET  StringBuffer
+0009 8BF0                  144             MOV     SI, AX
+                           145             
+000B B053                  146             MOV     AL, 83
+000D 268804                147             MOV     ES:[SI], AL             ; 83 - S
+0010 46                    148             INC     SI
+0011 B045                  149             MOV     AL, 69
+0013 268804                150             MOV     ES:[SI], AL             ; 116 - E
+0016 46                    151             INC     SI                      
+0017 B073                  152             MOV     AL, 115
+0019 268804                153             MOV     ES:[SI], AL             ; 65 - t
+001C 46                    154             INC     SI
+001D B000                  155             MOV     AL, 0
+001F 268804                156             MOV     ES:[SI], AL             ; null char for termination
+0022 46                    157             INC     SI
+                           158     
+0023 B80000         E      159             MOV     AX, OFFSET  StringBuffer ; return to the top of message 
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0026 8BF0                  160             MOV     SI, AX
+                           161     
+0028 E80000         E      162             CALL    Display                 ; now call display to display message
+                           163     
+                           164     
+                           165     
+002B E80000         E      166             CALL    GetKey          ;Get key from Keypad
+                           167     
+002E 3C0D                  168             CMP     AL, Key32       ; If Key = Baud
+0030 740F                  169             JE      Baud            ;   Initiate Change Baud
+                           170     
+0032 3C0B                  171             CMP     AL, Key33       ; If key = parity
+0034 7411                  172             JE      Parity          ;   Initiate Change Parity
+                           173     
+0036 3C07                  174             CMP     AL, Key34       ; If Key = Origin
+0038 7413                  175             JE      SetOrigin       ;   Change Origin       
+                           176     
+003A 3C2D                  177             CMP     AL, Key12       ; If Key = Return       
+003C 7423                  178             JE      SettingsReturn  ;   Go back to main menu
+                           179     
+003E EB1F90                180             JMP     EndSettings
+                           181     
+0041                       182     Baud:
+                           183     
+0041 E81F00                184             CALL    SetBaud         ; need to change baud rate
+0044 EB1990                185             JMP     EndSettings
+                           186     
+0047                       187     Parity:
+                           188     
+0047 E89C00                189             CALL    SetupParity     ; need to change parity
+004A EB1390                190             JMP     EndSettings
+                           191     
+004D                       192     SetOrigin:
+                           193     
+004D C70600000000   E      194             MOV     CraneVert, 0    ; set current location of crane
+0053 C70600000000   E      195             MOV     CraneAngle, 0   ;   as origin
+                           196     
+0059 E80000         E      197             CALL    ClearDisplay    ; indicate the change has been made
+005C EB0190                198             JMP     EndSettings
+                           199     
+005F                       200     EndSettings:
+                           201     
+005F EBA0                  202             JMP     SettingLoop     ; Go back to the top
+                           203     
+0061                       204     SettingsReturn:
+                           205     
+0061 58                    206             POP     AX              ; restore registers
+                           207     
+0062 C3                    208             RET                     ; done
+                           209     
+                           210     SettingsMenu    ENDP
+                           211     
+                           212     ; SetBaud
+                           213     ;
+                           214     ; Description:      Function sets the Baud rate of the serial channel
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           215     ;                       
+                           216     ;
+                           217     ; Arguments:        None.
+                           218     ; Return Value:     None.
+                           219     ;
+                           220     ; Local Variables:  None
+                           221     ;
+                           222     ; Shared Variables: None.
+                           223     ; Global Variables: None.
+                           224     ;                   
+                           225     ;                   
+                           226     ;
+                           227     ; Input:            KeyPad Input
+                           228     ; Output:           None.
+                           229     ;
+                           230     ; Error Handling:   None.
+                           231     ;
+                           232     ; Algorithms:       None.
+                           233     ;                   
+                           234     ;                   
+                           235     ; Data Structures:  None.
+                           236     ;
+                           237     ; Registers Used:   AX
+                           238     ; Stack Depth:      1 words
+                           239     ;
+                           240     ; Author:           Chirath Neranjena
+                           241     ; Last Modified:    Mar 18 2002
+                           242     
+                           243     
+0063                       244     SetBaud         PROC    NEAR
+                           245     
+                           246             
+0063 50                    247             PUSH    AX      ; Save register
+                           248     
+0064 B8----         R      249             MOV     AX, SEG StringBuffer    ; Display message to acknowledge menu entry
+0067 8EC0                  250             MOV     ES, AX
+0069 B80000         E      251             MOV     AX, OFFSET  StringBuffer
+006C 8BF0                  252             MOV     SI, AX
+                           253             
+006E B038                  254             MOV     AL, 56
+0070 268804                255             MOV     ES:[SI], AL             ; 83 - B
+0073 46                    256             INC     SI
+0074 B041                  257             MOV     AL, 65
+0076 268804                258             MOV     ES:[SI], AL             ; 116 - A
+0079 46                    259             INC     SI                      
+007A B055                  260             MOV     AL, 85
+007C 268804                261             MOV     ES:[SI], AL             ; 65 - U
+007F 46                    262             INC     SI
+0080 B044                  263             MOV     AL, 68
+0082 268804                264             MOV     ES:[SI], AL             ; 68 - D
+0085 46                    265             INC     SI
+0086 B000                  266             MOV     AL, 0
+0088 268804                267             MOV     ES:[SI], AL             ; null char for termination
+008B 46                    268             INC     SI
+                           269     
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+008C B80000         E      270             MOV     AX, OFFSET  StringBuffer ; return to the top of message 
+008F 8BF0                  271             MOV     SI, AX
+                           272     
+0091 E80000         E      273             CALL    Display                 ; now call display to display message
+                           274     
+0094                       275     SetBaudLoop:
+                           276     
+0094 E80000         E      277             CALL    GetKey          ; Get Key From Key pad
+                           278     
+0097 3C2D                  279             CMP     AL, Key12       ; Baud rate 300
+0099 7416                  280             JE      B300    
+                           281     
+009B 3C2B                  282             CMP     AL, Key13       ; Baud rate 1200
+009D 7418                  283             JE      B1200   
+                           284     
+009F 3C27                  285             CMP     AL, Key14       ; Baud rate 4800
+00A1 741A                  286             JE      B4800   
+                           287             
+00A3 3C1D                  288             CMP     AL, Key22       ; Baud rate 9600
+00A5 741C                  289             JE      B9600   
+                           290     
+00A7 3C1B                  291             CMP     AL, Key23       ; Baud rate 19200
+00A9 741E                  292             JE      B19200  
+                           293     
+00AB 3C17                  294             CMP     AL, Key24       ; Baud rate 57600
+00AD 7420                  295             JE      B57600  
+                           296     
+00AF EBE3                  297             JMP     SetBaudLoop
+                           298     
+00B1                       299     B300:
+00B1 B8C003                300             MOV     AX, Baud_300    ; get baud rate divsor for 300
+00B4 EB1F90                301             JMP     SetBaudEnd
+                           302     
+00B7                       303     B1200:
+00B7 B8F000                304             MOV     AX, Baud_1200   ; get baud rate divsor for 1200
+00BA EB1990                305             JMP     SetBaudEnd
+                           306     
+00BD                       307     B4800:
+00BD B83C00                308             MOV     AX, Baud_4800   ; get baud rate divsor for 4800
+00C0 EB1390                309             JMP     SetBaudEnd
+                           310     
+00C3                       311     B9600:
+00C3 B81E00                312             MOV     AX, Baud_9600   ; get baud rate divsor for 9600
+00C6 EB0D90                313             JMP     SetBaudEnd
+                           314     
+00C9                       315     B19200:
+00C9 B80F00                316             MOV     AX, Baud_19200  ; get baud rate divsor for 19200
+00CC EB0790                317             JMP     SetBaudEnd
+                           318     
+00CF                       319     B57600:
+00CF B80500                320             MOV     AX, Baud_57600  ; get baud rate divsor for 57600
+00D2 EB0190                321             JMP     SetBaudEnd
+                           322     
+00D5                       323     SetBaudEnd:
+                           324     
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           325     
+00D5 BA0301                326             MOV     DX, Serial_LCR          ; Enable Access to Divisor Latch Access Bit
+00D8 B88000                327             MOV     AX, Enable_DL_Acc
+00DB EE                    328             OUT     DX, AL
+                           329     
+00DC BA0001                330             MOV     DX, Serial_DL           ; Set Baud Rate
+00DF EE                    331             OUT     DX, AL
+00E0 42                    332             INC     DX
+00E1 8AC4                  333             MOV     AL, AH
+00E3 EE                    334             OUT     DX, AL
+                           335     
+00E4 58                    336             POP     AX
+                           337     
+00E5 C3                    338             RET
+                           339     
+                           340     SetBaud ENDP
+                           341     
+                           342     
+                           343     ; SetParity
+                           344     ;
+                           345     ; Description:      Function sets the Parity of the serial channel
+                           346     ;                       
+                           347     ;
+                           348     ; Arguments:        None.
+                           349     ; Return Value:     None.
+                           350     ;
+                           351     ; Local Variables:  None
+                           352     ;
+                           353     ; Shared Variables: None.
+                           354     ; Global Variables: None.
+                           355     ;                   
+                           356     ;                   
+                           357     ;
+                           358     ; Input:            KeyPad Input
+                           359     ; Output:           None.
+                           360     ;
+                           361     ; Error Handling:   None.
+                           362     ;
+                           363     ; Algorithms:       None.
+                           364     ;                   
+                           365     ;                   
+                           366     ; Data Structures:  None.
+                           367     ;
+                           368     ; Registers Used:   AX
+                           369     ; Stack Depth:      1 words
+                           370     ;
+                           371     ; Author:           Chirath Neranjena
+                           372     ; Last Modified:    Mar 18 2002
+                           373     
+                           374     
+00E6                       375     SetupParity     PROC    NEAR
+                           376     
+                           377                             
+00E6 50                    378             PUSH    AX      ; Save register
+                           379     
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00E7 B8----         R      380             MOV     AX, SEG StringBuffer    ; Display message to acknowledge menu entry
+00EA 8EC0                  381             MOV     ES, AX
+00EC B80000         E      382             MOV     AX, OFFSET  StringBuffer
+00EF 8BF0                  383             MOV     SI, AX
+                           384             
+00F1 B050                  385             MOV     AL, 80
+00F3 268804                386             MOV     ES:[SI], AL             ; 83 - P
+00F6 46                    387             INC     SI
+00F7 B041                  388             MOV     AL, 65
+00F9 268804                389             MOV     ES:[SI], AL             ; 116 - A
+00FC 46                    390             INC     SI                      
+00FD B000                  391             MOV     AL, 0
+00FF 268804                392             MOV     ES:[SI], AL             ; null char for termination
+0102 46                    393             INC     SI
+0103 B80000         E      394             MOV     AX, OFFSET  StringBuffer ; return to the top of message 
+0106 8BF0                  395             MOV     SI, AX
+                           396     
+0108 E80000         E      397             CALL    Display                 ; now call display to display message
+                           398     
+010B                       399     SetParityLoop:
+                           400     
+010B E80000         E      401             CALL    GetKey          ; Get Key From Key pad
+                           402     
+010E 3C2B                  403             CMP     AL, Key13       ; Set Odd Parity
+0110 7412                  404             JE      SetOddParity    
+                           405     
+0112 3C1B                  406             CMP     AL, Key23       ; Set Even Parity
+0114 7413                  407             JE      SetEvenParity   
+                           408     
+0116 3C0B                  409             CMP     AL, Key33       ; Set Mark Parity
+0118 7414                  410             JE      SetMarkParity   
+                           411             
+011A 3C17                  412             CMP     AL, Key24       ; Set 'Set' Parity
+011C 7415                  413             JE      SetSetParity    
+                           414     
+011E 3C07                  415             CMP     AL, Key34       ; set No Parity
+0120 7416                  416             JE      SetNoParity
+                           417     
+                           418     
+0122 EBE7                  419             JMP     SetParityLoop
+                           420     
+                           421     
+0124                       422     SetOddParity:
+                           423     
+0124 B00B                  424             MOV     AL, OddParity   ; get odd parity LCR value
+0126 EB1590                425             JMP     SetParityEND
+                           426     
+0129                       427     SetEvenParity:
+                           428     
+0129 B01B                  429             MOV     AL, EvenParity  ; get Even parity LCR value
+012B EB1090                430             JMP     SetParityEND
+                           431     
+012E                       432     SetMarkParity:
+                           433     
+012E B02B                  434             MOV     AL, MarkParity  ; get Mark parity LCR value
+8086/87/88/186 MACRO ASSEMBLER    SETTINGS                                                 15:54:55  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0130 EB0B90                435             JMP     SetParityEND
+                           436     
+0133                       437     SetSetParity:
+                           438     
+0133 B03B                  439             MOV     AL, SetParity   ; get Set parity LCR value
+0135 EB0690                440             JMP     SetParityEND
+                           441     
+0138                       442     SetNoParity:
+                           443     
+0138 B003                  444             MOV     AL, NoParity    ; get No parity LCR value
+013A EB0190                445             JMP     SetParityEND
+                           446     
+                           447     
+013D                       448     SetParityEnd:
+                           449     
+                           450     
+013D BA0301                451             MOV     DX, Serial_LCR          ; Set Parity
+0140 EE                    452             OUT     DX, AL
+                           453     
+                           454     
+0141 58                    455             POP     AX
+                           456     
+0142 C3                    457             RET
+                           458     
+                           459     SetupParity     ENDP
+                           460     
+----                       461     CODE    ENDS
+                           462     
+----                       463     DATA    SEGMENT PUBLIC  'DATA'
+                           464     
+                           465     EXTRN   StringBuffer    :BYTE   ; ; Buffer for storing display messages
+                           466     
+                           467     EXTRN   CraneAngle      :WORD   ; Holds the Absolute Angle       
+                           468     EXTRN   CraneVert       :WORD   ; Holds the Absolute Vertical position         
+                           469            
+                           470     
+                           471     
+                           472     
+----                       473     DATA    ENDS
+                           474     
+                           475     
+                           476             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

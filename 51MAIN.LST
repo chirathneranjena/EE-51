@@ -1,0 +1,809 @@
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE MAIN
+OBJECT MODULE PLACED IN 51MAIN.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE 51MAIN.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     ;;;                                     Chirath Neranjena Thouppuarachchi
+                             3     ;;;                                     EE / CS 51
+                             4     
+                             5     NAME  MAIN
+                             6       
+                             7     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             8     ;                                                                            ;
+                             9     ;                                    MAIN                                    ;
+                            10     ;                         EE/CS 51 Robocrane Main Function                   ;
+                            11     ;                                                                            ;
+                            12     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            13     
+                            14     ; Description:      This program is the main function of the Robocrane.
+                            15     ;                   It include the Initialization of the chip select,
+                            16     ;                       sets the interrupt vector table, and installs the
+                            17     ;                       timer event handler
+                            18     ;                   WARNING!: The program is an infinite Loop                       
+                                               
+                            19     ;
+                            20     ; Input:            Keys from the Keypad
+                            21     ; Output:           String on the LED Display.
+                            22     ;
+                            23     ; User Interface:   Keypad.
+                            24     ; Error Handling:   None.
+                            25     ;
+                            26     ; Algorithms:       None.
+                            27     ; Data Structures:  None.
+                            28     ;
+                            29     ; Revision History:
+                            30     ;
+                            31     ;     2/21/02  Chirath Neranjena  Converted to the Main function of Robocrane   
+                                      
+                            32     
+                            33     
+                            34     
+                            35     CGROUP  GROUP   CODE
+                            36     
+                            37     ; local include files
+                            38     
+                            39 +1  $INCLUDE(51MAIN.INC)
+                      =1    40     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    41     ;                                                                            ;
+                      =1    42     ;                                  51Main.INC                                ;
+                      =1    43     ;                              Robo Crane Main File                          ;
+                      =1    44     ;                                 Include File                               ;
+                      =1    45     ;                                                                            ;
+                      =1    46     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    47     
+                      =1    48     ; This file contains the definitions for the Robo Crane Main File
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1    49     ; program 
+                      =1    50     ;
+                      =1    51     ; Revision History:
+                      =1    52     ;       
+                      =1    53     ; 02/21/02      Chirath Thouppuarachchi         Creation
+                      =1    54     ;
+                      =1    55     
+                      =1    56     
+                      =1    57     ; Timer Defintions
+                      =1    58     
+                      =1    59     ; Addresses
+  FF56                =1    60     Tmr0Ctrl        EQU     0FF56H          ;address of Timer 0 Control Register
+  FF52                =1    61     Tmr0MaxCntA     EQU     0FF52H          ;address of Timer 0 Max Count A Register
+  FF50                =1    62     Tmr0Count       EQU     0FF50H          ;address of Timer 0 Count Register
+  FF66                =1    63     Tmr2Ctrl        EQU     0FF66H          ;address of Timer 2 Control Register
+  FF62                =1    64     Tmr2MaxCnt      EQU     0FF62H          ;address of Timer 2 Max Count A Register
+  FF60                =1    65     Tmr2Count       EQU     0FF60H          ;address of Timer 2 Count Register
+                      =1    66     
+  FF5E                =1    67     Tmr1Ctrl        EQU     0FF5EH          ; address of Timer 1 Control Register
+  FF58                =1    68     Tmr1Count       EQU     0FF58H          ; address of Timer 1 Count Register
+  FF5A                =1    69     Tmr1MaxCntA     EQU     0FF5AH          ; address of Timer 1 Max Count A Register
+                      =1    70     
+                      =1    71     ; Control Register Values
+  E001                =1    72     Tmr0CtrlVal     EQU     0E001H          ;value to write to Timer 0 Control Register
+                      =1    73                                             ;1---------------  enable timer
+                      =1    74                                             ;-1--------------  write to control
+                      =1    75                                             ;--1-------------  enable interrupts
+                      =1    76                                             ;------------00--  do not count timer 2 outs
+                      =1    77                                             ;--------------0-  single counter mode
+                      =1    78                                             ;---------------1  continuous mode
+  C001                =1    79     Tmr2CtrlVal     EQU     0C001H          ;value to write to Timer 2 Control Register
+                      =1    80                                             ;1---------------  enable timer
+                      =1    81                                             ;-1--------------  write to control
+                      =1    82                                             ;--0-------------  set interrupts on
+                      =1    83                                             ;---------------1  continuous mode
+                      =1    84     
+                      =1    85     
+  E009                =1    86     Tmr1CtrlVal     EQU     0E009H          ;value to write to Timer 0 Control Registe
+                      =1    87                                             ;1---------------  enable timer
+                      =1    88                                             ;-1--------------  write to control
+                      =1    89                                             ;--1-------------  enable interrupts
+                      =1    90                                             ;------------10--  count timer 2 outs
+                      =1    91                                             ;--------------0-  single counter mode
+                      =1    92                                             ;---------------1  continuous mode
+                      =1    93     
+                      =1    94     ; Interrupt Vectors
+  0008                =1    95     Tmr0Vec         EQU     8               ;interrupt vector for Timer 0
+  0013                =1    96     Tmr2Vec         EQU     19              ;interrupt vector for Timer 2   
+  0012                =1    97     Tmr1Vec         EQU     18              ;interrupt vector for Timer 1
+                      =1    98     
+  000E                =1    99     SerialVec       EQU     14              ; Interrupt Vector for Interrupt 2
+                      =1   100     
+                      =1   101     ; Interrupt Controller Definitions
+                      =1   102     
+                      =1   103     ; Addresses
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+  FF32                =1   104     INTCtrlrCtrl    EQU     0FF32H          ;address of interrupt controller for timer
+  FF22                =1   105     INTCtrlrEOI     EQU     0FF22H          ;address of interrupt controller EOI register
+                      =1   106     
+                      =1   107     ; Register Values
+  0001                =1   108     INTCtrlrCVal    EQU     00001H          ;set priority for timers to 1 and enable
+  0008                =1   109     Timer0EOI       EQU     00008H          ;Timer EOI command (same for all timers)
+  8000                =1   110     NonSpecEOI      EQU     08000H          ;Non-specific EOI command
+                      =1   111     
+                      =1   112     
+                      =1   113     ; Chip Select Unit Definitions
+                      =1   114     
+                      =1   115     ; Addresses
+  FFA4                =1   116     PACSreg         EQU     0FFA4H          ;address of PACS register
+  FFA8                =1   117     MPCSreg         EQU     0FFA8H          ;address of MPCS register
+                      =1   118     
+                      =1   119     ; Control Register Values
+  0003                =1   120     PACSval         EQU     00003H          ;PCS base at 0, 3 wait states
+  0183                =1   121     MPCSval         EQU     00183H          ;PCS in I/O space, use PCS5/6, 3 wait states
+                      =1   122     
+                      =1   123     
+                      =1   124     
+                      =1   125     ; Timing Definitions
+                      =1   126     
+  0900                =1   127     COUNTS_PER_MS_0 EQU     2304            ;number of timer counts per 1 ms for timer 1
+  0900                =1   128     COUNTS_PER_MS_2 EQU     2304            ; number of timer counts per 1 ms for timer 2
+  0064                =1   129     MS_PER_STEP     EQU     100             ;number of ms for crane step
+                      =1   130     
+                      =1   131     
+                      =1   132     ;KepPad Key Values
+                      =1   133     ; Each key is named after its row and column numbers
+                      =1   134     
+  002E                =1   135     Key11           EQU     0002EH
+  002D                =1   136     Key12           EQU     0002DH
+  002B                =1   137     Key13           EQU     0002BH
+  0027                =1   138     Key14           EQU     00027H
+  001E                =1   139     Key21           EQU     0001EH
+  001D                =1   140     Key22           EQU     0001DH
+  001B                =1   141     Key23           EQU     0001BH
+  0017                =1   142     Key24           EQU     00017H
+  000E                =1   143     Key31           EQU     0000EH
+  000D                =1   144     Key32           EQU     0000DH
+  000B                =1   145     Key33           EQU     0000BH
+  0007                =1   146     Key34           EQU     00007H
+                      =1   147     
+                      =1   148     ;Key Status
+  0000                =1   149     NoKeystate              EQU     0
+  0001                =1   150     KeyPressedstate         EQU     1
+  0002                =1   151     KeyDebouncedstate       EQU     2
+                      =1   152     
+  00DF                =1   153     NoKeyValue              EQU     000DFH
+                      =1   154     
+  0002                =1   155     KeyPadRows      EQU     2
+                      =1   156     
+  0001                =1   157     True            EQU     1
+  0000                =1   158     False           EQU     0
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   159     
+  0014                =1   160     AutoRepeatRate  EQU     20
+                      =1   161     
+                      =1   162     
+                      =1   163     ; General Definitions
+                      =1   164     
+  0004                =1   165     RESERVED_VECS   EQU     4               ;vectors reserved for debugger
+                      =1   166     
+  0080                =1   167     LEDDisplay      EQU     0080H           ;display address
+                      =1   168     
+  0008                =1   169     NO_DIGITS       EQU     8               ;number of digits in the display
+                      =1   170                                      
+  0014                =1   171     DebounceTime    EQU     20              ; number of ms to debounce each key
+                      =1   172     
+  0000                =1   173     KeypadPort      EQU     0               ; Port # of Keypad
+                      =1   174     
+  0001                =1   175     MagnetOn        EQU     1
+  0000                =1   176     MagnetOff       EQU     0       
+                      =1   177     
+                      =1   178     
+                           179     
+                           180     
+                           181     EXTRN   SCAN            :NEAR
+                           182     EXTRN   LEDMux          :NEAR
+                           183     EXTRN   SetSerial       :NEAR
+                           184     EXTRN   ClearDisplay    :NEAR
+                           185     EXTRN   InitParallel    :NEAR
+                           186     
+                           187     EXTRN   SerialInterruptHandler  :NEAR
+                           188     EXTRN   StepperEventHandler     :NEAR
+                           189     
+                           190     EXTRN   Display                 :NEAR
+                           191     EXTRN   GetKey                  :NEAR
+                           192     
+                           193     EXTRN   UserMenu        :NEAR
+                           194     EXTRN   SettingsMenu    :NEAR
+                           195     EXTRN   SerialMenu      :NEAR
+                           196     
+----                       197     CODE SEGMENT PUBLIC 'CODE'
+                           198     
+                           199             ASSUME  CS:CGROUP, DS:DATA, SS:STACK
+                           200     
+                           201     
+                           202     
+0000                       203     START:  
+                           204     
+0000                       205     MAIN:
+0000 B8----         R      206             MOV     AX, STACK               ;initialize the stack pointer
+0003 8ED0                  207             MOV     SS, AX
+0005 BCE00190       R      208             MOV     SP, OFFSET(TopOfStack)
+                           209     
+0009 B8----         R      210             MOV     AX, DATA                ;initialize the data segment
+000C 8ED8                  211             MOV     DS, AX
+                           212     
+                           213     
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+000E E88A00                214             CALL    InitCS                  ;initialize the 80188 chip selects
+                           215                                             ;   assumes LCS and UCS already setup
+                           216     
+0011 E81001                217             CALL    ClrIRQVectors           ;clear (initialize) interrupt vector table
+                           218     
+                           219                                             ;initialize the variables for the timer event
+                                    handler
+                           220     
+                           221     
+0014 E8DE00                222             CALL    InstallHandler          ;install the event handler
+                           223                                             ;   ALWAYS install handlers before
+                           224                                             ;   allowing the hardware to interrupt.
+                           225     
+0017 E89000                226             CALL    InitTimer               ;initialize the internal timer
+                           227     
+001A E80000         E      228             CALL    SetSerial               ; initialize the serial port
+                           229     
+001D E80000         E      230             CALL    InitParallel            ; initialize the parallel port
+                           231     
+0020 E80000         E      232             CALL    ClearDisplay            ;Clear the Display
+                           233     
+0023 FB                    234             STI                             ;and finally allow interrupts.
+                           235     
+0024                       236     Forever:
+                           237     
+0024 B8----         R      238             MOV     AX, SEG StringBuffer    ; Display Welcome message
+0027 8EC0                  239             MOV     ES, AX
+0029 B80000         R      240             MOV     AX, OFFSET  StringBuffer
+002C 8BF0                  241             MOV     SI, AX
+                           242             
+002E B053                  243             MOV     AL, 83
+0030 268804                244             MOV     ES:[SI], AL             ; 83 - S
+0033 46                    245             INC     SI
+0034 B074                  246             MOV     AL, 116
+0036 268804                247             MOV     ES:[SI], AL             ; 116 - t
+0039 46                    248             INC     SI                      
+003A B041                  249             MOV     AL, 65
+003C 268804                250             MOV     ES:[SI], AL             ; 65 - A
+003F 46                    251             INC     SI
+0040 B072                  252             MOV     AL, 114
+0042 268804                253             MOV     ES:[SI], AL             ; 114 - r
+0045 46                    254             INC     SI
+0046 B074                  255             MOV     AL, 116
+0048 268804                256             MOV     ES:[SI], AL             ; 116 - t
+004B 46                    257             INC     SI
+004C B000                  258             MOV     AL, 0
+004E 268804                259             MOV     ES:[SI], AL             ; null char for termination
+0051 46                    260             INC     SI
+                           261     
+0052 B80000         R      262             MOV     AX, OFFSET  StringBuffer ; return to the top of message 
+0055 8BF0                  263             MOV     SI, AX
+                           264     
+0057 E80000         E      265             CALL    Display                 ; now call display to display message
+                           266     
+                           267     
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           268             
+                           269     
+                           270     
+005A E80000         E      271             Call GetKey             ; Get key from key pad
+                           272     
+005D 3C2E                  273             CMP     AL, Key11       ; If key = user mode
+005F 740B                  274             JE      User            ;     go into user mode
+0061 3C1E                  275             CMP     AL, Key21       ; If Key = serial download mode
+0063 7413                  276             JE      SerialDownLoad  ;     go into serial down load mode     
+0065 3C0E                  277             CMP     AL, Key31       ; If Key = Settings Menu Mode   
+0067 7409                  278             JE      Settings        ;     go into settings menu     
+                           279     
+                           280     
+0069 EB1390                281             JMP     EndMainLoop     ; If any other key jump to the end of the function
+                           282     
+006C                       283     User:
+                           284     
+006C E80000         E      285             CALL    UserMenu        ; Calls the Crane Manual Control Mode
+006F EB0D90                286             JMP     EndMainLoop
+                           287     
+0072                       288     Settings:
+                           289     
+0072 E80000         E      290             CALL    SettingsMenu    ; Calls the Menu to set robocrane transmission
+0075 EB0790                291             JMP     EndMainLoop     ;   settings
+                           292     
+0078                       293     SerialDownLoad:
+                           294     
+0078 E80000         E      295             CALL    SerialMenu      ; go to serial down load mode
+007B EB0190                296             JMP     EndMainLoop
+                           297     
+007E                       298     EndMainLoop:
+                           299     
+007E EBA4                  300             JMP     Forever                 ;sit in an infinite loop, nothing to
+                           301                                             ;   do in the background routine
+                           302     
+0080 F4                    303             HLT                             ;never executed (hopefully)
+                           304     
+                           305     
+                           306     ; TimerEventHandler
+                           307     ;
+                           308     ; Description:      This procedure is the event handler for the timer 0
+                           309     ;                   interrupt.  It generated interrupts for display and 
+                           310     ;                   keypad functions
+                           311     ;
+                           312     ; Arguments:        None.
+                           313     ; Return Value:     None.
+                           314     ;
+                           315     ; Local Variables:  None
+                           316     ; Shared Variables: None.
+                           317     ; Global Variables: None
+                           318     ; Input:            None.
+                           319     ; Output:           None
+                           320     ;
+                           321     ; Error Handling:   None.
+                           322     ;
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           323     ; Algorithms:       None.
+                           324     ; Data Structures:  None.
+                           325     ;
+                           326     ; Registers Used:   None
+                           327     ; Stack Depth:      5 words
+                           328     ;
+                           329     ; Revision     :    Chirath Neranjena  Feb. 14 2002    
+                           330     ;                   Chirath Neranjena  Feb. 21 2002     
+                           331     ;
+                           332     
+0081                       333     TimerEventHandler       PROC    NEAR
+                           334     
+0081 9C                    335             PUSHF
+                           336     
+0082 50                    337             PUSH    AX                      ;save the registers
+0083 53                    338             PUSH    BX                      ;Event Handlers should NEVER change
+0084 52                    339             PUSH    DX                      ;   any register values
+                           340     
+0085 06                    341             PUSH    ES
+0086 56                    342             PUSH    SI
+                           343     
+                           344     
+                           345     
+0087 E80000         E      346             CALL    LEDMux                  ;do the Displaying on the LEDs
+                           347     
+008A E80000         E      348             CALL    Scan
+                           349     
+008D                       350     EndTimerEventHandler:                   ;done taking care of the timer
+                           351     
+008D BA22FF                352             MOV     DX, INTCtrlrEOI         ;send the EOI to the interrupt controller
+0090 B80800                353             MOV     AX, Timer0EOI
+0093 EE                    354             OUT     DX, AL
+                           355     
+                           356     
+0094 5E                    357             POP     SI
+0095 07                    358             POP     ES
+                           359     
+0096 5A                    360             POP     DX                      ;restore the registers
+0097 5B                    361             POP     BX
+0098 58                    362             POP     AX
+                           363     
+0099 9D                    364             POPF
+                           365     
+009A CF                    366             IRET                            ;and return (Event Handlers end with IRET not
+                                    RET)
+                           367     
+                           368     
+                           369     TimerEventHandler       ENDP
+                           370     
+                           371     
+                           372     
+                           373     
+                           374     ; InitCS
+                           375     ;
+                           376     ; Description:      Initialize the Peripheral Chip Selects on the 80188.
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           377     ;
+                           378     ; Arguments:        None.
+                           379     ; Return Value:     None.
+                           380     ;
+                           381     ; Local Variables:  None.
+                           382     ; Shared Variables: None.
+                           383     ; Global Variables: None.
+                           384     ;
+                           385     ; Input:            None.
+                           386     ; Output:           None.
+                           387     ;
+                           388     ; Error Handling:   None.
+                           389     ;
+                           390     ; Algorithms:       None.
+                           391     ; Data Structures:  None.
+                           392     ;
+                           393     ; Registers Used:   AX, DX
+                           394     ; Stack Depth:      0 words
+                           395     ;
+                           396     ; Author:           Glen George
+                           397     ; Last Modified:    Oct. 29, 1997
+                           398     
+                           399     ; Reviced for use in RoboCrane
+                           400     ;  02/21/02     Chirath Thouppuarachchi
+                           401     
+009B                       402     InitCS  PROC    NEAR
+                           403     
+                           404     
+009B BAA4FF                405             MOV     DX, PACSreg     ;setup to write to PACS register
+009E B80300                406             MOV     AX, PACSval
+00A1 EE                    407             OUT     DX, AL          ;write PACSval to PACS (base at 0, 3 wait states)
+                           408     
+00A2 BAA8FF                409             MOV     DX, MPCSreg     ;setup to write to MPCS register
+00A5 B88301                410             MOV     AX, MPCSval
+00A8 EE                    411             OUT     DX, AL          ;write MPCSval to MPCS (I/O space, 3 wait states)
+                           412     
+                           413     
+00A9 C3                    414             RET                     ;done so return
+                           415     
+                           416     
+                           417     InitCS   ENDP
+                           418     
+                           419     
+                           420     
+                           421     
+                           422     ; InitTimer
+                           423     ;
+                           424     ; Description:      Initialize the 80188 Timers.
+                           425     ;                   Timer 0 is set to generate interrupts at a frequancy 1000Hz
+                           426     ;                       User bt Display and Keypad Functions
+                           427     ;                   Timer 1 is set to generate interrupts by counting Timer 2
+                           428     ;                       Frequancy 10 Hz - Used to control stepper motor stepping
+                           429     ;                   Timer 2 is set to count every milli second
+                           430     ;                       Used to prescale timer 1 to count every 100 ms
+                           431     ;                   
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           432     ;
+                           433     ; Arguments:        None.
+                           434     ; Return Value:     None.
+                           435     ;
+                           436     ; Local Variables:  None.
+                           437     ; Shared Variables: None.
+                           438     ; Global Variables: None.
+                           439     ;
+                           440     ; Input:            None.
+                           441     ; Output:           None.
+                           442     ;
+                           443     ; Error Handling:   None.
+                           444     ;
+                           445     ; Algorithms:       None.
+                           446     ; Data Structures:  None.
+                           447     ;
+                           448     ; Registers Used:   AX, DX
+                           449     ; Stack Depth:      0 words
+                           450     ;
+                           451     ; Author:           Glen George
+                           452     ; Last Modified:    Oct. 29, 1997
+                           453     
+                           454     ; Revised for Use in RoboCrane
+                           455     ;       02/21/02        Chirath Neranjena - removed timer 2
+                           456     ;       22/03/02        Chirath Neranjena - set up timer 1 and 2
+                           457     
+00AA                       458     InitTimer       PROC    NEAR
+                           459     
+                           460     
+00AA BA60FF                461             MOV     DX, Tmr2Count   ;initialize the count register to 0
+00AD 33C0                  462             XOR     AX, AX
+00AF EE                    463             OUT     DX, AL
+                           464     
+00B0 BA62FF                465             MOV     DX, Tmr2MaxCnt  ;setup max count for 1ms counts
+00B3 B80009                466             MOV     AX, COUNTS_PER_MS_2
+00B6 EE                    467             OUT     DX, AL
+                           468     
+00B7 BA66FF                469             MOV     DX, Tmr2Ctrl    ;setup the control register, 
+00BA B801C0                470             MOV     AX, Tmr2CtrlVal
+00BD EE                    471             OUT     DX, AL
+                           472                             
+                           473     
+                           474     
+00BE BA58FF                475             MOV     DX, Tmr1Count   ;initialize the count register to 0
+00C1 33C0                  476             XOR     AX, AX
+00C3 EE                    477             OUT     DX, AL
+                           478     
+00C4 BA5AFF                479             MOV     DX, Tmr1MaxCntA ;set up the max count of the timer
+00C7 B86400                480             MOV     AX, MS_PER_STEP  ;   
+00CA EE                    481             OUT     DX, AL
+                           482     
+00CB BA5EFF                483             MOV     DX, Tmr1Ctrl    ;setup the control register, interrupts on
+00CE B809E0                484             MOV     AX, Tmr1CtrlVal
+00D1 EE                    485             OUT     DX, AL
+                           486     
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           487     
+                           488                                     ;initialize Timer #0 for 1 ms interrupts
+                           489     
+00D2 BA50FF                490             MOV     DX, Tmr0Count   ;initialize the count register to 0
+00D5 33C0                  491             XOR     AX, AX
+00D7 EE                    492             OUT     DX, AL
+                           493     
+00D8 BA52FF                494             MOV     DX, Tmr0MaxCntA ;
+00DB B80009                495             MOV     AX, COUNTS_PER_MS_0  ;   
+00DE EE                    496             OUT     DX, AL
+                           497     
+00DF BA56FF                498             MOV     DX, Tmr0Ctrl    ;setup the control register, interrupts on
+00E2 B801E0                499             MOV     AX, Tmr0CtrlVal
+00E5 EE                    500             OUT     DX, AL
+                           501     
+                           502                                     ;initialize interrupt controller for timers
+00E6 BA32FF                503             MOV     DX, INTCtrlrCtrl;setup the interrupt control register
+00E9 B80100                504             MOV     AX, INTCtrlrCVal
+00EC EE                    505             OUT     DX, AL
+                           506     
+00ED BA22FF                507             MOV     DX, INTCtrlrEOI ;send a non-specific EOI (to clear out controller)
+00F0 B80080                508             MOV     AX, NonSpecEOI
+00F3 EE                    509             OUT     DX, AL
+                           510     
+                           511     
+00F4 C3                    512             RET                     ;done so return
+                           513     
+                           514     
+                           515     InitTimer       ENDP
+                           516     
+                           517     
+                           518     
+                           519     
+                           520     ; InstallHandler
+                           521     ;
+                           522     ; Description:      Install the event handler for the timer interrupts,
+                           523     ;                   and Serial channel Interrupt and 
+                           524     ;
+                           525     ; Arguments:        None.
+                           526     ; Return Value:     None.
+                           527     ;
+                           528     ; Local Variables:  None.
+                           529     ; Shared Variables: None.
+                           530     ; Global Variables: None.
+                           531     ;
+                           532     ; Input:            None.
+                           533     ; Output:           None.
+                           534     ;
+                           535     ; Error Handling:   None.
+                           536     ;
+                           537     ; Algorithms:       None.
+                           538     ; Data Structures:  None.
+                           539     ;
+                           540     ; Registers Used:   flags, AX, ES
+                           541     ; Stack Depth:      1 word
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           542     ;
+                           543     ; Author:           Glen George
+                           544     ; Last Modified:    Jan. 28, 2002
+                           545     
+                           546     ; Reviced to work with RoboCrane
+                           547     ; 02/22/02      Chirath Neranjena       - set up timer 0 interrupt
+                           548     ; 7/03/02       Chirath Neranjena       - set interrupt 2
+                           549     ; 18/03/02      Chirath Neranjena       - set timer 1 interrupt
+                           550     
+00F5                       551     InstallHandler  PROC    NEAR
+                           552     
+                           553     
+00F5 33C0                  554             XOR     AX, AX          ;clear ES (interrupt vectors are in segment 0)
+00F7 8EC0                  555             MOV     ES, AX
+                           556                                     ;store the vector
+00F9 26C70620008100 R      557             MOV     ES: WORD PTR (4 * Tmr0Vec), OFFSET(TimerEventHandler)
+0100 26C7062200---- R      558             MOV     ES: WORD PTR (4 * Tmr0Vec + 2), SEG(TimerEventHandler)
+                           559     
+0107 26C70648000000 E      560             MOV     ES: WORD PTR (4 * Tmr1Vec), OFFSET(StepperEventHandler)
+010E 26C7064A00---- E      561             MOV     ES: WORD PTR (4 * Tmr1Vec + 2), SEG(StepperEventHandler)
+                           562     
+0115 26C70638000000 E      563             MOV     ES: WORD PTR (4 * SerialVec), OFFSET(SerialInterruptHandler)
+011C 26C7063A00---- E      564             MOV     ES: WORD PTR (4 * SerialVec + 2), SEG(SerialInterruptHandler)
+                           565             
+                           566     
+0123 C3                    567             RET                     ;all done, return
+                           568     
+                           569     
+                           570     InstallHandler  ENDP
+                           571     
+                           572     
+                           573     
+                           574     
+                           575     ; ClrIRQVectors
+                           576     ;
+                           577     ; Description:      This functions installs the IllegalEventHandler for all
+                           578     ;                   interrupt vectors in the interrupt vector table.  Note
+                           579     ;                   that all 256 vectors are initialized so the code must be
+                           580     ;                   located above 400H.  The initialization skips the first
+                           581     ;                   RESERVED_VECS vectors.
+                           582     ;
+                           583     ; Arguments:        None.
+                           584     ; Return Value:     None.
+                           585     ;
+                           586     ; Local Variables:  CX    - vector counter.
+                           587     ;                   ES:SI - pointer to vector table.
+                           588     ; Shared Variables: None.
+                           589     ; Global Variables: None.
+                           590     ;
+                           591     ; Input:            None.
+                           592     ; Output:           None.
+                           593     ;
+                           594     ; Error Handling:   None.
+                           595     ;
+                           596     ; Algorithms:       None.
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE   12
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           597     ; Data Structures:  None.
+                           598     ;
+                           599     ; Registers Used:   flags, AX, CX, SI, ES
+                           600     ; Stack Depth:      1 word
+                           601     ;
+                           602     ; Author:           Glen George
+                           603     ; Last Modified:    Jan. 28, 2002
+                           604     
+                           605     ; Revived for Use with RoboCrane
+                           606     ; 22/02/02       - Chirath Neranjena
+                           607     
+0124                       608     ClrIRQVectors   PROC    NEAR
+                           609     
+                           610     
+0124                       611     InitClrVectorLoop:              ;setup to store the same handler 256 times
+                           612     
+0124 33C0                  613             XOR     AX, AX          ;clear ES (interrupt vectors are in segment 0)
+0126 8EC0                  614             MOV     ES, AX
+0128 BE1000                615             MOV     SI, 4 * RESERVED_VECS   ;initialize SI to skip RESERVED_VECS (4 bytes
+                                    each)
+                           616     
+012B B9FC00                617             MOV     CX, 256 - RESERVED_VECS ;up to 256 vectors to initialize
+                           618     
+                           619     
+012E                       620     ClrVectorLoop:                  ;loop clearing each vector
+                           621                                     ;store the vector
+012E 26C7043F01     R      622             MOV     ES: WORD PTR [SI], OFFSET(IllegalEventHandler)
+0133 26C74402----   R      623             MOV     ES: WORD PTR [SI + 2], SEG(IllegalEventHandler)
+                           624     
+0139 83C604                625             ADD     SI, 4           ;update pointer to next vector
+                           626     
+013C E2F0                  627             LOOP    ClrVectorLoop   ;loop until have cleared all vectors
+                           628             ;JMP    EndClrIRQVectors;and all done
+                           629     
+                           630     
+013E                       631     EndClrIRQVectors:               ;all done, return
+013E C3                    632             RET
+                           633     
+                           634     
+                           635     ClrIRQVectors   ENDP
+                           636     
+                           637     
+                           638     
+                           639     
+                           640     ; IllegalEventHandler
+                           641     ;
+                           642     ; Description:      This procedure is the event handler for illegal
+                           643     ;                   (uninitialized) interrupts.  It does nothing - it just
+                           644     ;                   returns after sending a non-specific EOI.
+                           645     ;
+                           646     ; Arguments:        None.
+                           647     ; Return Value:     None.
+                           648     ;
+                           649     ; Local Variables:  None.
+                           650     ; Shared Variables: None.
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE   13
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           651     ; Global Variables: None.
+                           652     ;
+                           653     ; Input:            None.
+                           654     ; Output:           None.
+                           655     ;
+                           656     ; Error Handling:   None.
+                           657     ;
+                           658     ; Algorithms:       None.
+                           659     ; Data Structures:  None.
+                           660     ;
+                           661     ; Registers Used:   None
+                           662     ; Stack Depth:      0 words
+                           663     ;
+                           664     ; Author:           Glen George
+                           665     ; Last Modified:    Dec. 25, 2000
+                           666     ; Reviced to Work With RoboCrane
+                           667     
+013F                       668     IllegalEventHandler     PROC    NEAR
+                           669     
+013F 90                    670             NOP                             ;do nothing (can set breakpoint here)
+                           671     
+0140 50                    672             PUSH    AX                      ;save the registers
+0141 52                    673             PUSH    DX
+                           674     
+0142 BA22FF                675             MOV     DX, INTCtrlrEOI         ;send a non-sepecific EOI to the
+0145 B80080                676             MOV     AX, NonSpecEOI          ;   interrupt controller to clear out
+0148 EE                    677             OUT     DX, AL                  ;   the interrupt that got us here
+                           678     
+0149 5A                    679             POP     DX                      ;restore the registers
+014A 58                    680             POP     AX
+                           681     
+014B CF                    682             IRET                            ;and return
+                           683     
+                           684     
+                           685     IllegalEventHandler     ENDP
+                           686     
+                           687     
+                           688     
+----                       689     CODE ENDS
+                           690     
+                           691     ;the data segment
+                           692     
+----                       693     DATA    SEGMENT PUBLIC  'DATA'
+                           694     
+                           695     
+0000 (8                    696     StringBuffer    DB      8 DUP(?)        ; Buffer for storing display messages
+     ??
+     )
+                           697                     PUBLIC  StringBuffer
+                           698     
+0008 0000                  699     CraneVert       DW      0               ; Holds the Absolute Vertical position  
+                           700                     PUBLIC  CraneVert
+000A 0000                  701     CraneAngle      DW      0               ; Holds the Absolute Angle
+                           702                     PUBLIC  CraneAngle
+000C 0000                  703     CraneMagnet     DW      0               ; Holds the status of the magnet
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     15:54:54  04/23/:2  PAGE   14
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           704                     PUBLIC  CraneMagnet
+                           705     
+----                       706     DATA    ENDS
+                           707     
+                           708     
+                           709     
+                           710     
+                           711     ;the stack
+                           712     
+----                       713     STACK           SEGMENT STACK  'STACK'
+                           714     
+0000 (80                   715                     DB      80 DUP ('Stack ')       ;240 words
+     537461636B20
+     )
+                           716     
+01E0                       717     TopOfStack      LABEL   WORD
+                           718     
+----                       719     STACK           ENDS
+                           720     
+                           721     
+                           722     
+                           723             END     START
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

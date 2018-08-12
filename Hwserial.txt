@@ -1,0 +1,80 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                            ;
+;                                 Serial.INC                                 ;
+;                     16C450 Astnchronous Communication Element              ;
+;                                 Include File                               ;
+;                                                                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; This file contains the definitions for the TL16C450 Asynchronous Communication Chip.
+;
+;
+; Revision History:
+;	Chirath Neranjena     25/Feb/2002		Creation
+
+
+
+
+;SerialBase	EQU	00180H  	; Target Board base address for Chip
+
+;Addresses
+; DLAB = 0    (While the Divisor Latch Access Bit of The Line Contol Register is reset)
+
+
+Rx/Tx			EQU	SerialBase + 00000H	; Receive / Transmit Register
+InterruptEnable		EQU	SerialBase + 00001H	; Interrupt Enable Register
+InterruptID		EQU	SerialBase + 00002H	; Interrupt Identification Register
+LineCtrl		EQU	SerialBase + 00003H	; Line Control Register
+ModemCtrl		EQU	SerialBase + 00004H	; Modem Control Register
+LineStatus		EQU	SerialBase + 00005H	; Line Status Register
+ModemStatus		EQU	SerialBase + 00006H	; Modem Status Register
+Scratch			EQU	SerialBase + 00007H	; Scratch Register
+
+; DLAB = 1  (While the Divisor Latch Access Bit of The Line Contol Register is Set)
+
+DivLatchLSB		EQU	SerialBase + 00000H	; 
+DivLatchMSB		EQU	SerialBase + 00001H	;
+
+
+; Interrupt Enable Register (IER) 'InterruptEnable'
+
+
+EnRxDataInterrupt	EQU	0000001B	; Enables Receive data available Interrupt
+EnTHRE_Interrupt	EQU	0000010B	; Enables THRE Interrupt
+EnRxLineStatInt		EQU	0000100B	; Enables receive line status Interrupt
+EnModemStatInt		EQU	0001000B	; Enables Modem Status Interrupt
+
+
+; Interrupt Identification Register (IIR) 'Interrupt ID'
+
+
+InterruptnotPending	EQU	0000001B	; No Interrupt Pending
+Highest_Priority	EQU	0000110B	; Pending Interrupt is of the Highest Priority
+Norm_Priority		EQU	0000100B	; Pending Interrupt is of the Normal Priority
+Low_Priority		EQU	0000010B	; Pending Interrupt is of the Low Priority
+Lowest_Priority		EQU	0000000B	; Pending Interrupt is of the Lowest Priority
+
+; Line Control Register (LCR)
+
+SetDLAB			EQU	1000000B	; Set divisor Latch Access Bit
+
+WordLen5		EQU	0000000B	; Set Word Length = 5 bits	
+WordLen6		EQU	0000001B	; Set Word Length = 6 bits	
+WordLen7		EQU	0000010B	; Set Word Length = 7 bits	
+WordLen8		EQU	0000011B	; Set Word Length = 8 bits
+
+SetOddParity		EQU	0000100B	; Set ACE to generate and check Odd Parity
+SetEvenParity		EQU	0001100B	; Set ACE to generate and check Even Parity\
+
+EnclearParity		EQU	0010100B	; Enable parity bit Tx and checked as set
+EnSetParity		EQU	0011100B	; Enable parity bit Tx and checked as cleared
+
+; Line Status Register	(LSR)
+
+DataReady		EQU	0000000B	; Indicates ready to recieve
+OverrunError		EQU	0000010B	; Indicates the data was erased before read
+ParityError		EQU	0000100B	; Indicates Error in Data Parity
+FramingError		EQU	0001000B	; No stop bit
+
+
+	

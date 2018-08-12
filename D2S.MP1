@@ -1,0 +1,20 @@
+
+DOS 7.10 (038-N) 8086 LINKER, V2.7
+
+INPUT FILES: D2S.OBJ
+OUTPUT FILE: D2S.LNK
+CONTROLS SPECIFIED IN INVOCATION COMMAND:
+DATE:  02/09/:2  TIME:  19:18:12
+
+
+LINK MAP OF MODULE D2S
+
+LOGICAL SEGMENTS INCLUDED:
+LENGTH ADDRESS ALIGN  SEGMENT         CLASS           OVERLAY
+ 0000H ------    G    ??SEG                                         
+ 0091H ------    G    PROGRAM         CODE                          
+ 0020H ------    W    DATA            DATA                          
+ 0280H ------    W    STACK           STACK                         
+
+INPUT MODULES INCLUDED:
+D2S.OBJ(D2S)

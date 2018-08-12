@@ -1,0 +1,132 @@
+8086/87/88/186 MACRO ASSEMBLER    ANONYMOUS                                                19:20:35  02/09/:2  PAGE    1
+
+
+DOS 7.10 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE ANONYMOUS
+OBJECT MODULE PLACED IN DEC2.OBJ
+ASSEMBLER INVOKED BY:  C:\ASM\ASM86.EXE DEC2.ASM
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     ;Argument equates (include the return address (1 word) and BP (1 word)).
+  0004[]                     2     arg     EQU     WORD PTR [BP + 4]
+ -0002[]                     3     pwr10   EQU     WORD PTR [BP - 2]
+ -0004[]                     4     result  EQU     WORD PTR [BP - 4]
+                             5     
+                             6     ;local variables - 2 words
+  0004                       7     LocalVarSize    EQU     4
+                             8     
+                             9     
+0000                        10     Dec2String      PROC    NEAR
+*** ERROR #7 IN 10, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+                            11                     PUBLIC  Dec2String
+*** _______________________________________________________^
+*** ERROR #113 IN 11, NO DEFINITION FOR PUBLIC SYMBOL
+                            12                     
+                            13                     
+                            14     Dec2StringInit:                 ;initialization 
+*** ERROR #7 IN 14, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+0000 55                     15             PUSH BP                 ;save BP
+0001 8BEC                   16             MOV BP, SP              ;and get BP pointing at the stack
+0003 83EC04                 17             SUB SP, LocalVarSize    ;save space on stack for local variables
+0006 51                     18             PUSH CX                 ;save registers
+0007 52                     19             PUSH DX         
+                            20             
+0008 894604                 21             MOV arg, AX             ;arg equals the number to be converted
+000B C746FC0000             22             MOV result, 0           ;result = 0
+0010 C746FE1027             23             MOV pwr10, 10000        ;pwr10 = 10000
+0015 F8                     24             CLC                     ;error = FALSE
+                            25             ;JMP Dec2StringLoop     ;now start looping to get digits
+                            26             
+                            27     Dec2StringLoop:                 ;loop getting the digits on arg
+*** ERROR #7 IN 27, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+0016 9090                   28             JC EndDec2StringLoop    ;WHILE ((error = FALSE) AND
+*** ERROR #38 IN 28, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 28, (PASS 2) OPERANDS DO NOT MATCH THIS INSTRUCTION
+0018 837EFE00               29             CMP pwr10, 0            ;       (pwr10 > 0)
+001C 9090                   30             JLE EndDec2StringLoop   ;if have end conditions - end loop
+*** ERROR #38 IN 30, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 30, (PASS 2) OPERANDS DO NOT MATCH THIS INSTRUCTION
+001E 909090                 31             JMP Dec2StringLoopBody  ;else execute the loop body
+*** ERROR #38 IN 31, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 31, (PASS 2) OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            32             
+                            33     NegateNumber:
+*** ERROR #7 IN 33, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+0021 F75E04                 34             NEG arg                 ;make the negative number positive
+0024 C746FC2D00             35             MOV result, 45          ;store a negative sign (45 is the value in ASCII FOR 
+                                   "-")
+                            36             ;JMP Dec2StringLoopBody ;then continue in conversion
+                            37     
+8086/87/88/186 MACRO ASSEMBLER    ANONYMOUS                                                19:20:35  02/09/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            38     Dec2StringLoopBody:
+*** ERROR #7 IN 38, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+0029 837E0400               39             CMP arg, 0              ;IF (arg < 0) THEN
+002D 9090                   40             JL NegateNumber         ;make number positive and store minus sign
+*** ERROR #38 IN 40, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 40, (PASS 2) OPERANDS DO NOT MATCH THIS INSTRUCTION
+002F BA0000                 41             MOV DX, 0               ;setup for arg/pwr10
+0032 8B4604                 42             MOV AX, arg             
+0035 F776FE                 43             DIV pwr10               ;digit (AX) = arg/pwr10
+0038 3D0A00                 44             CMP AX, 10              ;check IF (digit < 10) THEN
+003B 9090                   45             JAE SizeError           ;if not it's an error
+*** ERROR #38 IN 45, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 45, (PASS 2) OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            46             ;JB Convert             ;otherwise process the digit
+                            47             
+                            48     Convert:                        ;IF (digit < 10) THEN
+*** ERROR #7 IN 48, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+003D 053000                 49             ADD AX, 48              ;converts digit to ASCII value
+0040 C166FC04               50             SHL result, 4           ;result = result shifted left 4
+*** ERROR #157 IN 50, iAPX186 INSTRUCTION REQUIRES $MOD186 CONTROL
+0044 0946FC                 51             OR result, AX           ;       OR digit
+0047 895604                 52             MOV arg, DX             ;arg = arg MODULO pwr10
+004A 8B46FE                 53             MOV AX, pwr10           ;setup to update pwr10
+004D B10A                   54             MOV CL, 10
+004F F6F1                   55             DIV CL                  ;calculate pwr10 = pwr10/10
+0051 B400                   56             MOV AH, 0               ;clear out remainder (not 0 if AX was 1)
+0053 8946FE                 57             MOV pwr10, AX           ;update pwr10
+0056 F8                     58             CLC                     ;error = FALSE
+0057 909090                 59             JMP EndLoopBody         ;end of loop body
+*** ERROR #38 IN 59, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 59, (PASS 2) OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            60             
+                            61     SizeError:                      ;ELSE
+*** ERROR #7 IN 61, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+005A F9                     62             STC                     ;       error = TRUE
+                            63             ;JMP EndLoopBody        
+                            64             
+                            65     EndLoopBody:                    ;ENDIF
+*** ERROR #7 IN 65, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+005B 909090                 66             JMP Dec2StringLoop      ;ENDWHILE (keep looping)
+*** ERROR #38 IN 66, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 66, (PASS 2) OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            67             
+                            68     EndDec2StringLoop:              ;ENDWHILE (out of loop) 
+*** ERROR #7 IN 68, NO CS-ASSUME IN EFFECT - NEAR LABEL CANNOT BE DEFINED
+005E 9090909090             69             MOV [DS:SI], result             ;move result into return value
+*** ERROR #52 IN 69, SEGMENT OVERRIDE MAY BE APPLIED ONLY TO AN ADDRESS EXPRESSION
+*** ERROR #55 IN 69, INVALID EXPRESSION IN SQUARE BRACKETS
+                            70             
+0063 5A                     71             POP DX                  ;restore registers
+0064 59                     72             POP CX
+0065 83C404                 73             ADD SP, LocalVarSize    ;remove local variables from stack
+0068 5D                     74             POP BP                  ;restore BP
+0069 C20200                 75             RET 2                   ;and return (releasing stack space)
+                            76             
+8086/87/88/186 MACRO ASSEMBLER    ANONYMOUS                                                19:20:35  02/09/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            77             
+                            78     Dec2String      ENDP
+*** ERROR #86 IN 78, MISMATCHED LABEL ON ENDS OR ENDP
+*** ERROR #89 IN 78, PREMATURE END OF FILE (NO END STATEMENT)
+*** ERROR #151 IN 78, NO NAME DIRECTIVE ENCOUNTERED, DEFAULT MODULE NAME USED
+
+ASSEMBLY COMPLETE, 30 ERRORS FOUND

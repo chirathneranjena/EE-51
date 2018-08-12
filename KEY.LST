@@ -1,0 +1,521 @@
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE KEY
+OBJECT MODULE PLACED IN KEY.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE KEY.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     NAME Key
+                             3     
+                             4     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             5     ;                                                                            ;
+                             6     ;                                    Key                                     ;
+                             7     ;                              Keypad Routines                               ;
+                             8     ;                                                                            ;
+                             9     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            10     
+                            11     ; Description:      Functions involved with the keypad. Includes
+                            12     ;                       IsAKey - Sets the zero flags appropriately if a key is presse
+                                   d
+                            13     ;                       GetKey - Returns a key that has been pressed            
+                                              
+                            14     ;
+                            15     ; Input:            None.
+                            16     ; Output:           Zero Flag, KeyValue (AL)
+                            17     ;
+                            18     ; User Interface:   requires the user to press keys in keypad
+                            19     ; Error Handling:   None.
+                            20     ;
+                            21     ; Algorithms:       None.
+                            22     ; Data Structures:  None.
+                            23     ;
+                            24     ; Revision History:
+                            25     ;       Chirath Neranjena       21, Feb 2002    Creation
+                            26     
+                            27     
+                            28     
+                            29     CGROUP  GROUP   CODE
+                            30     
+                            31     
+                            32 +1  $INCLUDE(51MAIN.INC)
+                      =1    33     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    34     ;                                                                            ;
+                      =1    35     ;                                  51Main.INC                                ;
+                      =1    36     ;                              Robo Crane Main File                          ;
+                      =1    37     ;                                 Include File                               ;
+                      =1    38     ;                                                                            ;
+                      =1    39     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    40     
+                      =1    41     ; This file contains the definitions for the Robo Crane Main File
+                      =1    42     ; program 
+                      =1    43     ;
+                      =1    44     ; Revision History:
+                      =1    45     ;       
+                      =1    46     ; 02/21/02      Chirath Thouppuarachchi         Creation
+                      =1    47     ;
+                      =1    48     
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1    49     
+                      =1    50     ; Timer Defintions
+                      =1    51     
+                      =1    52     ; Addresses
+  FF56                =1    53     Tmr0Ctrl        EQU     0FF56H          ;address of Timer 0 Control Register
+  FF52                =1    54     Tmr0MaxCntA     EQU     0FF52H          ;address of Timer 0 Max Count A Register
+  FF50                =1    55     Tmr0Count       EQU     0FF50H          ;address of Timer 0 Count Register
+  FF66                =1    56     Tmr2Ctrl        EQU     0FF66H          ;address of Timer 2 Control Register
+  FF62                =1    57     Tmr2MaxCnt      EQU     0FF62H          ;address of Timer 2 Max Count A Register
+  FF60                =1    58     Tmr2Count       EQU     0FF60H          ;address of Timer 2 Count Register
+                      =1    59     
+  FF5E                =1    60     Tmr1Ctrl        EQU     0FF5EH          ; address of Timer 1 Control Register
+  FF58                =1    61     Tmr1Count       EQU     0FF58H          ; address of Timer 1 Count Register
+  FF5A                =1    62     Tmr1MaxCntA     EQU     0FF5AH          ; address of Timer 1 Max Count A Register
+                      =1    63     
+                      =1    64     ; Control Register Values
+  E001                =1    65     Tmr0CtrlVal     EQU     0E001H          ;value to write to Timer 0 Control Register
+                      =1    66                                             ;1---------------  enable timer
+                      =1    67                                             ;-1--------------  write to control
+                      =1    68                                             ;--1-------------  enable interrupts
+                      =1    69                                             ;------------00--  do not count timer 2 outs
+                      =1    70                                             ;--------------0-  single counter mode
+                      =1    71                                             ;---------------1  continuous mode
+  C001                =1    72     Tmr2CtrlVal     EQU     0C001H          ;value to write to Timer 2 Control Register
+                      =1    73                                             ;1---------------  enable timer
+                      =1    74                                             ;-1--------------  write to control
+                      =1    75                                             ;--0-------------  set interrupts on
+                      =1    76                                             ;---------------1  continuous mode
+                      =1    77     
+                      =1    78     
+  E009                =1    79     Tmr1CtrlVal     EQU     0E009H          ;value to write to Timer 0 Control Registe
+                      =1    80                                             ;1---------------  enable timer
+                      =1    81                                             ;-1--------------  write to control
+                      =1    82                                             ;--1-------------  enable interrupts
+                      =1    83                                             ;------------10--  count timer 2 outs
+                      =1    84                                             ;--------------0-  single counter mode
+                      =1    85                                             ;---------------1  continuous mode
+                      =1    86     
+                      =1    87     ; Interrupt Vectors
+  0008                =1    88     Tmr0Vec         EQU     8               ;interrupt vector for Timer 0
+  0013                =1    89     Tmr2Vec         EQU     19              ;interrupt vector for Timer 2   
+  0012                =1    90     Tmr1Vec         EQU     18              ;interrupt vector for Timer 1
+                      =1    91     
+  000E                =1    92     SerialVec       EQU     14              ; Interrupt Vector for Interrupt 2
+                      =1    93     
+                      =1    94     ; Interrupt Controller Definitions
+                      =1    95     
+                      =1    96     ; Addresses
+  FF32                =1    97     INTCtrlrCtrl    EQU     0FF32H          ;address of interrupt controller for timer
+  FF22                =1    98     INTCtrlrEOI     EQU     0FF22H          ;address of interrupt controller EOI register
+                      =1    99     
+                      =1   100     ; Register Values
+  0001                =1   101     INTCtrlrCVal    EQU     00001H          ;set priority for timers to 1 and enable
+  0008                =1   102     Timer0EOI       EQU     00008H          ;Timer EOI command (same for all timers)
+  8000                =1   103     NonSpecEOI      EQU     08000H          ;Non-specific EOI command
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   104     
+                      =1   105     
+                      =1   106     ; Chip Select Unit Definitions
+                      =1   107     
+                      =1   108     ; Addresses
+  FFA4                =1   109     PACSreg         EQU     0FFA4H          ;address of PACS register
+  FFA8                =1   110     MPCSreg         EQU     0FFA8H          ;address of MPCS register
+                      =1   111     
+                      =1   112     ; Control Register Values
+  0003                =1   113     PACSval         EQU     00003H          ;PCS base at 0, 3 wait states
+  0183                =1   114     MPCSval         EQU     00183H          ;PCS in I/O space, use PCS5/6, 3 wait states
+                      =1   115     
+                      =1   116     
+                      =1   117     
+                      =1   118     ; Timing Definitions
+                      =1   119     
+  0900                =1   120     COUNTS_PER_MS_0 EQU     2304            ;number of timer counts per 1 ms for timer 1
+  0900                =1   121     COUNTS_PER_MS_2 EQU     2304            ; number of timer counts per 1 ms for timer 2
+  0064                =1   122     MS_PER_STEP     EQU     100             ;number of ms for crane step
+                      =1   123     
+                      =1   124     
+                      =1   125     ;KepPad Key Values
+                      =1   126     ; Each key is named after its row and column numbers
+                      =1   127     
+  002E                =1   128     Key11           EQU     0002EH
+  002D                =1   129     Key12           EQU     0002DH
+  002B                =1   130     Key13           EQU     0002BH
+  0027                =1   131     Key14           EQU     00027H
+  001E                =1   132     Key21           EQU     0001EH
+  001D                =1   133     Key22           EQU     0001DH
+  001B                =1   134     Key23           EQU     0001BH
+  0017                =1   135     Key24           EQU     00017H
+  000E                =1   136     Key31           EQU     0000EH
+  000D                =1   137     Key32           EQU     0000DH
+  000B                =1   138     Key33           EQU     0000BH
+  0007                =1   139     Key34           EQU     00007H
+                      =1   140     
+                      =1   141     ;Key Status
+  0000                =1   142     NoKeystate              EQU     0
+  0001                =1   143     KeyPressedstate         EQU     1
+  0002                =1   144     KeyDebouncedstate       EQU     2
+                      =1   145     
+  00DF                =1   146     NoKeyValue              EQU     000DFH
+                      =1   147     
+  0002                =1   148     KeyPadRows      EQU     2
+                      =1   149     
+  0001                =1   150     True            EQU     1
+  0000                =1   151     False           EQU     0
+                      =1   152     
+  0014                =1   153     AutoRepeatRate  EQU     20
+                      =1   154     
+                      =1   155     
+                      =1   156     ; General Definitions
+                      =1   157     
+  0004                =1   158     RESERVED_VECS   EQU     4               ;vectors reserved for debugger
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   159     
+  0080                =1   160     LEDDisplay      EQU     0080H           ;display address
+                      =1   161     
+  0008                =1   162     NO_DIGITS       EQU     8               ;number of digits in the display
+                      =1   163                                      
+  0014                =1   164     DebounceTime    EQU     20              ; number of ms to debounce each key
+                      =1   165     
+  0000                =1   166     KeypadPort      EQU     0               ; Port # of Keypad
+                      =1   167     
+  0001                =1   168     MagnetOn        EQU     1
+  0000                =1   169     MagnetOff       EQU     0       
+                      =1   170     
+                      =1   171     
+                           172     
+                           173     
+----                       174     CODE SEGMENT PUBLIC 'CODE'
+                           175     
+                           176             ASSUME  CS: CGROUP, DS: DATA
+                           177     
+                           178     
+                           179     ; Scan
+                           180     ;
+                           181     ; Description:      Keypad Scaning routines
+                           182     ;
+                           183     ; Arguments:        None.
+                           184     ; Return Value:     NewKey, NewKeyRow
+                           185     ;
+                           186     ; Local Variables:  None
+                           187     ;
+                           188     ; Shared Variables: None.
+                           189     ; Global Variables: KeyStatus - 0 - No key, 1 - Key pressed, 2 - Key Debpunced
+                           190     ;                   KeyRow    - row in keypad pressed
+                           191     ;                   Key       - Key in keypad row being pressed         
+                           192     ;
+                           193     ; Input:            None.
+                           194     ; Output:           None.
+                           195     ;
+                           196     ; Error Handling:   None.
+                           197     ;
+                           198     ; Algorithms:       Scan row in Key pad.
+                           199     ;                   If a key is pressed then debounce it
+                           200     ;                   Else go back to no key status    
+                           201     ; Data Structures:  None.
+                           202     ;
+                           203     ; Registers Used:   AX, BX
+                           204     ; Stack Depth:      0 words
+                           205     ;
+                           206     ; Author:           Chirath Neranjena
+                           207     ; Last Modified:    FEB. 21 2002
+                           208     
+0000                       209     SCAN            PROC    NEAR
+                           210                     PUBLIC  SCAN
+                           211     
+0000                       212     CheckKeyStatus:
+                           213             
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0000 A00100         R      214             MOV     AL, KeyStatus
+0003 3C01                  215             CMP     AL, KeyPressedState     ; Check Key Status
+0005 7C04                  216             JL      NoKey                   ;   IF There is no Key Check for a Keypress
+0007 7434                  217             JE      KeyPressed              ;   IF there is a keypress debounce it  
+0009 7F75                  218             JG      KeyDebounced            ;   IF the key has been debounced then hold.
+                                      
+                           219     
+000B                       220     NoKey:
+                           221     
+000B E89200                222             CALL    ScanRow                 ;   Scan row on keypad
+000E 3CDF                  223             CMP     AL, NoKeyValue          ;   IF There is a Key THEN
+0010 7519                  224             JNE     NewKeyPress             ;     do stuff for new keypress
+0012 A10200         R      225             MOV     AX, KeyRow
+0015 050100                226             ADD     AX, 1
+0018 A30200         R      227             MOV     KeyRow, AX              ;   IF NOT go to the next row
+001B 3D0200                228             CMP     AX, KeyDebouncedState   ;     See if row exceeds row on kepad
+001E 7F02                  229             JG      ResetKeyRow             ;       then adjust
+0020 7E7D                  230             JLE     EndScan                 ;    Otherwise we are done
+                           231     
+0022                       232     ResetKeyRow:
+                           233     
+0022 C70602000000   R      234             MOV     KeyRow, 0               ; Reset the Row being scanned
+0028 EB7590                235             JMP     EndScan                 ; Finish, go to the end
+                           236     
+002B                       237     NewKeyPress:
+                           238     
+002B C60601000190   R      239             MOV     KeyStatus, KeyPressedState ; Set Key Status = Key Pressed
+0031 A20000         R      240             MOV     Key, AL                 ; Store pressed key
+0034 C70604000000   R      241             MOV     KeyDebounceTime, 0      ; Reset KeyDebounceTime
+003A EB6390                242             JMP     EndScan                 ; All done
+                           243     
+003D                       244     KeyPressed:
+                           245     
+003D E86000                246             CALL    ScanRow                 ;  Scan row on keypad
+0040 3CDF                  247             CMP     AL, NoKeyValue          ;  Check if the Key is still being pressed
+0042 744C                  248             JE      KeyReleased             ;      If not then reset
+0044 3A060000       R      249             CMP     AL, Key                 ;  Check if the same key
+0048 7546                  250             JNE     KeyReleased             ;       If not then reset
+                           251                                             ;  Otherwise
+004A A10400         R      252             MOV     AX, KeyDebounceTime         ;    Increment debounce time
+004D 050100                253             ADD     AX, 1
+0050 A30400         R      254             MOV     KeyDebounceTime, AX
+                           255     
+0053 B81400                256             MOV     AX, DebounceTime
+0056 8B1E0400       R      257             MOV     BX, KeyDebounceTime
+005A 3BC3                  258             CMP     AX, BX                          ; If Debounce complete
+005C 7D03                  259             JGE     KeyJustDebounced                ;   Set variables
+005E EB3F90                260             JMP     EndScan                         ; Otherwise Finish
+                           261     
+0061                       262     KeyJustDebounced:
+                           263     
+0061 C60601000290   R      264             MOV     KeyStatus, KeyDebouncedState            ; Key has debounced
+0067 C60609000190   R      265             MOV     KeyAvailable, 1         ; Set KeyAvailable = true
+006D 8A1E0000       R      266             MOV     BL, Key
+0071 881E0600       R      267             MOV     NewKey, BL              ; Store the Key pressed
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0075 8B1E0200       R      268             MOV     BX, KeyRow
+0079 891E0700       R      269             MOV     NewKeyRow, BX           ; Also store the row number of the Key
+007D EB2090                270             JMP     EndScan                 ; Alright done
+                           271     
+0080                       272     KeyDebounced:
+                           273     
+0080 E81D00                274             CALL    ScanRow                 ; Scan row in Keypad
+0083 3CDF                  275             CMP     AL, NoKeyValue          ; Check if the key is still been pressed
+0085 7409                  276             JE      KeyReleased             ;   If not then reset
+0087 3A060000       R      277             CMP     AL, Key                 ; Check if same Key
+008B 7503                  278             JNE     KeyReleased             ;   If not then reset
+008D EB1090                279             JMP     EndScan                 ;  Otherwise go to finish
+                           280     
+0090                       281     KeyReleased:
+                           282             
+0090 C60601000090   R      283             MOV     KeyStatus, NoKeyState           ; No more key press
+0096 C60609000090   R      284             MOV     KeyAvailable, NoKeyState        ; KeyAvailable = false
+009C EB0190                285             JMP     EndScan                 ; Done
+                           286     
+009F                       287     EndScan:
+                           288     
+009F C3                    289             RET
+                           290     
+                           291     Scan            ENDP
+                           292     
+                           293     
+                           294     ; ScanRow
+                           295     ;
+                           296     ; Description - Scans the keypad for a keypress
+                           297     ;
+                           298     ; Arguments:        None.
+                           299     ; Return Value:     Pressed Key value
+                           300     ;
+                           301     ; Local Variables:  None
+                           302     ;
+                           303     ; Shared Variables: None.
+                           304     ; Global Variables: KeyRow              
+                           305     ;
+                           306     ; Input:            None.
+                           307     ; Output:           AL
+                           308     ;
+                           309     ; Error Handling:   None.
+                           310     ;
+                           311     ; Algorithms:       None
+                           312     ; Data Structures:  None.
+                           313     ;
+                           314     ; Registers Used:   DX, AL
+                           315     ; Stack Depth:      0 words
+                           316     ;
+                           317     ; Author:           Chirath Neranjena
+                           318     ; Last Modified:    FEB. 21 2002
+                           319     
+00A0                       320     ScanRow         PROC    NEAR
+                           321                     PUBLIC  ScanRow
+                           322     
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00A0 BA0000                323             MOV     DX, KeyPadPort
+00A3 03160200       R      324             ADD     DX, KeyRow                  ;   Go to the required row in Keypad
+                           325     
+00A7 EC                    326             IN      AL, DX                  ; Get the key
+                           327     
+00A8 C3                    328             RET                             ; get back
+                           329     
+                           330     ScanRow         ENDP
+                           331             
+                           332     
+                           333     ; IsAKey
+                           334     ;
+                           335     ; Description:      Sets the zeroflag if no key is available
+                           336     ;                       Resets the zeroflag if key is available
+                           337     ; Arguments:        None.
+                           338     ; Return Value:     None.
+                           339     ;
+                           340     ; Local Variables:  AX
+                           341     ;                  
+                           342     ; Shared Variables: None.
+                           343     ; Global Variables: KeyAvailable  - indicates whether a key is available
+                           344     ;                  
+                           345     ;
+                           346     ; Input:            None.
+                           347     ; Output:           None
+                           348     ;
+                           349     ; Error Handling:   None.
+                           350     ;
+                           351     ; Algorithms:       None.
+                           352     ; Data Structures:  None.
+                           353     ;
+                           354     ; Registers Used:   AX
+                           355     ; Stack Depth:      0 words
+                           356     ;
+                           357     ; Author:           Chirath Neranjena
+                           358     ; Last Modified:    FEB 20, 2002
+                           359     
+                           360     
+                           361     
+                           362     
+                           363     
+00A9                       364     IsAKey          PROC    NEAR
+                           365                     PUBLIC  IsAKey
+                           366     
+                           367     
+00A9 50                    368             PUSH    AX                      ; Save registers
+                           369     
+00AA A00900         R      370             MOV     AL, KeyAvailable
+00AD 3C00                  371             CMP     AL, False               ; Check KeyAvailable and set the flag
+                           372     
+00AF                       373     EndIsAKey:                              
+                           374     
+00AF 58                    375             POP     AX                      ; Restore registers
+00B0 C3                    376             RET
+                           377     
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           378     IsAKey  ENDP
+                           379     
+                           380     
+                           381     
+                           382     ; GetKey
+                           383     ;
+                           384     ; Description:      Sits in a loop until a key has been pressed and then returns the 
+                                   Key pressed in AL
+                           385     ;
+                           386     
+                           387     ; Arguments:        None.
+                           388     ; Return Value:     None.
+                           389     ;
+                           390     ; Local Variables:  BX, DX 
+                           391     ; Shared Variables: None.
+                           392     ; Global Variables: None
+                           393     ;
+                           394     ; Input:            None.
+                           395     ; Output:           AL Key Code
+                           396     ;
+                           397     ; Error Handling:   None.
+                           398     ;
+                           399     ; Algorithms:       None.
+                           400     ; Data Structures:  None.
+                           401     ;
+                           402     ; Registers Used:   AX, BX, CX
+                           403     ; Stack Depth:      2 words
+                           404     ;
+                           405     ; Author:           Chirath Neranjena
+                           406     ; Last Modified:    21 FEB 2002
+                           407     
+00B1                       408     GetKey          PROC    NEAR
+                           409                     PUBLIC  GetKey
+                           410     
+00B1 53                    411             PUSH    BX
+00B2 51                    412             PUSH    CX
+                           413     
+                           414     
+00B3                       415     LoopWhileNoKey:
+                           416     
+00B3 E8F3FF                417             CALL    IsAKey                  ; While Zero flag = 0 
+00B6 74FB                  418             JZ      LoopWhileNoKey          ;   Check for Key using IsAkey
+                           419                                             ; ENDWHILE
+                           420     
+00B8 A00600         R      421             MOV     AL, NewKey              ; Get whichkey was pressed
+00BB 2CC0                  422             SUB     AL, 00C0H               ; convert it to a number
+00BD 8AD8                  423             MOV     BL, AL
+                           424     
+00BF A10700         R      425             MOV     AX, NewKeyRow           ; get row of the pressed key
+00C2 B91000                426             MOV     CX, 00010H
+00C5 F7E1                  427             MUL     CX
+00C7 8BC8                  428             MOV     CX, AX                  ; convert it to the code
+                           429     
+00C9 8AC3                  430             MOV     AL, BL
+00CB 02C1                  431             ADD     AL, CL                  ; Store in AL
+8086/87/88/186 MACRO ASSEMBLER    KEY                                                      15:54:55  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00CD C60609000090   R      432             MOV     Keyavailable, NoKeyState         ; Done with key, now no key
+00D3                       433     point:        
+00D3 59                    434             POP     CX
+00D4 5B                    435             POP     BX                      ; Restore the registers
+                           436     
+00D5 C3                    437             RET
+                           438     
+                           439     GetKey  ENDP
+                           440     
+----                       441     CODE    ENDS
+                           442     
+----                       443     DATA    SEGMENT PUBLIC  'DATA'
+                           444     
+                           445     
+0000 ??                    446     Key             DB      ?
+0001 00                    447     KeyStatus       DB      0
+0002 0000                  448     KeyRow          DW      0
+0004 ????                  449     KeyDebounceTime DW      ?
+                           450     
+                           451     
+0006 ??                    452     NewKey          DB      ?               ; Holds the value of a new key being pressed
+                           453                     PUBLIC  NewKey
+                           454     
+0007 ????                  455     NewKeyRow       DW      ?               ; row of the key just pressed
+                           456                     PUBLIC  NewKeyRow
+                           457     
+0009 00                    458     KeyAvailable    DB      0               ; holds whether a key has been pressed or not
+                           459                     PUBLIC  KeyAvailable
+                           460     
+                           461     
+----                       462     DATA    ENDS
+                           463     
+                           464     
+                           465             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

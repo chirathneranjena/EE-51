@@ -1,0 +1,608 @@
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE STEPPER
+OBJECT MODULE PLACED IN STEPPER.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE STEPPER.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     Name Stepper
+                             3     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             4     ;                                                                            ;
+                             5     ;                                 Stepper                                    ;
+                             6     ;                              Stepper Routines                              ;
+                             7     ;                                                                            ;
+                             8     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             9     
+                            10     ; Description:      Functions involved with stepping the Robocrane motors
+                            11     ;                       and turning the crane magnet on/off
+                            12     ;
+                            13     ;
+                            14     ; Input:            None 
+                            15     ; Output:           Stepping data for motors and magnet toggle value
+                            16     ;
+                            17     ; User Interface:   None
+                            18     ; Error Handling:   None.
+                            19     ;
+                            20     ; Algorithms:       None.
+                            21     ; Data Structures:  None.
+                            22     ;
+                            23     ; Revision History:
+                            24     ;       Chirath Neranjena       17 Mar 2002     Creation
+                            25     
+                            26     CGROUP  GROUP   CODE
+                            27     
+                            28 +1  $INCLUDE(STEPPER.INC)
+                      =1    29     
+                      =1    30     
+  0001                =1    31     Pending         EQU     1
+  0000                =1    32     Free            EQU     0
+                      =1    33     
+  0181                =1    34     VertMotor       EQU     00181H
+  0181                =1    35     MagnetPort      EQU     00181H
+  0182                =1    36     AngleMotor      EQU     00182H
+  0183                =1    37     MotorControl    EQU     00183H
+                      =1    38     
+  0080                =1    39     PortCtrVal      EQU     00080H
+                      =1    40     
+                      =1    41     
+  0080                =1    42     MagnetOn        EQU     0000000010000000b
+  0000                =1    43     MagnetOff       EQU     0000000000000000b
+                      =1    44     
+  0001                =1    45     Straight        EQU     1
+ -0001                =1    46     Reverse         EQU     -1
+                      =1    47     
+  0009                =1    48     DegreesPerStepx10       EQU     9
+  0005                =1    49     InchesPerStepx10        EQU     5       
+                      =1    50     
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+  FF22                =1    51     INTCtrlrEOI     EQU     0FF22H
+  0008                =1    52     Timer2EOI       EQU     00008H
+                            53     
+----                        54     CODE SEGMENT PUBLIC 'CODE'
+                            55     
+                            56             ASSUME  CS: CGROUP, DS: DATA
+                            57     
+                            58     ; InitParallel
+                            59     ;
+                            60     ; Description:      Initialize the parallel port for motor functions
+                            61     ;
+                            62     ; Arguments:        None.
+                            63     ; Return Value:     None.
+                            64     ;
+                            65     ; Local Variables:  None
+                            66     ;
+                            67     ; Shared Variables: None
+                            68     ; Global Variables: None
+                            69     ;                   
+                            70     ;                   
+                            71     ;
+                            72     ; Input:            None.
+                            73     ; Output:           None
+                            74     ;
+                            75     ; Error Handling:   None.
+                            76     ;
+                            77     ; Algorithms:       None.
+                            78     ;                   
+                            79     ;                   
+                            80     ; Data Structures:  None.
+                            81     ;
+                            82     ; Registers Used:   AX, DX
+                            83     ; Stack Depth:      0 words
+                            84     ;
+                            85     ; Author:           Chirath Neranjena
+                            86     ; Last Modified:    MAR 18 2002
+                            87     
+0000                        88     InitParallel    PROC    NEAR
+                            89                     PUBLIC  InitParallel
+                            90     
+0000 BA8301                 91             MOV     DX, MotorControl        ; write the control word to parallel
+0003 B88000                 92             MOV     AX, PortCtrVal          ;       control register
+0006 EF                     93             OUT     DX, AX
+                            94     
+0007 C3                     95             RET
+                            96     
+                            97     InitParallel    ENDP
+                            98     
+                            99     ; StepperEventHandler
+                           100     ;
+                           101     ; Description:      Interrupt Handler for Stepper Functions
+                           102     ;
+                           103     ; Arguments:        None.
+                           104     ; Return Value:     None.
+                           105     ;
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           106     ; Local Variables:  None
+                           107     ;
+                           108     ; Shared Variables: AngleStatus, TableAnglePtr, AngleStep, VertStatus
+                           109     ;                   TableVertPtr, VertStep, MagnetStatus,MagnetValue
+                           110     ;                   OverrallStatus, CurrentAngle, AngleMotion, VertMotion
+                           111     
+                           112     ; Global Variables: None
+                           113     ;                   
+                           114     ;                   
+                           115     ;
+                           116     ; Input:            None.
+                           117     ; Output:           Stepper Motor Values
+                           118     ;
+                           119     ; Error Handling:   None.
+                           120     ;
+                           121     ; Algorithms:       None.
+                           122     ;                   
+                           123     ;                   
+                           124     ; Data Structures:  None.
+                           125     ;
+                           126     ; Registers Used:   AX, DX
+                           127     ; Stack Depth:      0 words
+                           128     ;
+                           129     ; Author:           Chirath Neranjena
+                           130     ; Last Modified:    FEB. 21 2002
+                           131     
+0008                       132     StepperEventHandler     PROC    NEAR
+                           133                             PUBLIC  StepperEventHandler
+                           134     
+0008 9C                    135             PUSHF           ; Save Registers
+                           136             
+0009 50                    137             PUSH    AX
+000A 53                    138             PUSH    BX
+000B 52                    139             PUSH    DX
+                           140     
+000C                       141     CheckAngleStatus:
+                           142     
+000C BB080090              143             MOV     BX, StepTableSize       ; Keep BX=table size - 1 for future
+0010 83EB01                144             SUB     BX, 1                   ;  comparisons
+                           145     
+0013 833E000001     R      146             CMP     AngleStatus, Pending    ; If there is no pending angular movement
+0018 7547                  147             JNE     CheckVertStatus         ; then check if there's a pending 
+                           148                                             ; vertical movement
+                           149             
+001A 833E1400FF     R      150             CMP     AngleMotion, Reverse    ; Check if the angle motion is reverse
+001F 7412                  151             JE      AngleMotionReverse      ;    take care of the reverse motion
+                           152             
+0021 FF0E0200       R      153             DEC     TableAnglePtr           ; go up one step on the table   
+                           154             
+0025 833E020000     R      155             CMP     TableAnglePtr, 0        ; if the pointer reaches the top
+002A 7D17                  156             JGE     SendAngleDataToPort     ;  then pointer is set to the bottom of
+002C 891E0200       R      157             MOV     TableAnglePtr, BX       ;  the table
+0030 EB1190                158             JMP     SendAngleDataToPort
+                           159     
+0033                       160     AngleMotionReverse:
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           161             
+0033 FF060200       R      162             INC     TableAnglePtr           ; go down one step on the table
+                           163     
+0037 391E0200       R      164             CMP     TableAnglePtr, BX       ; if table pointer is at the bottom
+003B 7E06                  165             JLE     SendAngleDataToPort     ; then set it back to the top
+                           166     
+003D C70602000000   R      167             MOV     TableAnglePtr, 0
+                           168     
+                           169     
+0043                       170     SendAngleDataToPort:
+                           171     
+0043 BBBB0190       R      172             MOV     BX, OFFSET StepperTable ; Get the next pattern for the 
+0047 A10200         R      173             MOV     AX, TableAnglePtr       ;       stepper motor from the table 
+004A 2ED7                  174             XLAT    CS:StepperTable
+                           175     
+004C BA8201                176             MOV     DX, AngleMotor          ; Rotate the Stepper Motor
+004F EE                    177             OUT     DX, AL  
+                           178     
+0050 FF0E0400       R      179             DEC     AngleStep               ; Decrement No of steps to complete step
+0054 833E040000     R      180             CMP     AngleStep, 0            ;  If No of steps more is not Zero
+0059 7506                  181             JNE     CheckVertStatus         ;   then Do Vertical Motor movement
+                           182             
+005B C70600000000   R      183             MOV     AngleStatus, Free       ; No more pending angular movements     
+                           184     
+0061                       185     CheckVertStatus:
+                           186     
+0061 833E060001     R      187             CMP     VertStatus, Pending     ; If there is no pending vertical movement
+0066 754B                  188             JNE     CheckMagnetStatus       ; then check if there's a pending 
+                           189                                             ; vertical movement
+                           190     
+0068 833E1600FF     R      191             CMP     VertMotion, Reverse     ; If vertical motion is in reverse
+006D 7412                  192             JE      VertMotionReverse       ; then take care of it  
+                           193                                             
+006F FF0E0800       R      194             DEC     TableVertPtr            ; go up one step on the table
+                           195             
+0073 833E080000     R      196             CMP     TableVertPtr, 0         ; if the pointer is at the top
+0078 7D17                  197             JGE     SendVertDataToPort      ; then set the pointer back to the bottom
+007A 891E0800       R      198             MOV     TableVertPtr, BX
+007E EB1190                199             JMP     SendVertDataToPort
+                           200     
+0081                       201     VertMotionReverse:
+                           202     
+0081 FF060800       R      203             INC     TableVertPtr            ; go down one step on the table
+                           204     
+0085 391E0800       R      205             CMP     TableVertPtr, BX        ; if the pointer has reached the bottom
+0089 7E06                  206             JLE     SendVertDataToPort      ; of the table then
+                           207     
+008B C70608000000   R      208             MOV     TableVertPtr, 0         ; set the pointer back to the top
+                           209     
+                           210     
+0091                       211     SendVertDataToPort:
+                           212     
+0091 BBBB0190       R      213             MOV     BX, OFFSET StepperTable ; Get the next pattern for the 
+0095 A10800         R      214             MOV     AX, TableVertPtr        ;       stepper motor from the table 
+0098 2ED7                  215             XLAT    CS:StepperTable
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           216     
+009A 0B060E00       R      217             OR      AX, MagnetValue
+009E BA8101                218             MOV     DX, VertMotor
+00A1 EE                    219             OUT     DX, AL
+                           220     
+00A2 FF0E0A00       R      221             Dec     VertStep                ; Decrement No of steps to complete step
+00A6 833E0A0000     R      222             CMP     VertStep, 0             ;  If No of steps more is not Zero
+00AB 7506                  223             JNE     CheckMagnetStatus               ;   then Do Magnet On/Off
+                           224     
+00AD C70606000000   R      225             MOV     VertStatus, Free        ; No more pending Vertical movements
+                           226     
+00B3                       227     CheckMagnetStatus:
+                           228     
+00B3 833E0C0001     R      229             CMP     MagnetStatus, Pending   ; If the magnet need not be turned on or off
+00B8 7517                  230             JNE     CheckOverallStatus      ;   go to check the overall status
+                           231             
+00BA BBBB0190       R      232             MOV     BX, OFFSET StepperTable ; Get the next pattern for the 
+00BE A10800         R      233             MOV     AX, TableVertPtr                  ;       stepper motor from the tabl
+                                   e 
+00C1 2ED7                  234             XLAT    CS:StepperTable
+                           235     
+00C3 BA8101                236             MOV     DX, MagnetPort          ; get the value fromt the Magnet/Vertical por
+                                   t
+                           237             ;IN      AX, DX
+                           238     
+00C6 0B060E00       R      239             OR      AX, MagnetValue         ; Set the Magnet on or Off
+00CA EE                    240             OUT     DX, AL   
+                           241     
+00CB C7060C000000   R      242             MOV     MagnetStatus, Free      ; No more magnet functions
+                           243     
+00D1                       244     CheckOverallStatus:
+                           245     
+00D1 A10000         R      246             MOV     AX, AngleStatus
+00D4 3D0100                247             CMP     AX,Pending              ;If AngleStatus <> Pending Then
+00D7 7416                  248             JE      EndStepperHandler       ;  IF VertStatus <> Pending Then        
+00D9 A10600         R      249             MOV     AX, VertStatus
+00DC 3D0100                250             CMP     AX, Pending             ;       IF MagnetStatus <> Pending Then
+00DF 740E                  251             JE      EndStepperHandler       ;
+00E1 A10C00         R      252             MOV     AX, MagnetStatus
+00E4 3D0100                253             CMP     AX, Pending             ;
+00E7 7406                  254             JE      EndStepperHandler
+                           255     
+00E9 C70610000000   R      256             MOV     OverrallStatus, Free    ;               OverrallStatus = Free   
+                           257     
+00EF                       258     EndStepperHandler:
+                           259             
+00EF BA22FF                260             MOV     DX, INTCtrlrEOI
+00F2 B80800                261             MOV     AX, Timer2EOI
+00F5 EE                    262             OUT     DX, AL
+                           263     
+00F6 5A                    264             POP     DX                      ; Restore Registers
+00F7 5B                    265             POP     BX
+00F8 58                    266             POP     AX
+                           267             
+00F9 9D                    268             POPF
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           269     
+                           270     
+00FA CF                    271             IRET                            ; Done
+                           272     
+                           273     
+                           274     
+                           275     StepperEventHandler     ENDP
+                           276     
+                           277     ; RotateCrane
+                           278     ;
+                           279     ; Description:      calculates and stores the number of steps for a rotation
+                           280     ;
+                           281     ; Arguments:        Rotate Angle
+                           282     ; Return Value:     None.
+                           283     ;
+                           284     ; Local Variables:  None
+                           285     ;
+                           286     ; Shared Variables: AngleStatus, AngleStep, OverrallStatus, AngleMotion 
+                           287     ; Global Variables: NOne.
+                           288     ;
+                           289     ; Input:            None.
+                           290     ; Output:           None
+                           291     ;
+                           292     ; Error Handling:   None.
+                           293     ;
+                           294     ; Algorithms:       None.
+                           295     ;                   
+                           296     ;                   
+                           297     ; Data Structures:  None.
+                           298     ;
+                           299     ; Registers Used:   None
+                           300     ; Stack Depth:      0 words
+                           301     ;
+                           302     ; Author:           Chirath Neranjena
+                           303     ; Last Modified:    MAR 18 2002
+                           304     
+                           305     
+00FB                       306     RotateCrane     PROC    NEAR
+                           307                     PUBLIC  RotateCrane
+                           308     
+00FB 53                    309             PUSH    BX      ; Save the registers
+00FC 52                    310             PUSH    DX
+                           311     
+00FD                       312     LoopWhilePendingA:
+                           313     
+00FD 833E100001     R      314             CMP     OverrallStatus, Pending ; Loop Until Crane movement is done
+0102 74F9                  315             JE      LoopWhilePendingA
+                           316     
+                           317                             
+0104                       318     CalcAbsAngle:
+                           319     
+                           320     
+0104 8B1E1200       R      321             MOV     BX, CurrentAngle         ; Convert Angle to Absolute Angle
+0108 A31200         R      322             MOV     CurrentAngle, AX         ;  Save the Current Angle of Crane
+                           323     
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+010B 2BC3                  324             SUB     AX, BX                 
+                           325                                             
+010D 3D0000                326             CMP     AX, 0                   ;IF Angle >= 0 then
+0110 7D02                  327             JGE     PositiveAngle           ; 
+0112 7C09                  328             JL      NegativeAngle   
+                           329     
+0114                       330     PositiveAngle:
+                           331     
+0114 C70614000100   R      332             MOV     AngleMotion, Straight   ; remember that the movement is striaght
+011A EB0990                333             JMP     CalcAngleSteps  
+                           334     
+011D                       335     NegativeAngle:
+                           336     
+011D C7061400FFFF   R      337             MOV     AngleMotion, Reverse    ; remember that the movement is reverse 
+0123 F7D8                  338             NEG     AX
+                           339     
+0125                       340     CalcAngleSteps:
+                           341     
+0125 BB0A00                342             MOV     BX, 10                  ; no of steps = (10 * Angle) / 
+0128 F7E3                  343             MUL     BX                      ;       (degress per step x 10)
+012A BB0900                344             MOV     BX, DegreesPerStepx10
+012D BA0000                345             MOV     DX, 0
+0130 F7F3                  346             DIV     BX
+0132 A30400         R      347             MOV     AngleStep, AX           ; save the number of steps
+0135 C70600000100   R      348             MOV     AngleStatus, Pending    ; setoff flags for initiating rotation
+013B C70610000100   R      349             MOV     OverrallStatus, Pending
+                           350     
+0141 5A                    351             POP     DX
+0142 5B                    352             POP     BX
+                           353             
+0143 C3                    354             RET
+                           355     
+                           356     RotateCrane     ENDP
+                           357     
+                           358     ; LowerCrane
+                           359     ;
+                           360     ; Description:      calculates and stores the number of steps for a Vertical movement
+                           361     ;
+                           362     ; Arguments:        length of motion
+                           363     ; Return Value:     None.
+                           364     ;
+                           365     ; Local Variables:  None
+                           366     ;
+                           367     ; Shared Variables: VertStatus, VertStep, OverrallStatus, VertMotion    
+                           368     ; Global Variables: NOne.
+                           369     ;
+                           370     ; Input:            None.
+                           371     ; Output:           None
+                           372     ;
+                           373     ; Error Handling:   None.
+                           374     ;
+                           375     ; Algorithms:       None.
+                           376     ;                   
+                           377     ;                   
+                           378     ; Data Structures:  None.
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           379     ;
+                           380     ; Registers Used:   None
+                           381     ; Stack Depth:      0 words
+                           382     ;
+                           383     ; Author:           Chirath Neranjena
+                           384     ; Last Modified:    MAR 18 2002
+                           385     
+0144                       386     LowerCrane      PROC    NEAR
+                           387                     PUBLIC  LowerCrane
+                           388     
+0144 53                    389             PUSH    BX      ;Save registers
+                           390     
+0145                       391     LoopWhilePendingV:
+                           392     
+0145 833E100001     R      393             CMP     OverrallStatus, Pending ; Loop Until Crane movement is done
+014A 74F9                  394             JE      LoopWhilePendingV
+                           395     
+                           396                             
+014C 3D0000                397             CMP     AX, 0                   ;IF Vert >= 0 then
+014F 7D02                  398             JGE     PositiveVert            ; motion is upwards
+0151 7C09                  399             JL      NegativeVert            ;ELSE   
+                           400                                             ; motion is downwards
+0153                       401     PositiveVert:
+                           402     
+0153 C70616000100   R      403             MOV     VertMotion, Straight    ; remember that the movement is straight
+0159 EB0990                404             JMP     CalcVertSteps   
+                           405     
+015C                       406     NegativeVert:
+                           407     
+015C C7061600FFFF   R      408             MOV     VertMotion, Reverse     ; remember that the movement is reverse
+0162 F7D8                  409             NEG     AX
+                           410     
+0164                       411     CalcVertSteps:
+                           412     
+0164 BB0A00                413             MOV     BX, 10                  ; no of steps = legth * 10 / inches per step 
+                                   x 10
+0167 F7E3                  414             MUL     BX
+0169 BB0500                415             MOV     BX, InchesPerStepx10
+016C BA0000                416             MOV     DX, 0
+016F F7F3                  417             DIV     BX
+0171 A30A00         R      418             MOV     VertStep, AX            ; save no steps
+0174 C70606000100   R      419             MOV     VertStatus, Pending     ; set off flags for crane motion
+017A C70610000100   R      420             MOV     OverrallStatus, Pending
+                           421     
+0180 5B                    422             POP     BX
+                           423             
+0181 C3                    424             RET
+                           425     
+                           426     LowerCrane      ENDP
+                           427     
+                           428     ; EnergizeMagner
+                           429     ;
+                           430     ; Description:      Energize or DeEnergize the crane magnet
+                           431     ;
+                           432     ; Arguments:        Magnet On/Off
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           433     ; Return Value:     None.
+                           434     ;
+                           435     ; Local Variables:  None
+                           436     ;
+                           437     ; Shared Variables: MagnetStatus, OverrallStatus
+                           438     ; Global Variables: NOne.
+                           439     ;
+                           440     ; Input:            None.
+                           441     ; Output:           None.
+                           442     ;
+                           443     ; Error Handling:   None.
+                           444     ;
+                           445     ; Algorithms:       None.
+                           446     ;                   
+                           447     ;                   
+                           448     ; Data Structures:  None.
+                           449     ;
+                           450     ; Registers Used:   None
+                           451     ; Stack Depth:      0 words
+                           452     ;
+                           453     ; Author:           Chirath Neranjena
+                           454     ; Last Modified:    MAR 18 2002
+                           455     
+0182                       456     EnergizeMagnet  PROC    NEAR
+                           457                     PUBLIC  EnergizeMagnet
+                           458     
+0182                       459     LoopWhilePendingM:
+                           460     
+0182 833E100001     R      461             CMP     OverrallStatus, Pending ; Loop Until Crane movement is done
+0187 74F9                  462             JE      LoopWhilePendingM       
+                           463     
+0189 3D0000                464             CMP     AX, 0                   ; if argument = 0 then
+018C 7417                  465             JE      DeEnergize              ;   denergize the magnet
+018E 7500                  466             JNE     Energize                ; else take care of energizing the magnet
+                           467     
+0190                       468     Energize:
+                           469     
+0190 C7060E008000   R      470             MOV     MagnetValue, MagnetOn   ; turn on magnet
+0196 C7060C000100   R      471             MOV     MagnetStatus, Pending   ; set off flags for change
+019C C70610000100   R      472             MOV     OverrallStatus, Pending
+01A2 EB1690                473             JMP     EndMagnet
+                           474     
+01A5                       475     DeEnergize:
+                           476     
+01A5 C7060E000000   R      477             MOV     MagnetValue, MagnetOff  ; turn off magnet
+01AB C7060C000100   R      478             MOV     MagnetStatus, Pending   ; set off flags for change      
+01B1 C70610000100   R      479             MOV     OverrallStatus, Pending
+01B7 EB0190                480             JMP     EndMagnet
+                           481     
+01BA                       482     EndMagnet:
+                           483             
+01BA C3                    484             RET             ; done, return  
+                           485     
+                           486     EnergizeMagnet  ENDP
+                           487     
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           488     
+                           489     
+                           490     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           491     ;                                       ;
+                           492     ;    Stepper Motor Step byte Values     ;
+                           493     ;                                       ;
+                           494     ;                                       ;
+                           495     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           496     
+01BB                       497     StepperTable    LABEL   BYTE
+                           498                     PUBLIC  StepperTable
+                           499     
+                           500     
+01BB 0A                    501             DB      00001010B
+01BC 08                    502             DB      00001000B            
+01BD 09                    503             DB      00001001B             
+01BE 01                    504             DB      00000001B              
+01BF 05                    505             DB      00000101B             
+01C0 04                    506             DB      00000100B             
+01C1 06                    507             DB      00000110B              
+01C2 02                    508             DB      00000010B               
+                           509      
+                           510     
+  0008                     511     StepTableSize      EQU     8         ;
+                           512     
+                           513     
+----                       514     CODE    ENDS
+                           515     
+----                       516     DATA    SEGMENT PUBLIC  'DATA'
+                           517     
+                           518     
+0000 0000                  519     AngleStatus             DW      0       ; holds whether there's a pending angular mor
+                                   tion
+0002 0400                  520     TableAnglePtr           DW      4       ; holds current position in the table for ang
+                                   les
+0004 0000                  521     AngleStep               DW      0       ; holds the number of steps remaining   
+                           522     
+0006 0000                  523     VertStatus              DW      0       ; holds whether there's a pending vertical mo
+                                   rtion
+0008 0400                  524     TableVertPtr            DW      4       ; holds current position in the table for ver
+                                   tical
+000A 0000                  525     VertStep                DW      0       ; holds the number of steps remaining
+                           526     
+000C 0000                  527     MagnetStatus            DW      0       ; magnet on or off status
+000E 0000                  528     MagnetValue             DW      0       ; value written to the port to change magner
+                           529     
+0010 0000                  530     OverrallStatus          DW      0       ; keeps track if all motion is complete
+                           531     
+0012 0000                  532     CurrentAngle            DW      0       ; absolute angle for rotaional motion
+                           533     
+0014 0000                  534     AngleMotion             DW      0       ; holds whether motion is reverse ot not
+0016 0000                  535     VertMotion              DW      0       ; holds whether motion is reverse ot not
+----                       536     DATA    ENDS
+                           537     
+                           538     
+8086/87/88/186 MACRO ASSEMBLER    STEPPER                                                  15:54:55  04/23/:2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           539             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

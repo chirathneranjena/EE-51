@@ -1,0 +1,20 @@
+
+DOS 5.0 (038-N) 8086 LINKER, V2.7
+
+INPUT FILES: FACTOR.OBJ
+OUTPUT FILE: FACTOR.LNK
+CONTROLS SPECIFIED IN INVOCATION COMMAND:
+DATE:  04/23/:2  TIME:  15:56:41
+
+
+LINK MAP OF MODULE FACTOR3
+
+LOGICAL SEGMENTS INCLUDED:
+LENGTH ADDRESS ALIGN  SEGMENT         CLASS           OVERLAY
+ 0000H ------    G    ??SEG                                         
+ 0060H ------    G    PROGRAM         CODE                          
+ 0020H ------    W    DATA            DATA                          
+ 0280H ------    W    STACK           STACK                         
+
+INPUT MODULES INCLUDED:
+FACTOR.OBJ(FACTOR3)

@@ -1,0 +1,23 @@
+       NAME  MACRODEMO
+
+
+; local include files
+$INCLUDE(macro.inc)
+
+
+
+PROGRAM SEGMENT PUBLIC 'CODE'
+
+        ASSUME  CS:PROGRAM, DS:NOTHING, ES:NOTHING
+
+
+	%CLR(AX)
+	%SETBIT(BX, 5)
+	%SETBIT(CX, 3)
+	%COMBIT(DX, 2)
+	%TESTBIT(AX, 4)
+
+PROGRAM	ENDS
+
+
+	END

@@ -1,0 +1,25 @@
+8086/87/88/186 MACRO ASSEMBLER    ANONYMOUS                                                12:51:51  02/27/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE ANONYMOUS
+OBJECT MODULE PLACED IN MACRO.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE MACRO.ASM
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     ;$NOLIST
+                             2     
+                             3     
+                             4     
+                             5     
+                             6     
+                             7     
+                             8     
+                             9     
+                            10     
+                            11     ;$LIST
+*** ERROR #89 IN 11, PREMATURE END OF FILE (NO END STATEMENT)
+*** ERROR #151 IN 11, NO NAME DIRECTIVE ENCOUNTERED, DEFAULT MODULE NAME USED
+
+ASSEMBLY COMPLETE, 2 ERRORS FOUND

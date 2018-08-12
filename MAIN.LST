@@ -1,0 +1,84 @@
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     02:36:06  02/11/:2  PAGE    1
+
+
+DOS 7.10 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE MAIN
+OBJECT MODULE PLACED IN MAIN.OBJ
+ASSEMBLER INVOKED BY:  C:\ASM\ASM86.EXE MAIN.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     NAME MAIN
+                             2     
+                             3     CGROUP  GROUP   CODE
+                             4     
+                             5     ;$INCLUDE(convert.INC)
+                             6     
+                             7     EXTRN   ConvertTest :NEAR
+                             8     
+----                         9     CODE SEGMENT PUBLIC 'CODE'
+                            10     
+                            11             ASSUME  CS:CGROUP, DS:DATA, SS:STACK
+                            12     
+                            13     
+                            14     
+                            15     
+                            16     
+0000                        17     START:  
+                            18     
+0000                        19     MAIN:
+0000 B8----         R       20             MOV     AX, STACK               ;initialize the stack pointer
+0003 8ED0                   21             MOV     SS, AX
+0005 BCE00190       R       22             MOV     SP, OFFSET(TopOfStack)
+                            23     
+0009 B8----         R       24             MOV     AX, DATA                ;initialize the data segment
+000C 8ED8                   25             MOV     DS, AX
+                            26     
+                            27      
+                            28     
+000E                        29     Forever:
+                            30     
+000E E80000         E       31             CALL ConvertTest
+                            32     
+0011 EBFB                   33             JMP    Forever                 ;sit in an infinite loop, nothing to
+                            34                                             ;   do in the background routine
+0013 F4                     35             HLT                             ;never executed (hopefully)
+                            36     
+0014 C3                     37             RET
+                            38     
+----                        39     CODE ENDS
+                            40     
+                            41     
+                            42     ;the data segment
+                            43     
+----                        44     DATA    SEGMENT PUBLIC  'DATA'
+                            45     
+                            46     ;String          DW      15 DUP(?)       ;prime factors (at most log2 I)
+                            47     
+----                        48     DATA    ENDS
+                            49     
+                            50     
+8086/87/88/186 MACRO ASSEMBLER    MAIN                                                     02:36:06  02/11/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            51     
+                            52     
+                            53     ;the stack
+                            54     
+----                        55     STACK           SEGMENT STACK  'STACK'
+                            56     
+0000 (80                    57                     DB      80 DUP ('Stack ')       ;240 words
+     537461636B20
+     )
+                            58     
+01E0                        59     TopOfStack      LABEL   WORD
+                            60     
+----                        61     STACK           ENDS
+                            62     
+                            63     
+                            64     
+                            65             END     START
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

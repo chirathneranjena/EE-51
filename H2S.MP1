@@ -1,0 +1,20 @@
+
+DOS 7.10 (038-N) 8086 LINKER, V2.7
+
+INPUT FILES: H2S.OBJ
+OUTPUT FILE: H2S.LNK
+CONTROLS SPECIFIED IN INVOCATION COMMAND:
+DATE:  02/09/:2  TIME:  20:55:54
+
+
+LINK MAP OF MODULE H2S
+
+LOGICAL SEGMENTS INCLUDED:
+LENGTH ADDRESS ALIGN  SEGMENT         CLASS           OVERLAY
+ 0000H ------    G    ??SEG                                         
+ 0089H ------    G    PROGRAM         CODE                          
+ 0020H ------    W    DATA            DATA                          
+ 0280H ------    W    STACK           STACK                         
+
+INPUT MODULES INCLUDED:
+H2S.OBJ(H2S)

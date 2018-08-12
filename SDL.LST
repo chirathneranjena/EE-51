@@ -1,0 +1,1069 @@
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE SDL
+OBJECT MODULE PLACED IN SDL.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE SDL.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     NAME SDL
+                             3     
+                             4     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             5     ;                                                                            ;
+                             6     ;                            Serial Download                                 ;
+                             7     ;                            Serial Routines                                 ;
+                             8     ;                                                                            ;
+                             9     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            10     
+                            11     ; Description:      Contains Functions For
+                            12     ;                       1. Downloading Paths over the serial channel
+                            13     ;                       2. Execute a Step from a path
+                            14     ;                       3. Reset the Path i.e go to the 1st step
+                            15     ;                       4. Display the next step
+                            16     ;                       5. Clear Path (remove all steps from path)
+                            17     ;                       6. Run Path run the path
+                            18     ;
+                            19     ;
+                            20     ; Input:            Key Presses from Key Pad, Serial Path data
+                            21     ; Output:           Motor Control Data  
+                            22     ;
+                            23     ; User Interface:   KeyPad, Display
+                            24     ; Error Handling:   None.
+                            25     ;
+                            26     ; Algorithms:       None.
+                            27     ; Data Structures:  None.
+                            28     ;
+                            29     ; Revision History:
+                            30     ;       Chirath Neranjena       18 Mar 2002     Creation
+                            31     
+                            32     
+                            33     CGROUP  GROUP   CODE
+                            34     
+                            35 +1  $INCLUDE(SDL.INC)
+                      =1    36     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    37     ;                                                                            ;
+                      =1    38     ;                                  SDL.INC                                   ;
+                      =1    39     ;                                                                            ;
+                      =1    40     ;                                 Include File                               ;
+                      =1    41     ;                                                                            ;
+                      =1    42     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    43     
+                      =1    44     ; This file contains the definitions for the Serial Download Path Functions
+                      =1    45     ;
+                      =1    46     ;
+                      =1    47     ; Revision History:
+                      =1    48     ;    18/03/2002    Chirath Neranjena  initial revision 
+                      =1    49     
+                      =1    50     ;max path size
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+  0100                =1    51     Path_Size       EQU     256
+                      =1    52     
+                      =1    53     ; magnet definitions
+  0001                =1    54     MagnetOn        EQU     1
+  0000                =1    55     MagnetOff       EQU     0
+                      =1    56     
+  0000                =1    57     Magnet_Neutral  EQU     0
+                      =1    58     
+                      =1    59     
+                      =1    60     ; Angle and Vert Defnitions
+  0000                =1    61     Absolute        EQU     0
+  0001                =1    62     Relative        EQU     1
+                            63 +1  $INCLUDE(SETTINGS.INC)
+                      =1    64     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    65     ;                                                                            ;
+                      =1    66     ;                                SETTINGS.INC                                ;
+                      =1    67     ;                                                                            ;
+                      =1    68     ;                                Include File                                ;
+                      =1    69     ;                                                                            ;
+                      =1    70     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    71     
+                      =1    72     ; This file contains the definitions for certain settings of Robocrane
+                      =1    73     ;
+                      =1    74     ; Revision History:
+                      =1    75     ;    18/03/2002    Chirath Neranjena  initial revision 
+                      =1    76     
+                      =1    77     
+                      =1    78     
+                      =1    79     ;Serial Port Registers
+  0103                =1    80     Serial_LCR      EQU     103H            ; Lactch Control Register
+  0080                =1    81     Enable_DL_Acc   EQU     10000000B       ; Enable Access to MSB and LSB by setting DLA
+                                   B
+                      =1    82     
+  0100                =1    83     Serial_DL       EQU     100H            ; Serial MSB and LSB Data Latch Registers
+                      =1    84     
+                      =1    85     ; Baud Rate Divisors
+  03C0                =1    86     Baud_300        EQU     960              ; Baud rate divisor for 300 Baud rate
+  00F0                =1    87     Baud_1200       EQU     240              ; Baud rate divisor for 1200 Baud rate
+  0078                =1    88     Baud_2400       EQU     120              ; Baud rate divisor for 2400 Baud rate
+  003C                =1    89     Baud_4800       EQU      60              ; Baud rate divisor for 4800 Baud rate
+  001E                =1    90     Baud_9600       EQU      30              ; Baud rate divisor for 9600 Baud rate
+  000F                =1    91     Baud_19200      EQU      15              ; Baud rate divisor for 19200 Baud rate
+  0005                =1    92     Baud_57600      EQU       5              ; Baud rate divisor for 57600 Baud rate
+                      =1    93     
+                      =1    94     ;Parity Settings
+  001B                =1    95     EvenParity      EQU     00011011B       ; LCR Even Parity Value
+  000B                =1    96     OddParity       EQU     00001011B       ; LCR Odd Parity Value
+  002B                =1    97     MarkParity      EQU     00101011B       ; LCR Mark Parity Value
+  003B                =1    98     SetParity       EQU     00111011B       ; LCR Set Parity Value
+  0003                =1    99     NoParity        EQU     00000011B       ; LCR No Parity Value
+                      =1   100     
+                      =1   101     ;KepPad Key Values
+                      =1   102     ; Each key is named after its row and column numbers
+                      =1   103     
+  002E                =1   104     Key11           EQU     0002EH
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+  002D                =1   105     Key12           EQU     0002DH
+  002B                =1   106     Key13           EQU     0002BH
+  0027                =1   107     Key14           EQU     00027H
+  001E                =1   108     Key21           EQU     0001EH
+  001D                =1   109     Key22           EQU     0001DH
+  001B                =1   110     Key23           EQU     0001BH
+  0017                =1   111     Key24           EQU     00017H
+  000E                =1   112     Key31           EQU     0000EH
+  000D                =1   113     Key32           EQU     0000DH
+  000B                =1   114     Key33           EQU     0000BH
+  0007                =1   115     Key34           EQU     00007H
+                      =1   116     
+                      =1   117     
+                      =1   118     
+                      =1   119     
+                           120     
+                           121     EXTRN   Display :NEAR
+                           122     EXTRN   ClearDisplay    :NEAR
+                           123     EXTRN   RotateCrane     :NEAR
+                           124     EXTRN   LowerCrane      :NEAR
+                           125     EXTRN   EnergizeMagnet  :NEAR
+                           126     EXTRN   displayNum      :NEAR
+                           127     EXTRN   GetKey          :NEAR
+                           128     EXTRN   IsaKey          :NEAR
+                           129     EXTRN   SerialGetChar   :NEAR
+                           130     EXTRN   ParseSerialChar :NEAR
+                           131     
+                           132     
+----                       133     CODE SEGMENT PUBLIC 'CODE'
+                           134     
+                           135             ASSUME  CS: CGROUP, DS: DATA
+                           136     
+                           137     ; SerialDownLoad
+                           138     ;
+                           139     ; Description:      This Function Parses characters received from the serial channel.
+                           140     ;                       The function ends if there's an error or end of path is 
+                           141     ;                       indicated.
+                           142     ;
+                           143     ; Arguments:        None.
+                           144     ; Return Value:     None.
+                           145     ;
+                           146     ; Local Variables:  None
+                           147     ;
+                           148     ; Shared Variables: None.
+                           149     ; Global Variables: None
+                           150     ;                   
+                           151     ;                   
+                           152     ;
+                           153     ; Input:            None.
+                           154     ; Output:           None.
+                           155     ;
+                           156     ; Error Handling:   None.
+                           157     ;
+                           158     ; Algorithms:       None.
+                           159     ;                   
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           160     ;                   
+                           161     ; Data Structures:  None.
+                           162     ;
+                           163     ; Registers Used:   AX, ES, SI
+                           164     ; Stack Depth:      3 words
+                           165     ;
+                           166     ; Author:           Chirath Neranjena
+                           167     ; Last Modified:    MAR 16 2002
+                           168     
+0000                       169     SerialMenu      PROC    NEAR
+                           170                     PUBLIC  SerialMenu
+                           171     
+                           172     
+0000 50                    173             PUSH    AX      ; Save Registers
+0001 06                    174             PUSH    ES
+0002 56                    175             PUSH    SI
+                           176     
+0003 B8----         R      177             MOV     AX, SEG StringBuffer    ; Display message to acknowledge menu entry
+0006 8EC0                  178             MOV     ES, AX
+0008 B80000         E      179             MOV     AX, OFFSET  StringBuffer
+000B 8BF0                  180             MOV     SI, AX
+                           181             
+000D B053                  182             MOV     AL, 83
+000F 268804                183             MOV     ES:[SI], AL             ; 83 - S
+0012 46                    184             INC     SI
+0013 B04F                  185             MOV     AL, 79
+0015 268804                186             MOV     ES:[SI], AL             ; 116 - D
+0018 46                    187             INC     SI                      
+0019 B04C                  188             MOV     AL, 76
+001B 268804                189             MOV     ES:[SI], AL             ; 76 - L
+001E 46                    190             INC     SI
+001F B000                  191             MOV     AL, 0
+0021 268804                192             MOV     ES:[SI], AL             ; null char for termination
+0024 46                    193             INC     SI
+                           194     
+0025 B80000         E      195             MOV     AX, OFFSET  StringBuffer ; return to the top of message 
+0028 8BF0                  196             MOV     SI, AX
+                           197     
+002A E80000         E      198             CALL    Display                 ; now call display to display message
+                           199     
+                           200     
+002D                       201     SDLLoop:
+                           202     
+                           203             
+002D E80000         E      204             CALL    GetKey          ; Get Key from Key pad  
+                           205     
+0030 3C1D                  206             CMP     AL, Key22       ; If Key = DownLoad Then
+0032 741C                  207             JE      DownLoadPath    ;       download the path
+                           208     
+0034 3C1B                  209             CMP     AL, Key23       ; If Key = execute Then
+0036 741E                  210             JE      ExecuteStep             ;       execute the next step
+                           211     
+0038 3C0B                  212             CMP     AL, Key33       ; If Key = reset Then
+003A 7420                  213             JE      ResetPath       ;       reset the current path
+                           214     
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+003C 3C17                  215             CMP     AL, Key24       ; If Key = clear Then
+003E 7422                  216             JE      ClearPath       ;       clear the current path
+                           217             
+0040 3C07                  218             CMP     AL, Key34       ; If Key = Run Then
+0042 7424                  219             JE      RunPath         ;       Run the current Path
+                           220     
+0044 3C27                  221             CMP     AL, Key14       ; If Key = Display Angle Then
+0046 7426                  222             JE      DisplayAngle    ;       display the angle of next step
+                           223     
+0048 3C2B                  224             CMP     AL, Key13       ; If Key = Display Vert Then
+004A 7428                  225             JE      DisplayVert     ;       display the vert of next step
+                           226     
+004C 3C2D                  227             CMP     AL, Key12       ; If Key =  Return Then
+004E 742C                  228             JE      SDLReturn       ;       download the path
+                           229     
+0050                       230     DownLoadPath:
+                           231     
+0050 E82D00                232             CALL    SerialDownload  ;Down load a path
+0053 EB2590                233             JMP     EndSDL
+                           234     
+0056                       235     ExecuteStep:
+                           236     
+0056 E8EC00                237             CALL    ExecStep        ; execute next step in path
+0059 EB1F90                238             JMP     EndSDL
+                           239     
+005C                       240     ResetPath:
+                           241     
+005C E8E301                242             CALL    Reset           ; reset the path i.e go to the first step
+005F EB1990                243             JMP     EndSDL
+                           244     
+0062                       245     ClearPath:
+                           246     
+0062 E8F801                247             Call    Clear           ; clear all steps in path
+0065 EB1390                248             JMP     EndSDL
+                           249     
+0068                       250     RunPath:
+                           251     
+0068 E8DE01                252             Call    Run     ; Run the entire path
+006B EB0D90                253             JMP     EndSDL
+                           254     
+006E                       255     DisplayAngle:
+                           256     
+006E E8F901                257             CALL    DisplayAgl      ; display the angle of next path step
+0071 EB0790                258             JMP     EndSDL
+                           259     
+0074                       260     DisplayVert:
+                           261     
+0074 E80B02                262             CALL    DisplayVrt      ; display the vert of next path step
+0077 EB0190                263             JMP     EndSDL
+                           264     
+007A                       265     EndSDL:
+                           266     
+007A EBB1                  267             JMP     SDLLoop         ; Loop back to the top
+                           268     
+007C                       269     SDLReturn:
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           270             
+007C 5E                    271             POP     SI
+007D 07                    272             POP     ES      
+007E 58                    273             POP     AX              ; restore registers
+                           274     
+007F C3                    275             RET             ; done - go back to previous menu
+                           276     
+                           277     SerialMenu      ENDP
+                           278     
+                           279     ; SerialDownLoad
+                           280     ;
+                           281     ; Description:      Downloads a path from the serial channel and stores it in an arra
+                                   y
+                           282     ;
+                           283     ; Arguments:        None.
+                           284     ; Return Value:     None.
+                           285     ;
+                           286     ; Local Variables:  None
+                           287     ;
+                           288     ; Shared Variables: None.
+                           289     ; Global Variables: None
+                           290     ;                   
+                           291     ;                   
+                           292     ;
+                           293     ; Input:            None.
+                           294     ; Output:           None.
+                           295     ;
+                           296     ; Error Handling:   None.
+                           297     ;
+                           298     ; Algorithms:       None.
+                           299     ;                   
+                           300     ;                   
+                           301     ; Data Structures:  None.
+                           302     ;
+                           303     ; Registers Used:   AX, ES, SI
+                           304     ; Stack Depth:      3 words
+                           305     ;
+                           306     ; Author:           Chirath Neranjena
+                           307     ; Last Modified:    MAR 16 2002
+                           308     
+                           309     
+0080                       310     SerialDownLoad  PROC    NEAR
+                           311                     
+                           312     
+0080 50                    313             PUSH    AX      ; Save Registers
+0081 06                    314             PUSH    ES
+0082 56                    315             PUSH    SI
+                           316             
+0083 E80000         E      317             CALL    ClearDisplay
+                           318             
+0086 B8----         R      319             MOV     AX, SEG StringBuffer    ; Display message to acknowledge menu entry
+0089 8EC0                  320             MOV     ES, AX
+008B B80000         E      321             MOV     AX, OFFSET  StringBuffer
+008E 8BF0                  322             MOV     SI, AX
+                           323             
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0090 B064                  324             MOV     AL, 100
+0092 268804                325             MOV     ES:[SI], AL             ; 100 - d
+0095 46                    326             INC     SI
+0096 B06C                  327             MOV     AL, 108
+0098 268804                328             MOV     ES:[SI], AL             ; 108 - l
+009B 46                    329             INC     SI                      
+009C B000                  330             MOV     AL, 0
+009E 268804                331             MOV     ES:[SI], AL             ; null char for termination
+00A1 46                    332             INC     SI
+                           333     
+00A2 B80000         E      334             MOV     AX, OFFSET  StringBuffer ; return to the top of message 
+00A5 8BF0                  335             MOV     SI, AX
+                           336     
+00A7 E80000         E      337             CALL    Display                 ; now call display to display message
+                           338     
+                           339     
+00AA C70604000000   R      340             MOV     PathStepPtr, 0          ; Initialize the path pointer
+00B0 C70602000000   R      341             MOV     PathStepSize, 0         ; Initialize the path size
+                           342     
+00B6                       343     DownLoadLoop:
+                           344     
+00B6 E80000         E      345             CALL    IsaKey          ; Check if there is a key
+00B9 740B                  346             JZ      NoStop          ; If no key then there is no stop
+00BB 7500                  347             JNZ     CheckWhatKey    ; If there's a key check what it is
+                           348     
+00BD                       349     CheckWhatKey:
+                           350     
+00BD E80000         E      351             CALL    GetKey          ; get the key pressed
+00C0 3C0D                  352             CMP     AL, Key32       ; If Halt Key the STOP !
+00C2 740E                  353             JE      EndDownLoadPath ;
+00C4 7500                  354             JNE     NoStop          ; Otherwise keep doing download
+                           355     
+00C6                       356     NoStop:
+                           357     
+00C6 E80000         E      358             CALL    SerialGetChar   ; Get a character from the serial channel
+                           359             
+00C9 E80000         E      360             CALL    ParseSerialChar ; Parse the character
+                           361     
+00CC 3C00                  362             CMP     AL, 0           ; If path error, or path end
+00CE 7502                  363             JNE     EndDownLoadPath ; we have finished downloading
+                           364     
+00D0 EBE4                  365             JMP     DownLoadLoop    ; Otherwise Get another character and parse
+                           366     
+00D2                       367     EndDownLoadPath:
+                           368     
+00D2 5E                    369             POP     SI
+00D3 07                    370             POP     ES      
+00D4 58                    371             POP     AX      ; restore registers
+                           372     
+00D5 C3                    373             RET             ; done
+                           374     
+                           375     SerialDownLoad  ENDP
+                           376     
+                           377     ; BeginPath
+                           378     ;
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           379     ; Description:      Initializes a path by resetting all pointers in the pathh arrays
+                           380     ;
+                           381     ; Arguments:        Path Number
+                           382     ; Return Value:     None.
+                           383     ;
+                           384     ; Local Variables:  None
+                           385     ;
+                           386     ; Shared Variables: None.
+                           387     ; Global Variables: None
+                           388     ;                   
+                           389     ;                   
+                           390     ;
+                           391     ; Input:            None.
+                           392     ; Output:           None.
+                           393     ;
+                           394     ; Error Handling:   None.
+                           395     ;
+                           396     ; Algorithms:       None.
+                           397     ;                   
+                           398     ;                   
+                           399     ; Data Structures:  None.
+                           400     ;
+                           401     ; Registers Used:   AX,
+                           402     ; Stack Depth:      0 words
+                           403     ;
+                           404     ; Author:           Chirath Neranjena
+                           405     ; Last Modified:    MAR 16 2002
+                           406     
+00D6                       407     BeginPath       PROC    NEAR
+                           408                     PUBLIC  BeginPath
+                           409     
+00D6 A30000         R      410             MOV     PathNumber, AX          ; set path number
+00D9 C70602000000   R      411             MOV     PathStepSize, 0         ; initialize pointers
+00DF C70604000000   R      412             MOV     PathStepPtr, 0
+                           413     
+                           414     
+00E5 C3                    415             RET
+                           416     
+                           417     BeginPath       ENDP
+                           418     
+                           419     ; StorePathStep
+                           420     ;
+                           421     ; Description:      Stores a step parsed by the serial channel in a series of arrays
+                           422     ;                   for future path movements
+                           423     ;
+                           424     ; Arguments:        (DX) Angle - Angle of Rotation
+                           425     ;                   (CH) ArFlag- Way of Rotation
+                           426     ;                   (BX) Vert - Length of vertical movement
+                           427     ;                   (CL) VrFlag - Way of Vertical movement
+                           428     ;                   (AL) Magnet - status of the magnet On or Off
+                           429     ;
+                           430     ; Return Value:     None.
+                           431     ;
+                           432     ; Local Variables:  None
+                           433     ;
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           434     ; Shared Variables: None.
+                           435     ; Global Variables: None
+                           436     ;                   
+                           437     ;                   
+                           438     ;
+                           439     ; Input:            None.
+                           440     ; Output:           None.
+                           441     ;
+                           442     ; Error Handling:   None.
+                           443     ;
+                           444     ; Algorithms:       None.
+                           445     ;                   
+                           446     ;                   
+                           447     ; Data Structures:  Arrays
+                           448     ;
+                           449     ; Registers Used:   AX, ES, SI
+                           450     ; Stack Depth:      3 words
+                           451     ;
+                           452     ; Author:           Chirath Neranjena
+                           453     ; Last Modified:    MAR 16 2002
+                           454     
+00E6                       455     StorePathStep   PROC    NEAR
+                           456                     PUBLIC  StorePathStep
+                           457     
+00E6 06                    458             PUSH    ES              
+00E7 56                    459             PUSH    SI
+00E8 50                    460             PUSH    AX
+                           461             
+00E9 B8----         R      462             MOV     AX, SEG VertArray
+00EC 8EC0                  463             MOV     ES, AX                  ; get memory location of vert array
+00EE B80600         R      464             MOV     AX, OFFSET VertArray
+00F1 8BF0                  465             MOV     SI, AX
+                           466     
+00F3 03360200       R      467             ADD     SI, PathStepSize        ; store the vertical motion of step
+00F7 26891C                468             MOV     ES:[SI], BX
+                           469     
+00FA B8----         R      470             MOV     AX, SEG VrflagArray
+00FD 8EC0                  471             MOV     ES, AX                  ; get memory location of VrFlag array
+00FF B80602         R      472             MOV     AX, OFFSET VrFlagArray
+0102 8BF0                  473             MOV     SI, AX
+                           474     
+0104 03360200       R      475             ADD     SI, PathStepSize        ; store vertical orientation for step
+0108 26880C                476             MOV     ES:[SI], cL
+                           477     
+010B B8----         R      478             MOV     AX, SEG AngleArray
+010E 8EC0                  479             MOV     ES, AX                  ; get memory location of Angle array
+0110 B80604         R      480             MOV     AX, OFFSET AngleArray
+0113 8BF0                  481             MOV     SI, AX
+                           482     
+0115 03360200       R      483             ADD     SI, PathStepSize        ; add new step to the end of the array
+0119 268914                484             MOV     ES:[SI], DX
+                           485     
+011C B8----         R      486             MOV     AX, SEG ArFlagArray
+011F 8EC0                  487             MOV     ES, AX                  ; get memory location of ArFlag array
+0121 B80606         R      488             MOV     AX, OFFSET ArFlagArray
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0124 8BF0                  489             MOV     SI, AX
+                           490     
+0126 03360200       R      491             ADD     SI, PathStepSize        ; store vertical orientation for step
+012A 26882C                492             MOV     ES:[SI], CH
+                           493     
+012D B8----         R      494             MOV     AX, SEG MagnetArray
+0130 8EC0                  495             MOV     ES, AX                  ; get memory location of Magnet array
+0132 B80608         R      496             MOV     AX, OFFSET MagnetArray
+0135 8BF0                  497             MOV     SI, AX
+                           498     
+0137 03360200       R      499             ADD     SI, PathStepSize        ; store vertical magnet status for step
+                           500             
+013B 58                    501             POP     AX              ; retore the value of AX
+013C 268804                502             MOV     ES:[SI], AL
+                           503     
+013F 8306020002     R      504             ADD     PathStepSize, 2         ; increment the size of the buffer, (2 word)
+                           505     
+0144 C3                    506             RET
+                           507     
+                           508     StorePathStep   ENDP
+                           509     
+                           510     ; ExecPath
+                           511     ;
+                           512     ; Description:      Executes a step in the path staore from serial download
+                           513     ;
+                           514     ; Arguments:        None
+                           515     ; Return Value:     None.
+                           516     ;
+                           517     ; Local Variables:  None
+                           518     ;
+                           519     ; Shared Variables: None.
+                           520     ; Global Variables: None
+                           521     ;                   
+                           522     ;                   
+                           523     ;
+                           524     ; Input:            None.
+                           525     ; Output:           None.
+                           526     ;
+                           527     ; Error Handling:   None.
+                           528     ;
+                           529     ; Algorithms:       None.
+                           530     ;                   
+                           531     ;                   
+                           532     ; Data Structures:  Arrays
+                           533     ;
+                           534     ; Registers Used:   AX, BX, ES, SI
+                           535     ; Stack Depth:      4 words
+                           536     ;
+                           537     ; Author:           Chirath Neranjena
+                           538     ; Last Modified:    MAR 16 2002
+                           539     
+0145                       540     ExecStep        PROC    NEAR
+                           541     
+                           542     
+0145 50                    543             PUSH    AX
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0146 53                    544             PUSH    BX
+0147 06                    545             PUSH    ES              ; Save registers
+0148 56                    546             PUSH    SI
+                           547     
+0149 A10400         R      548             MOV     AX, PathStepPtr
+014C 39060200       R      549             CMP     PathstepSize, AX        ; If path is empty
+0150 7451                  550             JE      EndExecjmp                      ;  then nothing to execute
+                           551     
+0152 B8----         R      552             MOV     AX, SEG MagnetArray
+0155 8EC0                  553             MOV     ES, AX                  ; get memory location of Magnet array
+0157 B80608         R      554             MOV     AX, OFFSET MagnetArray
+015A 8BF0                  555             MOV     SI, AX
+                           556     
+015C 03360200       R      557             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           558                                             ; executed
+                           559             
+0160 268B04                560             MOV     AX, ES:[SI]     ; get the magnet status for the path
+                           561     
+0163 3D0000                562             CMP     AX, Magnet_Neutral      ; Check if magnet if to switch on or off
+0166 7F05                  563             JG      EnergizeMag             ;  if switch on then energize magnet
+0168 7C12                  564             JL      DeEnergizeMag           ;  else de energize magnet
+016A EB1F90                565             JMP     MoveAngle               ; If no change the continue
+                           566     
+016D                       567     EnergizeMag:
+                           568     
+016D B80100                569             MOV     AX, MagnetOn            ; set magnet on
+0170 E80000         E      570             CALL    EnergizeMagnet
+0173 C70600000100   E      571             MOV     CraneMagnet, MagnetOn
+0179 EB1090                572             JMP     MoveAngle               ; now take care of rotation
+                           573     
+017C                       574     DeEnergizeMag:
+                           575     
+017C B80000                576             MOV     AX, MagnetOff           ; set magnet off
+017F E80000         E      577             CALL    EnergizeMagnet
+0182 C70600000000   E      578             MOV     CraneMagnet, MagnetOff
+0188 EB0190                579             JMP     MoveAngle               ; now take care of rotation
+                           580     
+018B                       581     MoveAngle:
+                           582     
+018B B8----         R      583             MOV     AX, SEG ArFlagArray
+018E 8EC0                  584             MOV     ES, AX                  ; get memory location of  Ararray
+0190 B80606         R      585             MOV     AX, OFFSET ArFlagArray
+0193 8BF0                  586             MOV     SI, AX
+                           587     
+0195 03360200       R      588             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           589                                             ; executed
+0199 268B04                590             MOV     AX, ES:[SI]             ; get value for angular orientation
+                           591             
+019C 3D0000                592             CMP     AX, Absolute            ; Check if Angle is Absolute or Relative
+019F 7405                  593             JE      AbsoluteAngle           ;  appropriately jump to the next code
+01A1 751D                  594             JNE     RelativeAngle
+                           595     
+01A3                       596     EndExecjmp:
+                           597     
+01A3 E99200                598             JMP     EndExec                 ; End Exec Jump Booster
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   12
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           599             
+01A6                       600     AbsoluteAngle:
+                           601     
+01A6 B8----         R      602             MOV     AX, SEG AngleArray
+01A9 8EC0                  603             MOV     ES, AX                  ; get memory location of  Angle Arrat
+01AB B80604         R      604             MOV     AX, OFFSET AngleArray
+01AE 8BF0                  605             MOV     SI, AX
+                           606     
+01B0 03360200       R      607             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           608                                             ; executed
+01B4 268B04                609             MOV     AX, ES:[SI]     ; Get the angle
+                           610     
+01B7 A30000         E      611             MOV     CraneAngle, AX  ; Undate Absolute angle
+                           612     
+01BA E80000         E      613             CALL    RotateCrane     ; Rotate the crane
+01BD EB1F90                614             JMP     MoveVert
+                           615     
+01C0                       616     RelativeAngle:
+                           617     
+01C0 B8----         R      618             MOV     AX, SEG AngleArray
+01C3 8EC0                  619             MOV     ES, AX                  ; get memory location of  Angle Array
+01C5 B80604         R      620             MOV     AX, OFFSET AngleArray
+01C8 8BF0                  621             MOV     SI, AX
+                           622     
+01CA 03360200       R      623             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           624                                             ; executed
+01CE 268B04                625             MOV     AX, ES:[SI]     ; Get the angle
+                           626     
+01D1 03060000       E      627             ADD     AX, CraneAngle  ; Calculate new absolute position
+01D5 A30000         E      628             MOV     CraneAngle, AX  ; Undate Absolute angle
+                           629     
+01D8 E80000         E      630             CALL    RotateCrane     ; Rotate the crane
+01DB EB0190                631             JMP     MoveVert
+                           632     
+01DE                       633     MoveVert:
+                           634     
+01DE B8----         R      635             MOV     AX, SEG VrFlagArray
+01E1 8EC0                  636             MOV     ES, AX                  ; get memory location of  Vrarray
+01E3 B80602         R      637             MOV     AX, OFFSET VrFlagArray
+01E6 8BF0                  638             MOV     SI, AX
+                           639     
+01E8 03360200       R      640             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           641                                             ; executed
+01EC 268B04                642             MOV     AX, ES:[SI]             ; get value for angular orientation
+                           643             
+01EF 3D0000                644             CMP     AX, Absolute            ; Check if Vert is Absolute or Relative
+01F2 7402                  645             JE      AbsoluteVert            ;  appropriately jump to the next code
+01F4 7521                  646             JNE     RelativeVert
+                           647     
+01F6                       648     AbsoluteVert:
+                           649     
+01F6 B8----         R      650             MOV     AX, SEG VertArray
+01F9 8EC0                  651             MOV     ES, AX                  ; get memory location of  Vert Array
+01FB B80600         R      652             MOV     AX, OFFSET VertArray
+01FE 8BF0                  653             MOV     SI, AX
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   13
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           654     
+0200 03360200       R      655             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           656                                             ; executed
+0204 268B04                657             MOV     AX, ES:[SI]     ; Get the length
+                           658     
+0207 8BD8                  659             MOV     BX, AX          ; Calculate relative position
+0209 2B060000       E      660             SUB     AX, CraneVert
+020D 891E0000       E      661             MOV     CraneVert, BX
+                           662     
+0211 E80000         E      663             CALL    LowerCrane      ; Rotate the crane
+0214 EB2290                664             JMP     EndExec ; goto end
+                           665     
+0217                       666     RelativeVert:
+                           667     
+0217 B8----         R      668             MOV     AX, SEG VertArray
+021A 8EC0                  669             MOV     ES, AX                  ; get memory location of Vert Array
+021C B80604         R      670             MOV     AX, OFFSET AngleArray
+021F 8BF0                  671             MOV     SI, AX
+                           672     
+0221 03360200       R      673             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           674                                             ; executed
+0225 268B04                675             MOV     AX, ES:[SI]     ; Get the length
+                           676     
+0228 8BD8                  677             MOV     BX, AX          ; Calculate relative position
+022A 03060000       E      678             ADD     AX, CraneVert
+022E 891E0000       E      679             MOV     CraneVert, BX
+                           680     
+0232 E80000         E      681             CALL    LowerCrane      ; Rotate the crane
+0235 EB0190                682             JMP     EndExec
+                           683     
+0238                       684     EndExec:
+                           685     
+0238 8306040002     R      686             ADD     PathStepPtr, 2 ; increment the pointer by two (cos word)
+                           687     
+023D 5E                    688             POP     SI      
+023E 07                    689             POP     ES
+023F 5B                    690             POP     BX
+0240 58                    691             POP     AX
+                           692     
+0241 C3                    693             RET
+                           694     
+                           695     ExecStep        ENDP
+                           696     
+                           697     ; Reset
+                           698     ;
+                           699     ; Description:      Set the Path step pointer = 0 (i.e go to the first step)
+                           700     ;
+                           701     ; Arguments:        None
+                           702     ; Return Value:     None.
+                           703     ;
+                           704     ; Local Variables:  None
+                           705     ;
+                           706     ; Shared Variables: None.
+                           707     ; Global Variables: None
+                           708     ;                   
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   14
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           709     ;                   
+                           710     ;
+                           711     ; Input:            None.
+                           712     ; Output:           None.
+                           713     ;
+                           714     ; Error Handling:   None.
+                           715     ;
+                           716     ; Algorithms:       None.
+                           717     ;                   
+                           718     ;                   
+                           719     ; Data Structures:  None
+                           720     ;
+                           721     ; Registers Used:   None
+                           722     ; Stack Depth:      0 words
+                           723     ;
+                           724     ; Author:           Chirath Neranjena
+                           725     ; Last Modified:    MAR 16 2002
+                           726     
+                           727     
+0242                       728     Reset   PROC    NEAR
+                           729     
+0242 C70604000000   R      730             MOV     PathStepPtr, 0  ; restart at the top of array
+0248 C3                    731             RET
+                           732     
+                           733     Reset   ENDP
+                           734     
+                           735     ; Run
+                           736     ;
+                           737     ; Description:      Runs the path that is stores in the arrays that was downloaded
+                           738     ;                       from the serial channel
+                           739     ;
+                           740     ; Arguments:        None
+                           741     ; Return Value:     None.
+                           742     ;
+                           743     ; Local Variables:  None
+                           744     ;
+                           745     ; Shared Variables: None.
+                           746     ; Global Variables: None
+                           747     ;                   
+                           748     ;                   
+                           749     ;
+                           750     ; Input:            None.
+                           751     ; Output:           None.
+                           752     ;
+                           753     ; Error Handling:   None.
+                           754     ;
+                           755     ; Algorithms:       None.
+                           756     ;                   
+                           757     ;                   
+                           758     ; Data Structures:  None
+                           759     ;
+                           760     ; Registers Used:   None
+                           761     ; Stack Depth:      0 words
+                           762     ;
+                           763     ; Author:           Chirath Neranjena
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   15
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           764     ; Last Modified:    MAR 16 2002
+                           765     
+0249                       766     Run             PROC    NEAR
+                           767     
+0249 50                    768             PUSH    AX      ; save AX
+                           769     
+024A E80FFE                770             CALL    ResetPath       ; go to the begining of the path
+                           771     
+024D                       772     LoopWhileRunPath:
+                           773             
+024D A10200         R      774             MOV     AX, PathStepSize        
+0250 39060400       R      775             CMP     PathStepPtr, AX         ; if path is empty then nothing
+                           776                                             ;   to run
+0254 7405                  777             JE      EndRunPath              ;  then we are done
+                           778     
+0256 E8ECFE                779             CALL    ExecStep                ; execute next step
+0259 EBF2                  780             JMP     LoopWhileRunPath
+                           781             
+                           782     
+025B                       783     EndRunPath:
+                           784     
+025B 58                    785             POP     AX      ; restore AX
+                           786     
+025C C3                    787             RET
+                           788     
+                           789     Run     ENDP
+                           790     
+                           791     ; Clear
+                           792     ;
+                           793     ; Description:      Erase all path data in the path arrays
+                           794     ;
+                           795     ; Arguments:        None
+                           796     ; Return Value:     None.
+                           797     ;
+                           798     ; Local Variables:  None
+                           799     ;
+                           800     ; Shared Variables: None.
+                           801     ; Global Variables: None
+                           802     ;                   
+                           803     ;                   
+                           804     ;
+                           805     ; Input:            None.
+                           806     ; Output:           None.
+                           807     ;
+                           808     ; Error Handling:   None.
+                           809     ;
+                           810     ; Algorithms:       None.
+                           811     ;                   
+                           812     ;                   
+                           813     ; Data Structures:  None
+                           814     ;
+                           815     ; Registers Used:   None
+                           816     ; Stack Depth:      0 words
+                           817     ;
+                           818     ; Author:           Chirath Neranjena
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   16
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           819     ; Last Modified:    MAR 16 2002
+                           820     
+025D                       821     Clear   PROC    NEAR
+                           822     
+025D C70604000000   R      823             MOV     PathStepPtr, 0          ; reset the pointers !
+0263 C70602000000   R      824             MOV     PathStepSize, 0         ;  it's all that is required
+                           825     
+0269 C3                    826             RET
+                           827     
+                           828     Clear   ENDP
+                           829     
+                           830     ; DisplayAgl
+                           831     ;
+                           832     ; Description:      Display the angle of the next step
+                           833     ;
+                           834     ; Arguments:        None
+                           835     ; Return Value:     None.
+                           836     ;
+                           837     ; Local Variables:  None
+                           838     ;
+                           839     ; Shared Variables: None.
+                           840     ; Global Variables: None
+                           841     ;                   
+                           842     ;                   
+                           843     ;
+                           844     ; Input:            None.
+                           845     ; Output:           None.
+                           846     ;
+                           847     ; Error Handling:   None.
+                           848     ;
+                           849     ; Algorithms:       None.
+                           850     ;                   
+                           851     ;                   
+                           852     ; Data Structures:  Arrays
+                           853     ;
+                           854     ; Registers Used:   AX, ES, SI
+                           855     ; Stack Depth:      3 words
+                           856     ;
+                           857     ; Author:           Chirath Neranjena
+                           858     ; Last Modified:    MAR 16 2002
+                           859     
+026A                       860     DisplayAgl      PROC    NEAR
+                           861     
+026A 50                    862             PUSH    AX
+026B 06                    863             PUSH    ES
+026C 56                    864             PUSH    SI
+                           865     
+026D B8----         R      866             MOV     AX, SEG AngleArray
+0270 8EC0                  867             MOV     ES, AX                  ; get memory location of  Angle Array
+0272 B80604         R      868             MOV     AX, OFFSET AngleArray
+0275 8BF0                  869             MOV     SI, AX
+                           870     
+0277 03360200       R      871             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           872                                             ; executed
+027B 268B04                873             MOV     AX, ES:[SI]     ; Get the Angle
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   17
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           874     
+027E E80000         E      875             CALL    DisplayNum      ; Display the Angle
+                           876     
+0281 C3                    877             RET
+                           878     
+                           879     DisplayAgl      ENDP
+                           880     
+                           881     ; DisplayVrt
+                           882     ;
+                           883     ; Description:      Display the vertical distance of the next step
+                           884     ;
+                           885     ; Arguments:        None
+                           886     ; Return Value:     None.
+                           887     ;
+                           888     ; Local Variables:  None
+                           889     ;
+                           890     ; Shared Variables: None.
+                           891     ; Global Variables: None
+                           892     ;                   
+                           893     ;                   
+                           894     ;
+                           895     ; Input:            None.
+                           896     ; Output:           None.
+                           897     ;
+                           898     ; Error Handling:   None.
+                           899     ;
+                           900     ; Algorithms:       None.
+                           901     ;                   
+                           902     ;                   
+                           903     ; Data Structures:  Arrays
+                           904     ;
+                           905     ; Registers Used:   AX, ES, SI
+                           906     ; Stack Depth:      3 words
+                           907     ;
+                           908     ; Author:           Chirath Neranjena
+                           909     ; Last Modified:    MAR 16 2002
+                           910     
+0282                       911     DisplayVrt      PROC    NEAR
+                           912     
+0282 50                    913             PUSH    AX
+0283 06                    914             PUSH    ES
+0284 56                    915             PUSH    SI
+                           916     
+0285 B8----         R      917             MOV     AX, SEG VertArray
+0288 8EC0                  918             MOV     ES, AX                  ; get memory location of  Vert Array
+028A B80600         R      919             MOV     AX, OFFSET VertArray
+028D 8BF0                  920             MOV     SI, AX
+                           921     
+028F 03360200       R      922             ADD     SI, PathStepSize        ; Add the current loaction of the step being
+                           923                                             ; executed
+0293 268B04                924             MOV     AX, ES:[SI]     ; Get the length
+                           925     
+0296 E80000         E      926             CALL    DisplayNum      ; Display the vertical length
+                           927     
+0299 C3                    928             RET
+8086/87/88/186 MACRO ASSEMBLER    SDL                                                      15:54:55  04/23/:2  PAGE   18
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           929     
+                           930     DisplayVrt      ENDP
+                           931     
+                           932             
+----                       933     CODE    ENDS
+                           934     
+----                       935     DATA    SEGMENT PUBLIC  'DATA'
+                           936     
+                           937     
+                           938     
+                           939     
+                           940     EXTRN   StringBuffer    :BYTE   ; ; Buffer for storing display messages
+                           941     EXTRN   CraneAngle      :WORD   ; Holds the Absolute Angle       
+                           942     EXTRN   CraneVert       :WORD   ; Holds the Absolute Vertical position         
+                           943     EXTRN   CraneMagnet     :WORD   ; Holds the status of the magnet        
+                           944     
+0000 ????                  945     PathNumber      DW      ?
+0002 ????                  946     PathStepSize    DW      ?
+0004 ????                  947     PathStepPtr     DW      ?
+                           948     
+0006 (256                  949     VertArray          DW      Path_Size DUP(?)     ; Vertical motion array
+     ????
+     )
+0206 (256                  950     VrFlagArray        DW      Path_Size DUP(?)     ; vertical motion orientation array
+     ????
+     )
+0406 (256                  951     AngleArray         DW      Path_Size DUP(?)     ; Angular motion array
+     ????
+     )
+0606 (256                  952     ArFlagArray        DW      Path_Size DUP(?)     ; Angular motion orientation array
+     ????
+     )
+0806 (256                  953     MagnetArray        DW      Path_Size DUP(?)     ; Magnet status array
+     ????
+     )
+                           954     
+                           955     
+                           956     
+----                       957     DATA    ENDS
+                           958     
+                           959     
+                           960             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

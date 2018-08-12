@@ -1,0 +1,23 @@
+
+DOS 5.0 (038-N) 8086 LINKER, V2.7
+
+INPUT FILES: TEMP.LNK, PARSE.OBJ, QUEUE.OBJ, KEY.OBJ
+OUTPUT FILE: SYSTEM.LNK
+CONTROLS SPECIFIED IN INVOCATION COMMAND:
+DATE:  04/23/:2  TIME:  15:54:55
+
+
+LINK MAP OF MODULE MAIN
+
+LOGICAL SEGMENTS INCLUDED:
+LENGTH ADDRESS ALIGN  SEGMENT         CLASS           OVERLAY
+ 0000H ------    G    ??SEG                                         
+ 1616H ------    G    CODE            CODE                          
+ 0C3AH ------    G    DATA            DATA                          
+ 01E0H ------    G    STACK           STACK                         
+
+INPUT MODULES INCLUDED:
+TEMP.LNK(MAIN)
+PARSE.OBJ(PARSING)
+QUEUE.OBJ(QUEUE)
+KEY.OBJ(KEY)

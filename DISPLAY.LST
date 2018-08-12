@@ -1,0 +1,760 @@
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE DISPLAY
+OBJECT MODULE PLACED IN DISPLAY.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE DISPLAY.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     NAME Display
+                             3     
+                             4     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             5     ;                                                                            ;
+                             6     ;                                   Display                                  ;
+                             7     ;                                Display Routines                            ;
+                             8     ;                                                                            ;
+                             9     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            10     
+                            11     ; This file contains the functions for displaying a string, displaying a decimal numb
+                                   er
+                            12     ; and displaying a hex number.
+                            13     ;  
+                            14     ;
+                            15     ; Display - Displays a string 
+                            16     ; DisplayNum - Displays a Decimal Number
+                            17     ; DisplayHex - Displays a Hex number 
+                            18     ;
+                            19     ;
+                            20     ;
+                            21     ; Revision History:
+                            22     ;       Chirath Neranjena       FEB 21, 2002    Creation
+                            23     ;
+                            24     ;
+                            25     
+                            26     
+                            27     CGROUP  GROUP   CODE
+                            28     
+                            29     
+                            30     
+                            31 +1  $INCLUDE(51MAIN.INC)
+                      =1    32     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    33     ;                                                                            ;
+                      =1    34     ;                                  51Main.INC                                ;
+                      =1    35     ;                              Robo Crane Main File                          ;
+                      =1    36     ;                                 Include File                               ;
+                      =1    37     ;                                                                            ;
+                      =1    38     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    39     
+                      =1    40     ; This file contains the definitions for the Robo Crane Main File
+                      =1    41     ; program 
+                      =1    42     ;
+                      =1    43     ; Revision History:
+                      =1    44     ;       
+                      =1    45     ; 02/21/02      Chirath Thouppuarachchi         Creation
+                      =1    46     ;
+                      =1    47     
+                      =1    48     
+                      =1    49     ; Timer Defintions
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1    50     
+                      =1    51     ; Addresses
+  FF56                =1    52     Tmr0Ctrl        EQU     0FF56H          ;address of Timer 0 Control Register
+  FF52                =1    53     Tmr0MaxCntA     EQU     0FF52H          ;address of Timer 0 Max Count A Register
+  FF50                =1    54     Tmr0Count       EQU     0FF50H          ;address of Timer 0 Count Register
+  FF66                =1    55     Tmr2Ctrl        EQU     0FF66H          ;address of Timer 2 Control Register
+  FF62                =1    56     Tmr2MaxCnt      EQU     0FF62H          ;address of Timer 2 Max Count A Register
+  FF60                =1    57     Tmr2Count       EQU     0FF60H          ;address of Timer 2 Count Register
+                      =1    58     
+  FF5E                =1    59     Tmr1Ctrl        EQU     0FF5EH          ; address of Timer 1 Control Register
+  FF58                =1    60     Tmr1Count       EQU     0FF58H          ; address of Timer 1 Count Register
+  FF5A                =1    61     Tmr1MaxCntA     EQU     0FF5AH          ; address of Timer 1 Max Count A Register
+                      =1    62     
+                      =1    63     ; Control Register Values
+  E001                =1    64     Tmr0CtrlVal     EQU     0E001H          ;value to write to Timer 0 Control Register
+                      =1    65                                             ;1---------------  enable timer
+                      =1    66                                             ;-1--------------  write to control
+                      =1    67                                             ;--1-------------  enable interrupts
+                      =1    68                                             ;------------00--  do not count timer 2 outs
+                      =1    69                                             ;--------------0-  single counter mode
+                      =1    70                                             ;---------------1  continuous mode
+  C001                =1    71     Tmr2CtrlVal     EQU     0C001H          ;value to write to Timer 2 Control Register
+                      =1    72                                             ;1---------------  enable timer
+                      =1    73                                             ;-1--------------  write to control
+                      =1    74                                             ;--0-------------  set interrupts on
+                      =1    75                                             ;---------------1  continuous mode
+                      =1    76     
+                      =1    77     
+  E009                =1    78     Tmr1CtrlVal     EQU     0E009H          ;value to write to Timer 0 Control Registe
+                      =1    79                                             ;1---------------  enable timer
+                      =1    80                                             ;-1--------------  write to control
+                      =1    81                                             ;--1-------------  enable interrupts
+                      =1    82                                             ;------------10--  count timer 2 outs
+                      =1    83                                             ;--------------0-  single counter mode
+                      =1    84                                             ;---------------1  continuous mode
+                      =1    85     
+                      =1    86     ; Interrupt Vectors
+  0008                =1    87     Tmr0Vec         EQU     8               ;interrupt vector for Timer 0
+  0013                =1    88     Tmr2Vec         EQU     19              ;interrupt vector for Timer 2   
+  0012                =1    89     Tmr1Vec         EQU     18              ;interrupt vector for Timer 1
+                      =1    90     
+  000E                =1    91     SerialVec       EQU     14              ; Interrupt Vector for Interrupt 2
+                      =1    92     
+                      =1    93     ; Interrupt Controller Definitions
+                      =1    94     
+                      =1    95     ; Addresses
+  FF32                =1    96     INTCtrlrCtrl    EQU     0FF32H          ;address of interrupt controller for timer
+  FF22                =1    97     INTCtrlrEOI     EQU     0FF22H          ;address of interrupt controller EOI register
+                      =1    98     
+                      =1    99     ; Register Values
+  0001                =1   100     INTCtrlrCVal    EQU     00001H          ;set priority for timers to 1 and enable
+  0008                =1   101     Timer0EOI       EQU     00008H          ;Timer EOI command (same for all timers)
+  8000                =1   102     NonSpecEOI      EQU     08000H          ;Non-specific EOI command
+                      =1   103     
+                      =1   104     
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   105     ; Chip Select Unit Definitions
+                      =1   106     
+                      =1   107     ; Addresses
+  FFA4                =1   108     PACSreg         EQU     0FFA4H          ;address of PACS register
+  FFA8                =1   109     MPCSreg         EQU     0FFA8H          ;address of MPCS register
+                      =1   110     
+                      =1   111     ; Control Register Values
+  0003                =1   112     PACSval         EQU     00003H          ;PCS base at 0, 3 wait states
+  0183                =1   113     MPCSval         EQU     00183H          ;PCS in I/O space, use PCS5/6, 3 wait states
+                      =1   114     
+                      =1   115     
+                      =1   116     
+                      =1   117     ; Timing Definitions
+                      =1   118     
+  0900                =1   119     COUNTS_PER_MS_0 EQU     2304            ;number of timer counts per 1 ms for timer 1
+  0900                =1   120     COUNTS_PER_MS_2 EQU     2304            ; number of timer counts per 1 ms for timer 2
+  0064                =1   121     MS_PER_STEP     EQU     100             ;number of ms for crane step
+                      =1   122     
+                      =1   123     
+                      =1   124     ;KepPad Key Values
+                      =1   125     ; Each key is named after its row and column numbers
+                      =1   126     
+  002E                =1   127     Key11           EQU     0002EH
+  002D                =1   128     Key12           EQU     0002DH
+  002B                =1   129     Key13           EQU     0002BH
+  0027                =1   130     Key14           EQU     00027H
+  001E                =1   131     Key21           EQU     0001EH
+  001D                =1   132     Key22           EQU     0001DH
+  001B                =1   133     Key23           EQU     0001BH
+  0017                =1   134     Key24           EQU     00017H
+  000E                =1   135     Key31           EQU     0000EH
+  000D                =1   136     Key32           EQU     0000DH
+  000B                =1   137     Key33           EQU     0000BH
+  0007                =1   138     Key34           EQU     00007H
+                      =1   139     
+                      =1   140     ;Key Status
+  0000                =1   141     NoKeystate              EQU     0
+  0001                =1   142     KeyPressedstate         EQU     1
+  0002                =1   143     KeyDebouncedstate       EQU     2
+                      =1   144     
+  00DF                =1   145     NoKeyValue              EQU     000DFH
+                      =1   146     
+  0002                =1   147     KeyPadRows      EQU     2
+                      =1   148     
+  0001                =1   149     True            EQU     1
+  0000                =1   150     False           EQU     0
+                      =1   151     
+  0014                =1   152     AutoRepeatRate  EQU     20
+                      =1   153     
+                      =1   154     
+                      =1   155     ; General Definitions
+                      =1   156     
+  0004                =1   157     RESERVED_VECS   EQU     4               ;vectors reserved for debugger
+                      =1   158     
+  0080                =1   159     LEDDisplay      EQU     0080H           ;display address
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   160     
+  0008                =1   161     NO_DIGITS       EQU     8               ;number of digits in the display
+                      =1   162                                      
+  0014                =1   163     DebounceTime    EQU     20              ; number of ms to debounce each key
+                      =1   164     
+  0000                =1   165     KeypadPort      EQU     0               ; Port # of Keypad
+                      =1   166     
+  0001                =1   167     MagnetOn        EQU     1
+  0000                =1   168     MagnetOff       EQU     0       
+                      =1   169     
+                      =1   170     
+                           171     
+                           172     EXTRN   Dec2String :NEAR
+                           173     EXTRN   Hex2String :NEAR
+                           174     
+----                       175     CODE SEGMENT PUBLIC 'CODE'
+                           176     
+                           177             ASSUME  CS: CGROUP, DS: DATA
+                           178     
+                           179     
+                           180     ; LEDMux
+                           181     ;
+                           182     ; Description:      Multiplexing Function for LED display
+                           183     ;
+                           184     ; Arguments:        DisplayBuffer
+                           185     ; Return Value:     None.
+                           186     ;
+                           187     ; Local Variables:  AX - Segement Pattern
+                           188     ; Shared Variables: DisplayBuffer
+                           189     ; Global Variables: None.
+                           190     ;
+                           191     ; Input:            None.
+                           192     ; Output:           LED Digit at a time
+                           193     ;
+                           194     ; Error Handling:   None.
+                           195     ;
+                           196     ; Algorithms:       None.
+                           197     ; Data Structures:  None.
+                           198     ;
+                           199     ; Registers Used:   AX, DX, ES, SI
+                           200     ; Stack Depth:      0 words
+                           201     ;
+                           202     ; Author:           Chirath Neranjena
+                           203     ; Last Modified:    FEB 21, 2002
+                           204     
+                           205     
+0000                       206     LEDMux          PROC    NEAR
+                           207                     PUBLIC  LEDMux
+                           208     
+                           209     
+0000                       210     DisplayUpdate:                           ;Update the display
+                           211     
+0000 B8----         R      212             MOV     AX, SEG DisplayBuffer
+0003 8EC0                  213             MOV     ES, AX                   ;Get Display Buffer Segment
+                           214     
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0005 B80000         R      215             MOV     AX, OFFSET DisplayBuffer
+0008 03061000       R      216             ADD     AX, Digit
+000C 8BF0                  217             MOV     SI, AX                   ;Get Display Buffer Offset
+                           218             
+000E BA8000                219             MOV     DX, LEDDisplay           ;get the display address
+0011 03161000       R      220             ADD     DX, Digit                ;get offset for current digit
+                           221            
+0015 268A04                222             MOV     AL, ES:[SI]              ;get the segment pattern number
+                           223     
+0018 EE                    224             OUT     DX, AL                   ;output segment
+                           225     
+                           226     
+0019                       227     NextDigit:                               ;do the next digit
+0019 FF061000       R      228             INC     Digit                    ;update digit number
+001D 833E100008     R      229             CMP     Digit, NO_DIGITS         ;have we done all the digits ?
+0022 7206                  230             JB      SkipDigitAdjust
+                           231     
+0024                       232     DigitAdjust:                            ;if so, wrap the digit number back to 0
+0024 C70610000000   R      233             MOV     Digit, 0
+                           234     
+002A                       235     SkipDigitAdjust:
+                           236             ;JMP    EndLEDMux               ;done with LED Muxing
+                           237     
+                           238     
+002A                       239     SameDigit:                              ;on the same digit - all done
+                           240             ;JMP    EndLEDMux
+                           241     
+002A                       242     ENDLEDMux:
+                           243             
+002A C3                    244             RET
+                           245     
+                           246     LEDMux          ENDP
+                           247     
+                           248     
+                           249     
+                           250     
+                           251     ; Display
+                           252     ;
+                           253     ; Description:      Gets the string given by the ES:SI registers, converts into 
+                           254     ;                   appropriate segment patterns and writes to the display buffer.
+                           255     ;
+                           256     ; Arguments:        ES:SI String
+                           257     ; Return Value:     None.
+                           258     ;
+                           259     ; Local Variables:  None
+                           260     ;                   
+                           261     ; Shared Variables: None.
+                           262     ; Global Variables: None
+                           263     ;                   
+                           264     ;
+                           265     ; Input:            String
+                           266     ; Output:           Segment pattern to the display.
+                           267     ;
+                           268     ; Error Handling:   None.
+                           269     ;
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           270     ; Algorithms:       None.
+                           271     ; Data Structures:  None.
+                           272     ;
+                           273     ; Registers Used:   AX, DS, DI, ES, IS
+                           274     ; Stack Depth:      8 words
+                           275     ;
+                           276     ; Author:           Glen George
+                           277     ; Last Modified:    Oct. 29, 1997
+                           278     
+                           279     
+                           280     
+002B                       281     Display         PROC NEAR
+                           282                     PUBLIC Display
+                           283     
+                           284     
+002B                       285     InitDisplay:
+                           286                                             
+002B 50                    287             PUSH    AX                      ; Save Registers
+002C 53                    288             PUSH    BX
+002D 51                    289             PUSH    CX
+002E 52                    290             PUSH    DX
+                           291     
+002F 06                    292             PUSH    ES                      ; Save Segment & Offset Registers
+0030 56                    293             PUSH    SI
+0031 1E                    294             PUSH    DS
+0032 57                    295             PUSH    DI
+                           296     
+0033 E84400                297             CALL    ClearDisplay            ; Clear anything already in Display
+                           298     
+                           299     
+0036 B8----         R      300             MOV     AX, SEG DisplayBuffer         ; Get Display Buffer Segment        
+0039 8ED8                  301             MOV     DS, AX
+003B B80000         R      302             MOV     AX, OFFSET DisplayBuffer      ; Get Display Buffer Offset
+003E 8BF8                  303             MOV     DI, AX
+0040 BBA20090       R      304             MOV     BX, OFFSET(ASCIISegTable)       ; Set the Offset of the Segement Tabl
+                                   e  
+                           305     
+0044                       306     StartDisplayingDigits:
+                           307     
+0044 268A04                308             MOV     AL, ES:[SI]             ; Get the Character to Display
+0047 3C00                  309             CMP     AL, 0                   ; While (char # Null) 
+0049 7408                  310             JE      EndDisplay              ;   (nothing to more Display)
+                           311             ;JNE    ConvertToSegment
+                           312     
+004B                       313     ConvertToSegment:
+                           314     
+004B 2ED7                  315             XLAT    CS:ASCIISegTable        ; Convert Character to Segment Pattern
+                           316     
+004D 8805                  317             MOV     DS:[DI], AL             ; Save in Display Buffer
+004F 46                    318             INC     SI                      ; Go to the Next Character
+0050 47                    319             INC     DI
+                           320     
+0051 EBF1                  321             JMP     StartDisplayingDigits   ; ENDWHILE
+                           322     
+0053                       323     EndDisplay:
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           324     
+0053 5F                    325             POP     DI                      ; Restore the registers
+0054 1F                    326             POP     DS
+0055 5E                    327             POP     SI
+0056 07                    328             POP     ES
+                           329     
+0057 5A                    330             POP     DX                      
+0058 59                    331             POP     CX
+0059 5B                    332             POP     BX
+005A 58                    333             POP     AX
+                           334     
+005B C3                    335             RET
+                           336     
+                           337     Display ENDP
+                           338     
+                           339     ; DisplayNum
+                           340     ;
+                           341     ; Description:      This function gets a Decimal number given by the Ax register
+                           342     ;                   converts to an ASCII string pattern and calls Display string to
+                           343     ;                   display the number on the LED display.
+                           344     ;
+                           345     ; Arguments:        AX, Decimal Number
+                           346     ; Return Value:     None.
+                           347     ;
+                           348     ; Local Variables: None
+                           349     ;              
+                           350     ; Shared Variables: None.
+                           351     ; Global Variables:
+                           352     ;
+                           353     ; Input:            None.
+                           354     ; Output:           ES:SI String
+                           355     ;
+                           356     ; Error Handling:   None.
+                           357     ;
+                           358     ; Algorithms:       None.
+                           359     ; Data Structures:  None.
+                           360     ;
+                           361     ; Registers Used:   None
+                           362     ; Stack Depth:      2 words
+                           363     ;
+                           364     ; Author:           Chirath Neranjena
+                           365     ; Last Modified:    FEB 20, 2002
+                           366     
+005C                       367     DisplayNum      PROC NEAR
+                           368                     PUBLIC DisplayNum
+                           369     
+005C                       370     InitDisplayNum:
+                           371     
+005C 50                    372             PUSH    AX
+005D 06                    373             PUSH    ES
+                           374     
+005E E80000         E      375             CALL    Dec2String
+                           376     
+0061                       377     ChangeDecSegments:
+0061 8CD8                  378             MOV     AX, DS
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0063 8EC0                  379             MOV     ES, AX
+                           380     
+0065                       381     DisplayDecNumber:
+0065 E8C3FF                382             CALL    Display
+                           383     
+0068                       384     EndDisplayNum:
+0068 07                    385             POP     ES
+0069 58                    386             POP     AX
+                           387     
+006A C3                    388             RET
+                           389     
+                           390     DisplayNum      ENDP
+                           391     
+                           392     
+                           393     ; DisplayHex
+                           394     ;
+                           395     ; Description:      This function gets a Hex number given by the Ax register
+                           396     ;                   converts to an ASCII string pattern and calls Display string to
+                           397     ;                   display the number on the LED display.
+                           398     ;
+                           399     ; Arguments:        AX, Hex Number
+                           400     ; Return Value:     None.
+                           401     ;
+                           402     ; Local Variables: None
+                           403     ;              
+                           404     ; Shared Variables: None.
+                           405     ; Global Variables:
+                           406     ;
+                           407     ; Input:            None.
+                           408     ; Output:           ES:SI String
+                           409     ;
+                           410     ; Error Handling:   None.
+                           411     ;
+                           412     ; Algorithms:       None.
+                           413     ; Data Structures:  None.
+                           414     ;
+                           415     ; Registers Used:   None
+                           416     ; Stack Depth:      2 words
+                           417     ;
+                           418     ; Author:           Chirath Neranjena
+                           419     ; Last Modified:    FEB 20, 2002
+                           420     
+006B                       421     DisplayHex      PROC NEAR
+                           422                     PUBLIC DisplayHex
+                           423     
+006B                       424     InitDisplayHex:
+                           425     
+006B 50                    426             PUSH    AX
+006C 06                    427             PUSH    ES
+                           428     
+006D E80000         E      429             CALL    Hex2String
+                           430     
+0070                       431     ChangeHexSegments:
+0070 8CD8                  432             MOV     AX, DS
+0072 8EC0                  433             MOV     ES, AX
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           434     
+0074                       435     DisplayHexNumber:
+0074 E8B4FF                436             CALL    Display
+                           437     
+0077                       438     EndDisplayHex:
+0077 07                    439             POP     ES
+0078 58                    440             POP     AX
+                           441     
+0079 C3                    442             RET
+                           443     
+                           444     DisplayHex      ENDP
+                           445     
+                           446     ; ClearDisplay
+                           447     ;
+                           448     ; Description:      Outputs a null string to the displaybuffer to clear the display
+                           449     ;
+                           450     ;
+                           451     ; Arguments:        None
+                           452     ; Return Value:     None.
+                           453     ;
+                           454     ; Local Variables: None
+                           455     ;              
+                           456     ; Shared Variables: None.
+                           457     ; Global Variables:
+                           458     ;
+                           459     ; Input:            None.
+                           460     ; Output:           None
+                           461     ;
+                           462     ; Error Handling:   None.
+                           463     ;
+                           464     ; Algorithms:       None.
+                           465     ; Data Structures:  None.
+                           466     ;
+                           467     ; Registers Used:   None
+                           468     ; Stack Depth:      6 words
+                           469     ;
+                           470     ; Author:           Chirath Neranjena
+                           471     ; Last Modified:    FEB 20, 2002
+                           472     
+007A                       473     ClearDisplay            PROC    NEAR
+                           474                             PUBLIC  ClearDisplay
+                           475     
+007A                       476     InitClearDisplay:
+                           477     
+007A 50                    478             PUSH    AX              ; Save Registers
+007B 53                    479             PUSH    BX
+007C 51                    480             PUSH    CX
+007D 52                    481             PUSH    DX
+                           482     
+007E 06                    483             PUSH    ES
+007F 56                    484             PUSH    SI
+                           485     
+0080 B8----         R      486             MOV     AX, SEG DisplayBuffer ;Get Display Buffer Segment     
+0083 8EC0                  487             MOV     ES, AX           
+0085 B80000         R      488             MOV     AX, OFFSET DisplayBuffer  ;Get Display Buffer Offset
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0088 8BF0                  489             MOV     SI, AX           
+                           490     
+                           491             
+008A B000                  492             MOV     AL, 0           ; Save Null value in AL
+008C B90100                493             MOV     CX, 1           ; Save Digit Number in CX
+                           494     
+008F BB0800                495             MOV     BX, NO_DIGITS
+                           496     
+0092                       497     ClearDigits:
+                           498     
+0092 268804                499             MOV     ES:[SI], AL      ; Clear Digit
+0095 46                    500             INC     SI               ; Goto Next Digit
+0096 41                    501             INC     CX
+0097 3BCB                  502             CMP     CX, BX           ; Have we done with all Digits?
+0099 7EF7                  503             JLE     ClearDigits      ; If not Go back to Clearing Digits
+                           504             ;JG      EndClearDisplay ; Finished? then end function
+                           505     
+009B                       506     EndClearDisplay:
+                           507     
+009B 5E                    508             POP     SI
+009C 07                    509             POP     ES
+009D 5A                    510             POP     DX              ; Restore the Registers
+009E 59                    511             POP     CX
+009F 5B                    512             POP     BX
+00A0 58                    513             POP     AX
+                           514     
+00A1 C3                    515             RET
+                           516     
+                           517     ClearDisplay    ENDP
+                           518     
+                           519     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           520     ;                                                                     ; 
+                           521     ; Segment Table carrying the segement patterns for ASCIII Values      ;
+                           522     ;                                                                     ; 
+                           523     ;                                                                     ;
+                           524     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                           525     
+00A2                       526     ASCIISegTable   LABEL   BYTE
+                           527                     PUBLIC  ASCIISegTable
+                           528     
+                           529     
+                           530     ;       DB      .gfedcba                ;ASCII character
+                           531     
+00A2 00                    532             DB      00000000B               ;NUL
+00A3 00                    533             DB      00000000B               ;SOH
+00A4 00                    534             DB      00000000B               ;STX
+00A5 00                    535             DB      00000000B               ;ETX
+00A6 00                    536             DB      00000000B               ;EOT
+00A7 00                    537             DB      00000000B               ;ENQ
+00A8 00                    538             DB      00000000B               ;ACK
+00A9 00                    539             DB      00000000B               ;BEL
+00AA 00                    540             DB      00000000B               ;backspace
+00AB 00                    541             DB      00000000B               ;TAB
+00AC 00                    542             DB      00000000B               ;new line
+00AD 00                    543             DB      00000000B               ;vertical tab
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00AE 00                    544             DB      00000000B               ;form feed
+00AF 00                    545             DB      00000000B               ;carriage return
+00B0 00                    546             DB      00000000B               ;SO
+00B1 00                    547             DB      00000000B               ;SI
+00B2 00                    548             DB      00000000B               ;DLE
+00B3 00                    549             DB      00000000B               ;DC1
+00B4 00                    550             DB      00000000B               ;DC2
+00B5 00                    551             DB      00000000B               ;DC3
+00B6 00                    552             DB      00000000B               ;DC4
+00B7 00                    553             DB      00000000B               ;NAK
+00B8 00                    554             DB      00000000B               ;SYN
+00B9 00                    555             DB      00000000B               ;ETB
+00BA 00                    556             DB      00000000B               ;CAN
+00BB 00                    557             DB      00000000B               ;EM
+00BC 00                    558             DB      00000000B               ;SUB
+00BD 00                    559             DB      00000000B               ;escape
+00BE 00                    560             DB      00000000B               ;FS
+00BF 00                    561             DB      00000000B               ;GS
+00C0 00                    562             DB      00000000B               ;AS
+00C1 00                    563             DB      00000000B               ;US
+                           564     
+                           565     ;       DB      .gfedcba                ;ASCII character
+                           566     
+00C2 00                    567             DB      00000000B               ;space
+00C3 00                    568             DB      00000000B               ;!
+00C4 22                    569             DB      00100010B               ;"
+00C5 00                    570             DB      00000000B               ;#
+00C6 00                    571             DB      00000000B               ;$
+00C7 00                    572             DB      00000000B               ;percent symbol
+00C8 00                    573             DB      00000000B               ;&
+00C9 02                    574             DB      00000010B               ;'
+00CA 39                    575             DB      00111001B               ;(
+00CB 0F                    576             DB      00001111B               ;)
+00CC 00                    577             DB      00000000B               ;*
+00CD 00                    578             DB      00000000B               ;+
+00CE 00                    579             DB      00000000B               ;,
+00CF 40                    580             DB      01000000B               ;-
+00D0 00                    581             DB      00000000B               ;.
+00D1 00                    582             DB      00000000B               ;/
+00D2 3F                    583             DB      00111111B               ;0
+00D3 06                    584             DB      00000110B               ;1
+00D4 5B                    585             DB      01011011B               ;2
+00D5 4F                    586             DB      01001111B               ;3
+00D6 66                    587             DB      01100110B               ;4
+00D7 6D                    588             DB      01101101B               ;5
+00D8 7D                    589             DB      01111101B               ;6
+00D9 07                    590             DB      00000111B               ;7
+00DA 7F                    591             DB      01111111B               ;8
+00DB 67                    592             DB      01100111B               ;9
+00DC 00                    593             DB      00000000B               ;:
+00DD 00                    594             DB      00000000B               ;;
+00DE 00                    595             DB      00000000B               ;<
+00DF 48                    596             DB      01001000B               ;=
+00E0 00                    597             DB      00000000B               ;>
+00E1 00                    598             DB      00000000B               ;?
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE   12
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           599     
+                           600     ;       DB      .gfedcba                ;ASCII character
+                           601     
+00E2 5F                    602             DB      01011111B               ;@
+00E3 77                    603             DB      01110111B               ;A
+00E4 7F                    604             DB      01111111B               ;B
+00E5 39                    605             DB      00111001B               ;C
+00E6 3F                    606             DB      00111111B               ;D
+00E7 79                    607             DB      01111001B               ;E
+00E8 71                    608             DB      01110001B               ;F
+00E9 7D                    609             DB      01111101B               ;G
+00EA 76                    610             DB      01110110B               ;H
+00EB 06                    611             DB      00000110B               ;I
+00EC 1E                    612             DB      00011110B               ;J
+00ED 00                    613             DB      00000000B               ;K
+00EE 38                    614             DB      00111000B               ;L
+00EF 00                    615             DB      00000000B               ;M
+00F0 00                    616             DB      00000000B               ;N
+00F1 3F                    617             DB      00111111B               ;O
+00F2 73                    618             DB      01110011B               ;P
+00F3 00                    619             DB      00000000B               ;Q
+00F4 00                    620             DB      00000000B               ;R
+00F5 6D                    621             DB      01101101B               ;S
+00F6 00                    622             DB      00000000B               ;T
+00F7 3E                    623             DB      00111110B               ;U
+00F8 00                    624             DB      00000000B               ;V
+00F9 00                    625             DB      00000000B               ;W
+00FA 00                    626             DB      00000000B               ;X
+00FB 66                    627             DB      01100110B               ;Y
+00FC 00                    628             DB      00000000B               ;Z
+00FD 39                    629             DB      00111001B               ;[
+00FE 00                    630             DB      00000000B               ;\
+00FF 0F                    631             DB      00001111B               ;]
+0100 00                    632             DB      00000000B               ;^
+0101 08                    633             DB      00001000B               ;_
+                           634     
+                           635     ;       DB      .gfedcba                ;ASCII character
+                           636     
+0102 20                    637             DB      00100000B               ;`
+0103 00                    638             DB      00000000B               ;a
+0104 7C                    639             DB      01111100B               ;b
+0105 58                    640             DB      01011000B               ;c
+0106 5E                    641             DB      01011110B               ;d
+0107 00                    642             DB      00000000B               ;e
+0108 00                    643             DB      00000000B               ;f
+0109 00                    644             DB      00000000B               ;g
+010A 74                    645             DB      01110100B               ;h
+010B 04                    646             DB      00000100B               ;i
+010C 00                    647             DB      00000000B               ;j
+010D 00                    648             DB      00000000B               ;k
+010E 30                    649             DB      00110000B               ;l
+010F 00                    650             DB      00000000B               ;m
+0110 54                    651             DB      01010100B               ;n
+0111 5C                    652             DB      01011100B               ;o
+0112 00                    653             DB      00000000B               ;p
+8086/87/88/186 MACRO ASSEMBLER    DISPLAY                                                  15:54:54  04/23/:2  PAGE   13
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0113 00                    654             DB      00000000B               ;q
+0114 50                    655             DB      01010000B               ;r
+0115 00                    656             DB      00000000B               ;s
+0116 78                    657             DB      01111000B               ;t
+0117 1C                    658             DB      00011100B               ;u
+0118 00                    659             DB      00000000B               ;v
+0119 00                    660             DB      00000000B               ;w
+011A 00                    661             DB      00000000B               ;x
+011B 6E                    662             DB      01101110B               ;y
+011C 00                    663             DB      00000000B               ;z
+011D 00                    664             DB      00000000B               ;{
+011E 06                    665             DB      00000110B               ;|
+011F 00                    666             DB      00000000B               ;}
+0120 01                    667             DB      00000001B               ;~
+0121 00                    668             DB      00000000B               ;rubout
+                           669     
+----                       670     CODE    ENDS
+                           671     
+----                       672     DATA    SEGMENT PUBLIC  'DATA'
+                           673     
+                           674     
+0000 (8                    675     DisplayBuffer   DW      8 DUP(?)
+     ????
+     )
+                           676                     PUBLIC  DisplayBuffer
+                           677     
+0010 0000                  678     Digit           DW      0               ;the current digit number
+                           679                  
+                           680     
+----                       681     DATA    ENDS
+                           682     
+                           683     
+                           684             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

@@ -1,0 +1,210 @@
+8086/87/88/186 MACRO ASSEMBLER    FACTOR3                                                  15:55:36  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE FACTOR3
+OBJECT MODULE PLACED IN FACTOR.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE FACTOR.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1             NAME    FACTOR3
+                             2     
+                             3     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             4     ;                                                                            ;
+                             5     ;                                   FACTOR3                                  ;
+                             6     ;                         Demo Program for Homework #3                       ;
+                             7     ;                                  EE/CS  51                                 ;
+                             8     ;                                                                            ;
+                             9     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            10     
+                            11     ; Description:      This program finds the prime factorization of a 16-bit
+                            12     ;                   number stored at location I.  The program is terminated
+                            13     ;                   by this number being non-positive.
+                            14     ;
+                            15     ; Input:            Integer to factor (at location I).
+                            16     ; Output:           The prime factorization of the input number.  The prime
+                            17     ;                   factors are output to memory starting at location Factors.
+                            18     ;
+                            19     ; User Interface:   The user must store the number to be factored at location
+                            20     ;                   I and the prime factors can be read from location Factors.
+                            21     ; Error Handling:   None.
+                            22     ;
+                            23     ; Local Variables:  CX               - possible factor.
+                            24     ;                   ES:DI            - pointer to list of prime factors.
+                            25     ;                   I (memory)       - value to factor.
+                            26     ;                   Factors (memory) - factors of I.
+                            27     ; Shared Variables: None.
+                            28     ; Global Variables: None.
+                            29     ;
+                            30     ; Algorithms:       Check for divisibility by 2 and odd numbers starting with
+                            31     ;                   3.  (This is somewhat inefficient, but it works.)
+                            32     ; Data Structures:  None.
+                            33     ;
+                            34     ; Known Bugs:       None.
+                            35     ; Limitations:      The number to factor must fit in 16-bits, including the
+                            36     ;                   sign bit.
+                            37     ;
+                            38     ; Revision History:
+                            39     ;    10/20/93  Glen George              Initial revision.
+                            40     ;    10/24/94  Glen George              Updated comments.
+                            41     ;    10/25/95  Glen George              Added CLD instruction to make sure
+                            42     ;                                          strings are auto-incrementing.
+                            43     ;                                       No longer write 1 as a factor.
+                            44     ;                                       Updated comments.
+                            45     ;    10/20/98  Glen George              Updated comments.
+                            46     ;    12/26/99  Glen George              Fixed minor bug in FactorLoop end
+                            47     ;                                          condition test.
+                            48     ;     1/14/00  Glen George              Changed name of stack segment from
+                            49     ;                                          TheStack to STACK.
+                            50     ;    12/25/00  Glen George              Changed name of program to FACTOR4.
+8086/87/88/186 MACRO ASSEMBLER    FACTOR3                                                  15:55:36  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            51     ;                                       Updated comments.
+                            52     ;    11/19/01  Glen George              Changed name of program to FACTOR3.
+                            53     ;     1/30/02  Glen George              Added proper assume for ES.
+                            54     
+                            55     
+                            56     
+----                        57     PROGRAM SEGMENT PUBLIC 'CODE'
+                            58     
+                            59             ASSUME  CS:PROGRAM, DS:DATA, ES:DATA, SS:STACK
+                            60     
+                            61     
+                            62     
+0000                        63     FactorStart:                            ;start factorization program
+0000 B8----         R       64             MOV     AX, STACK               ;initialize the stack pointer
+0003 8ED0                   65             MOV     SS, AX
+0005 BC800290       R       66             MOV     SP, OFFSET(TopOfStack)
+                            67     
+0009 B8----         R       68             MOV     AX, DATA                ;initialize the data segment
+000C 8ED8                   69             MOV     DS, AX
+                            70     
+000E FC                     71             CLD                             ;setup auto-increment
+                            72     
+                            73     
+000F                        74     InputLoop:                              ;REPEAT
+000F BF020090       R       75             MOV     DI, OFFSET Factors      ;    get pointer to location to store
+0013 B8----         R       76             MOV     AX, SEG Factors         ;       factorization in ES:DI
+0016 8EC0                   77             MOV     ES, AX
+0018 833E000000     R       78             CMP     I, 0                    ;    check IF (i > 0)
+001D 7E37                   79             JLE     EndInputLoop            ;    if not - get out of here
+                            80             ;JG     FactorIt                ;    otherwise factor the number
+                            81     
+001F                        82     FactorIt:                               ;    IF (i > 0) THEN
+001F B90200                 83             MOV     CX, 2                   ;        factor = 2
+                            84     
+                            85     
+0022                        86     FactorLoop:                             ;        WHILE  (factor*factor <= i)
+0022 8BC1                   87             MOV     AX, CX
+0024 F7E1                   88             MUL     CX                      ;            compute factor * factor
+0026 3B060000       R       89             CMP     AX, I                   ;            check factor * factor <= i
+002A 7726                   90             JA      EndFactorLoop           ;            if not - get out of loop
+                            91             ;JBE    FactorLoopBody          ;            else - execute loop body
+                            92     
+002C                        93     FactorLoopBody:                         ;            body of factorization loop
+002C A10000         R       94             MOV     AX, I                   ;            setup for divide by factor
+002F BA0000                 95             MOV     DX, 0
+0032 F7F1                   96             DIV     CX                      ;            compute i/factor
+0034 83FA00                 97             CMP     DX, 0                   ;            check for remainder
+0037 7509                   98             JNE     NotAFactor              ;            remainder != 0 => no factor
+                            99             ;JE     IsAFactor               ;            remainder = 0 => factor
+                           100     
+0039                       101     IsAFactor:                              ;            IF (i divisible by factor)  THEN
+0039 A30000         R      102             MOV     I, AX                   ;                i = i/factor
+003C 8BC1                  103             MOV     AX, CX
+003E AB                    104             STOSW                           ;                store the factor
+003F EB0F90                105             JMP     EndFactorChk            ;                done dealing with factor
+8086/87/88/186 MACRO ASSEMBLER    FACTOR3                                                  15:55:36  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           106     
+0042                       107     NotAFactor:                             ;            ELSE
+0042 83F902                108             CMP     CX, 2                   ;                check IF (factor = 2)
+0045 7506                  109             JNE     OddFactor               ;                if not - do odd factors
+                           110             ;JE     FirstFactor             ;                else - it's the first one
+0047                       111     FirstFactor:                            ;                IF (factor = 2)  THEN
+0047 B90300                112             MOV     CX, 3                   ;                    factor = 3
+004A EB0490                113             JMP     EndFactorUpdate         ;                    done setting factor
+004D                       114     OddFactor:                              ;                ELSE
+004D 83C102                115             ADD     CX, 2                   ;                    factor = factor + 2
+                           116             ;JMP    EndFactorUpdate         ;                    done setting factor
+0050                       117     EndFactorUpdate:                        ;                ENDIF
+                           118             ;JMP    EndFactorChk            ;                done checking factors
+                           119     
+0050                       120     EndFactorChk:                           ;            ENDIF
+0050 EBD0                  121             JMP     FactorLoop              ;        ENDWHILE (keep looping)
+                           122     
+                           123     
+0052                       124     EndFactorLoop:                          ;        ENDWHILE (done with loop)
+0052 A10000         R      125             MOV     AX, I                   ;        store the final factor
+0055 AB                    126             STOSW
+                           127             ;JMP    EndInputLoop            ;        done processing this input
+                           128     
+                           129     
+0056                       130     EndInputLoop:                           ;    ENDIF
+                           131     
+0056 833E000000     R      132             CMP     I, 0                    ;    check for (i <= 0)
+005B 7FB2                  133             JG      InputLoop               ;    UNTIL (i <= 0)
+                           134             ;JLE    EndFactor
+                           135     
+                           136     
+005D                       137     EndFactor:                              ;    end program
+005D 90                    138             NOP
+005E 90                    139             NOP
+005F 90                    140             NOP
+                           141     
+                           142     
+                           143     
+----                       144     PROGRAM ENDS
+                           145     
+                           146     
+                           147     
+                           148     
+                           149     ;the data segment
+                           150     
+----                       151     DATA    SEGMENT  WORD  PUBLIC  'DATA'
+                           152     
+                           153     
+0000 ????                  154     I               DW      ?               ;number to factor
+                           155     
+0002 (15                   156     Factors         DW      15 DUP(?)       ;prime factors (at most log2 I)
+     ????
+     )
+                           157     
+                           158     
+8086/87/88/186 MACRO ASSEMBLER    FACTOR3                                                  15:55:36  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+----                       159     DATA    ENDS
+                           160     
+                           161     
+                           162     
+                           163     
+                           164     ;the stack
+                           165     
+----                       166     STACK           SEGMENT  WORD  STACK  'STACK'
+                           167     
+                           168     
+0000 (80                   169                     DB      80 DUP ('Stack   ')             ;320 words
+     537461636B2020
+     20
+     )
+                           170     
+0280                       171     TopOfStack      LABEL   WORD
+                           172     
+                           173     
+----                       174     STACK           ENDS
+                           175     
+                           176     
+                           177     
+                           178             END     FactorStart
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

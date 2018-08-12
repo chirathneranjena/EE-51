@@ -1,0 +1,587 @@
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE SERIAL
+OBJECT MODULE PLACED IN SERIAL.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE SERIAL.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     NAME Serial
+                             3     
+                             4     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             5     ;                                                                            ;
+                             6     ;                                 Serial                                     ;
+                             7     ;                              Serial Routines                               ;
+                             8     ;                                                                            ;
+                             9     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            10     
+                            11     ; Description:      Functions involved with handling Serial Chip
+                            12     ;                       SetSerial - Initialized Serial Chip
+                            13     ;                       SerialInterrupt Handler - Interrupt Handler for Serial Interr
+                                   upt                                
+                            14     ;                       SerialInReady - Checks if ready to receive
+                            15     ;                       SerialGetChar - Gets a character from serial channel    
+                            16     ;                       SerialOutRdy  - Checks if ready to transmit             
+                            17     ;                       SerialPutChar - Transmit next char over the serial channel
+                            18     ;
+                            19     ;
+                            20     ; Input:            Zero Flag, Input Characters
+                            21     ; Output:           Zero Flag, Output Characters        
+                            22     ;
+                            23     ; User Interface:   None
+                            24     ; Error Handling:   None.
+                            25     ;
+                            26     ; Algorithms:       None.
+                            27     ; Data Structures:  None.
+                            28     ;
+                            29     ; Revision History:
+                            30     ;       Chirath Neranjena       08 Mar 2002     Creation
+                            31     
+                            32     
+                            33     CGROUP  GROUP   CODE
+                            34     
+                            35     
+                            36 +1  $INCLUDE(SERIAL.INC)
+                      =1    37     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    38     ;                                                                            ;
+                      =1    39     ;                                  SERIAL.INC                                ;
+                      =1    40     ;                                                                            ;
+                      =1    41     ;                                 Include File                               ;
+                      =1    42     ;                                                                            ;
+                      =1    43     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    44     
+                      =1    45     ; This file contains the definitions for the Serial Channel Functions
+                      =1    46     ; program (SERIAL.ASM).
+                      =1    47     ;
+                      =1    48     ; Revision History:
+                      =1    49     ;    08/03/2002    Chirath Neranjena  initial revision 
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1    50     
+                      =1    51     
+                      =1    52     
+                      =1    53     ; Register Selects
+                      =1    54     
+  0100                =1    55     Serial_Rx       EQU     100H    ; Reciever Buffer Register
+  0100                =1    56     Serial_Tx       EQU     100H    ; Trasmitter Holding Register
+                      =1    57     
+  0100                =1    58     Serial_DL       EQU     100H    ; Serial MSB and LSB Data Latch Registers
+                      =1    59     
+  0101                =1    60     Serial_IER      EQU     101H    ; Interrupt Enable Register in Serial Chip
+  0102                =1    61     Serial_IIR      EQU     102H    ; Interrupt Identification Register
+  0103                =1    62     Serial_LCR      EQU     103H    ; Lactch Control Register
+  0104                =1    63     Serial_MCR      EQU     104H    ; Modem Control Register
+  0105                =1    64     Serial_LSR      EQU     105H    ; Line Status Register
+                      =1    65     
+                      =1    66     ; DLAB Access value
+                      =1    67     
+  0080                =1    68     Enable_DL_Acc   EQU     10000000B       ; Enable Access to MSB and LSB by setting DLA
+                                   B
+                      =1    69     
+                      =1    70     ; Baud Rate Divisors
+  03C0                =1    71     Baud_300        EQU     960              ; Baud rate divisor for 300 Baud rate
+  00F0                =1    72     Baud_1200       EQU     240              ; Baud rate divisor for 1200 Baud rate
+  0078                =1    73     Baud_2400       EQU     120              ; Baud rate divisor for 2400 Baud rate
+  003C                =1    74     Baud_4800       EQU      60              ; Baud rate divisor for 4800 Baud rate
+  001E                =1    75     Baud_9600       EQU      30              ; Baud rate divisor for 9600 Baud rate
+  000F                =1    76     Baud_19200      EQU      15              ; Baud rate divisor for 19200 Baud rate
+  0005                =1    77     Baud_57600      EQU       5              ; Baud rate divisor for 57600 Baud rate
+                      =1    78     
+                      =1    79     ;Parity Settings
+  001B                =1    80     EvenParity      EQU     00011011B       ; LCR Even Parity Value
+  000B                =1    81     OddParity       EQU     00001011B       ; LCR Odd Parity Value
+  002B                =1    82     MarkParity      EQU     00101011B       ; LCR Mark Parity Value
+  003B                =1    83     SetParity       EQU     00111011B       ; LCR Set Parity Value
+  0003                =1    84     NoParity        EQU     00000011B       ; LCR No Parity Value
+                      =1    85     
+                      =1    86     
+                      =1    87     
+                      =1    88     ; Serial LCR Register setup value
+  0003                =1    89     Serial_Setup    EQU     00000011B       ; Word length -8 bits
+                      =1    90                                             ; stop bits - 1
+                      =1    91     
+                      =1    92     ; Serial IER Register setup values
+  0007                =1    93     Serial_IRQ      EQU     00000111B       ; enable ERBF, ETBE, ELSI
+                      =1    94     
+  0005                =1    95     Tickle_IRQ      EQU     00000101B       ; enable ERBF, ELSI and not ETBE
+                      =1    96     
+                      =1    97     
+                      =1    98     ; Interrupt2 configuration, Register Selects
+  000E                =1    99     SerialVec       EQU     14              ; Interrupt Vector for Interrupt 2
+  FF3C                =1   100     Int2CtrlReg     EQU     0FF3CH          ; Interrupt2 controller register address
+  FF22                =1   101     IntCtrlEOI      EQU     0FF22H          ; EOI register address
+                      =1   102     
+                      =1   103     ; Interrupt2 Setup Values       
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+  0011                =1   104     Int2CtrlVal     EQU     00011H          ; Unmask Int2, prority 1
+  000E                =1   105     Int2EOI         EQU     0000EH          ; Interrupt 2 EOI
+  8000                =1   106     NonSpecEOI      EQU     08000H          ; Non specific EOI
+                      =1   107     
+                      =1   108     ; IIR Values
+  0006                =1   109     Serial_Error    EQU     00000110B       ; IER - Serial Error
+  0004                =1   110     Serial_Rx_Rdy   EQU     00000100B       ; IER - Receiver Data Ready
+  0002                =1   111     Serial_Tx_Rdy   EQU     00000010B       ; IER - Transmitter holding register
+                      =1   112     
+                      =1   113     ; MCR REgister Setup values
+  0002                =1   114     SERIAL_RTS      EQU     00000010B       ;RTS output bit
+  0001                =1   115     SERIAL_DTR      EQU     00000001B       ;DTR output bit
+                      =1   116     
+                      =1   117     
+  001E                =1   118     ERROR_BIT_MASK  EQU     00011110B       ;error bits
+                      =1   119     
+  0000                =1   120     No_ERROR        EQU     0
+                      =1   121     
+                           122     
+                           123     EXTRN   RxFull          :NEAR
+                           124     EXTRN   RxEmpty         :NEAR
+                           125     EXTRN   RxEnQueue       :NEAR
+                           126     EXTRN   RxDeQueue       :NEAR
+                           127     
+                           128     EXTRN   TxFull          :NEAR
+                           129     EXTRN   TxEmpty         :NEAR
+                           130     EXTRN   TxEnQueue       :NEAR
+                           131     EXTRN   TxDeQueue       :NEAR
+                           132     
+----                       133     CODE SEGMENT PUBLIC 'CODE'
+                           134     
+                           135             ASSUME  CS: CGROUP, DS: DATA
+                           136     
+                           137     ; SetSerial
+                           138     ;
+                           139     ; Description:      Function sets up the Serial Chip for program use
+                           140     ;
+                           141     ; Arguments:        None.
+                           142     ; Return Value:     None.
+                           143     ;
+                           144     ; Local Variables:  None
+                           145     ;
+                           146     ; Shared Variables: None.
+                           147     ; Global Variables: None
+                           148     ;                   
+                           149     ;                   
+                           150     ;
+                           151     ; Input:            None.
+                           152     ; Output:           None.
+                           153     ;
+                           154     ; Error Handling:   None.
+                           155     ;
+                           156     ; Algorithms:       None.
+                           157     ;                   
+                           158     ;                   
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           159     ; Data Structures:  None.
+                           160     ;
+                           161     ; Registers Used:   AX, DX
+                           162     ; Stack Depth:      0 words
+                           163     ;
+                           164     ; Author:           Chirath Neranjena
+                           165     ; Last Modified:    FEB. 21 2002
+                           166     
+0000                       167     SetSerial       PROC    NEAR
+                           168                     PUBLIC  SetSerial
+                           169     
+0000 BA0301                170             MOV     DX, Serial_LCR          ; Enable Access to Divisor Latch Access Bit
+0003 B88000                171             MOV     AX, Enable_DL_Acc
+0006 EE                    172             OUT     DX, AL
+                           173     
+0007 BA0001                174             MOV     DX, Serial_DL           ; Set Baud Rate
+000A B80F00                175             MOV     AX, Baud_19200
+000D EE                    176             OUT     DX, AL
+000E 42                    177             INC     DX
+000F 8AC4                  178             MOV     AL, AH
+0011 EE                    179             OUT     DX, AL
+                           180     
+0012 BA0301                181             MOV     DX, Serial_LCR          ; Setup other Serial chip options
+0015 B80300                182             MOV     AX, Serial_Setup
+0018 EE                    183             OUT     DX, AL
+                           184     
+0019 BA0101                185             MOV     DX, Serial_IER          ; Enable Serial chip Interrupts
+001C B80700                186             MOV     AX, Serial_IRQ
+001F EE                    187             OUT     DX, AL
+                           188     
+0020 BA0401                189             MOV     DX, SERIAL_MCR                  ;set the modem control lines
+0023 B003                  190             MOV     AL, SERIAL_RTS + SERIAL_DTR     ;RTS and DTR both on
+0025 EE                    191             OUT     DX, AL
+                           192     
+                           193     
+0026 BA3CFF                194             MOV     DX, Int2CtrlReg         ; Setup Interrupt 2
+0029 B81100                195             MOV     AX, Int2CtrlVal
+002C EF                    196             OUT     DX, AX
+                           197     
+002D BA22FF                198             MOV     DX, IntCtrlEOI          ; send a non-specific EOI (to clear out contr
+                                   oller)
+0030 B80080                199             MOV     AX, NonSpecEOI          
+0033 EF                    200             OUT     DX, AX
+                           201     
+0034 C60600000090   R      202             MOV     ErrorBits, 0            ; set Errorbits = nothing
+                           203             
+003A C3                    204             RET
+                           205     
+                           206     SetSerial       ENDP
+                           207     
+                           208     
+                           209     ; SerialInterruptHandler
+                           210     ;
+                           211     ; Description:      This procedure is the event handler for the Serial
+                           212     ;                   interrupt.  
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           213     ;
+                           214     ; Arguments:        None.
+                           215     ; Return Value:     None.
+                           216     ;
+                           217     ; Local Variables:  None
+                           218     ; Shared Variables: None.
+                           219     ; Global Variables: None
+                           220     ; Input:            Input Character, Error Values
+                           221     ; Output:           Output Character    
+                           222     ;
+                           223     ; Error Handling:   None.
+                           224     ;
+                           225     ; Algorithms:       None.
+                           226     ; Data Structures:  None.
+                           227     ;
+                           228     ; Registers Used:   AX, DX
+                           229     ; Stack Depth:      5 words
+                           230     ;
+                           231     ; Author       :    Chirath Neranjena  Feb. 14 2002    
+                           232     ;       
+                           233     ;
+                           234     
+                           235     
+003B                       236     SerialInterruptHandler  PROC    NEAR
+                           237                             PUBLIC  SerialInterruptHandler
+                           238     
+                           239     
+003B 9C                    240             PUSHF
+                           241     
+003C 50                    242             PUSH    AX                      ; Save registers
+003D 52                    243             PUSH    DX
+                           244     
+003E                       245     InterruptCheck:
+                           246     
+003E BA0201                247             MOV     DX, Serial_IIR          ; Get IIR register value to check type of int
+                                   errupt
+0041 EC                    248             IN      AL, DX
+                           249     
+0042 3C06                  250             CMP     AL, Serial_Error        ; If error Handle error
+0044 7408                  251             JE      HandleSerialError
+                           252     
+0046 3C04                  253             CMP     AL, Serial_Rx_Rdy       ; If there is a received character then
+0048 740F                  254             JE      SerialReceive           ;   Acknowledge the received charcter
+                           255     
+004A 3C02                  256             CMP     AL, Serial_Tx_Rdy       ; If Transmission is possible then
+004C 741A                  257             JE      SerialTransmit          ;   Trasmit the next character
+                           258     
+004E                       259     HandleSerialError:
+                           260     
+004E BA0501                261             MOV     DX, Serial_LSR          ; Dump Error value in Status register   
+0051 EC                    262             IN      AL, DX                  ;  onto ErrorBits Variable
+0052 08060000       R      263             OR      ErrorBits, AL
+0056 EB1F90                264             JMP     EndSerialInterrupt      ; done  
+                           265     
+0059                       266     SerialReceive:
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           267             
+                           268     
+0059 BA0001                269             MOV     DX, Serial_Rx           ; Get the received character
+005C EC                    270             IN      AL, DX
+                           271     
+005D E80000         E      272             CALL    RxFull                  ; If the receive queue is not full then
+0060 7415                  273             JZ      EndSerialInterrupt      ;   store the value in the queue        
+                           274     
+0062 E80000         E      275             CALL    RxEnQueue               
+0065 EB1090                276             JMP     EndSerialInterrupt      ; done
+                           277     
+0068                       278     SerialTransmit:
+                           279     
+0068 E80000         E      280             CALL    TxEmpty                 ; if Transmit Queue is Full then
+006B 740A                  281             JZ      EndSerialInterrupt      ;       nothing to do
+                           282     
+006D E80000         E      283             CALL    TxDeQueue               ; Else get the next character from queue
+0070 BA0001                284             MOV     DX, Serial_Tx           ;    and transmit
+0073 EE                    285             OUT     DX, AL
+                           286     
+0074 EB0190                287             JMP     EndSerialInterrupt      ; done
+                           288     
+0077                       289     EndSerialInterrupt:
+                           290     
+0077 BA22FF                291             MOV     DX, IntCtrlEOI          ; Send EOI to clear interrupt on controller
+007A B80E00                292             MOV     AX, Int2EOI
+007D EF                    293             OUT     DX, AX
+                           294     
+007E 5A                    295             POP     DX                      ; restore registers
+007F 58                    296             POP     AX
+                           297     
+0080 9D                    298             POPF
+                           299     
+0081 CF                    300             IRET
+                           301     
+                           302     SerialInterruptHandler  ENDP
+                           303     
+                           304     ; SerialInRdy
+                           305     ;
+                           306     ; Description - Checks if ready to receive
+                           307     ;
+                           308     ; Arguments:        None.
+                           309     ; Return Value:     None
+                           310     ;
+                           311     ; Local Variables:  None
+                           312     ;
+                           313     ; Shared Variables: None.
+                           314     ; Global Variables: None.
+                           315     ;
+                           316     ; Input:            None.
+                           317     ; Output:           None.
+                           318     ;
+                           319     ; Error Handling:   None.
+                           320     ;
+                           321     ; Algorithms:       None
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           322     ; Data Structures:  None.
+                           323     ;
+                           324     ; Registers Used:   None
+                           325     ; Stack Depth:      None
+                           326     ;
+                           327     ; Author:           Chirath Neranjena
+                           328     ; Last Modified:    MAR 08 2002
+                           329     
+0082                       330     SerialInRdy     PROC    NEAR
+                           331                     PUBLIC  SerialInRdy
+                           332     
+0082 E80000         E      333             CALL    RxEmpty         ; If Receive queue is empty then no character availab
+                                   le
+0085 C3                    334             RET                     ; 
+                           335     
+                           336     SerialInRdy     ENDP
+                           337     
+                           338     
+                           339     ; SerialGetChar
+                           340     ;
+                           341     ; Description - Gets Character from the serial channel
+                           342     ;
+                           343     ; Arguments:        None.
+                           344     ; Return Value:     Character from serial channel, Error flag
+                           345     ;
+                           346     ; Local Variables:  None
+                           347     ;
+                           348     ; Shared Variables: ErrorBits
+                           349     ; Global Variables: None.
+                           350     ;
+                           351     ; Input:            None.
+                           352     ; Output:           AX
+                           353     ;
+                           354     ; Error Handling:   None.
+                           355     ;
+                           356     ; Algorithms:       None
+                           357     ; Data Structures:  None.
+                           358     ;
+                           359     ; Registers Used:   None
+                           360     ; Stack Depth:      None
+                           361     ;
+                           362     ; Author:           Chirath Neranjena
+                           363     ; Last Modified:    MAR 08 2002
+                           364     
+0086                       365     SerialGetChar   PROC    NEAR
+                           366                     PUBLIC  SerialGetChar
+                           367     
+0086                       368     SerialGetCharStart:
+                           369     
+0086 E8F9FF                370             CALL    SerialInRdy             ; Loop while there is a character in Receive 
+                                   queue
+0089 74FB                  371             JZ      SerialGetCharStart
+                           372     
+008B E80000         E      373             CALL    RxDeQueue               ; Get Character received from serial channel
+                           374     
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+008E 803E000000     R      375             CMP     ErrorBits, NO_ERROR             ; Check for errors
+0093 7401                  376             JE      EndSerialGetChar        ; If there is an error
+                           377     
+0095 F9                    378             STC                             ;   set carry flag
+                           379     
+0096                       380     EndSerialGetChar:                       ; End If
+                           381     
+0096 C3                    382             RET                             ; done
+                           383     
+                           384     SerialGetChar   ENDP
+                           385     
+                           386     ; SerialOutRdy
+                           387     ;
+                           388     ; Description - Checks if ready to Transmit
+                           389     ;
+                           390     ; Arguments:        None.
+                           391     ; Return Value:     None
+                           392     ;
+                           393     ; Local Variables:  None
+                           394     ;
+                           395     ; Shared Variables: None.
+                           396     ; Global Variables: None.
+                           397     ;
+                           398     ; Input:            None.
+                           399     ; Output:           None
+                           400     ;
+                           401     ; Error Handling:   None.
+                           402     ;
+                           403     ; Algorithms:       None
+                           404     ; Data Structures:  None.
+                           405     ;
+                           406     ; Registers Used:   None
+                           407     ; Stack Depth:      None
+                           408     ;
+                           409     ; Author:           Chirath Neranjena
+                           410     ; Last Modified:    MAR 08 2002
+                           411     
+0097                       412     SerialOutRdy    PROC    NEAR
+                           413                     PUBLIC  SerialOutRdy
+                           414     
+0097 E80000         E      415             CALL    TxFull                  ; If Transmit queue is full, the transmission
+                           416                                             ;   of character is not possible
+009A C3                    417             RET
+                           418     
+                           419     SerialOutRdy    ENDP
+                           420                     
+                           421     
+                           422     ; SerialOutChar
+                           423     ;
+                           424     ; Description - Transmits a Character to the serial channel
+                           425     ;
+                           426     ; Arguments:        Character to Transmit
+                           427     ; Return Value:     None
+                           428     ;
+                           429     ; Local Variables:  None
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           430     ;
+                           431     ; Shared Variables: None
+                           432     ; Global Variables: None.
+                           433     ;
+                           434     ; Input:            AX
+                           435     ; Output:           None
+                           436     ;
+                           437     ; Error Handling:   None.
+                           438     ;
+                           439     ; Algorithms:       None
+                           440     ; Data Structures:  None.
+                           441     ;
+                           442     ; Registers Used:   None
+                           443     ; Stack Depth:      None
+                           444     ;
+                           445     ; Author:           Chirath Neranjena
+                           446     ; Last Modified:    MAR 08 2002
+                           447     
+009B                       448     SerialPutChar   PROC    NEAR
+                           449                     PUBLIC  SerialPutChar
+                           450     
+009B                       451     SerialPutCharStart:
+                           452     
+009B E8F9FF                453             CALL    SerialOutRdy            ; lOOP while character can be transmitted
+009E 74FB                  454             JZ      SerialPutCharStart
+                           455     
+00A0 E80000         E      456             CALL    TxEnQueue               ; move charcter to transmit queue
+                           457     
+00A3 50                    458             PUSH    AX
+00A4 52                    459             PUSH    DX
+                           460     
+00A5 BA0101                461             MOV     DX, Serial_IER          ; Disable ETBE chip Interrupt
+00A8 B80500                462             MOV     AX, Tickle_IRQ          
+00AB EE                    463             OUT     DX, AL
+                           464     
+00AC BA0101                465             MOV     DX, Serial_IER          ; Enable Serial chip Interrupts
+00AF B80700                466             MOV     AX, Serial_IRQ
+00B2 EE                    467             OUT     DX, AL
+                           468     
+00B3 5A                    469             POP     DX
+00B4 58                    470             POP     AX
+                           471     
+00B5 C3                    472             RET
+                           473     
+                           474     SerialPutChar   ENDP
+                           475     
+                           476     
+                           477     ; SerialStatus
+                           478     ;
+                           479     ; Description - Returns the Error Value of the serial channel
+                           480     ;
+                           481     ; Arguments:        None.
+                           482     ; Return Value:     Error Value
+                           483     ;
+                           484     ; Local Variables:  None
+8086/87/88/186 MACRO ASSEMBLER    SERIAL                                                   15:54:55  04/23/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           485     ;
+                           486     ; Shared Variables: ErrorBits
+                           487     ; Global Variables: None.
+                           488     ;
+                           489     ; Input:            None.
+                           490     ; Output:           Error Value
+                           491     ;
+                           492     ; Error Handling:   None.
+                           493     ;
+                           494     ; Algorithms:       None
+                           495     ; Data Structures:  None.
+                           496     ;
+                           497     ; Registers Used:   None
+                           498     ; Stack Depth:      None
+                           499     ;
+                           500     ; Author:           Chirath Neranjena
+                           501     ; Last Modified:    MAR 08 2002
+                           502     
+00B6                       503     SerialStatus    PROC    NEAR
+                           504             
+00B6 A00000         R      505             MOV     AL, ErrorBits
+00B9 C60600000090   R      506             MOV     Errorbits, NO_ERROR
+                           507     
+00BF C3                    508             RET
+                           509     
+                           510     SerialStatus    ENDP
+                           511     
+                           512     
+----                       513     CODE    ENDS
+                           514     
+----                       515     DATA    SEGMENT PUBLIC  'DATA'
+                           516     
+                           517     
+0000 ??                    518     ErrorBits             DB      ?                 ; Error Bits Variable   
+                           519     
+                           520     
+----                       521     DATA    ENDS
+                           522     
+                           523     
+                           524             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

@@ -1,0 +1,456 @@
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE CONVERT
+OBJECT MODULE PLACED IN CONVERT.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE CONVERT.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     
+                             3     
+                             4     NAME Convert
+                             5     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             6     ;                                                                            ;
+                             7     ;                                    Convert                                 ;
+                             8     ;                         Robocrane Numeric Conversion Routines              ;
+                             9     ;                                                                            ;
+                            10     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            11     
+                            12     ; Description:      This program contains numeric convertion functions
+                            13     ;                    for Robocrane system. converts decimal and haxadecimal
+                            14     ;                        numbers into ascii coded characters.
+                            15     ;
+                            16     ; Input:            None
+                            17     ; Output:           None
+                            18     ;
+                            19     ; User Interface:   None.
+                            20     ; Error Handling:   None.
+                            21     ;
+                            22     ; Algorithms:       None.
+                            23     ; Data Structures:  None.
+                            24     ;
+                            25     ; Revision History:
+                            26     ;
+                            27     ;     2/21/02  Chirath Neranjena  Converted to the Main function of Robocrane   
+                                      
+                            28     
+                            29     
+                            30     
+                            31     
+                            32     CGROUP  GROUP  CODE
+                            33     
+                            34     
+----                        35     CODE SEGMENT PUBLIC 'CODE'
+                            36     
+                            37          ASSUME  CS:CGROUP
+                            38     
+                            39     
+                            40     ; Dec2String
+                            41     ;
+                            42     ; Description:      Function converts a decimal number or a hex number passed 
+                            43     ;                       to it through the AX register and returns the ASCII 
+                            44     ;                       string form of the number. The string is stored at the
+                            45     ;                       memory location given by the address in the DS:SI register.
+                                      
+                            46     ; 
+                            47     ; 
+                            48     ;
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            49     ; Arguments:        AX         - Number to be converted to String
+                            50     ; Return Values:    DS:SI      - Starting Address of the memory location 
+                            51     ;                               containing the ASCII string
+                            52     ;                   
+                            53     ;
+                            54     ; Local Variables: arg (BX)    - copy of passed binary value to convert.
+                            55     ;                 digit (AX)  - computed string character.
+                            56     ;                 pwr10 (CX)  - current power of 10 being computed.
+                            57     ;                 StartAddress (DS) ^ Address where the string begin
+                            58     ;                 Offset (SI) ^ Address where each character is stored.
+                            59     ;                       
+                            60     ; Shared Variables: None.
+                            61     ; Global Variables: None.
+                            62     ;
+                            63     ; Input:            None.
+                            64     ; Output:           None.
+                            65     ;
+                            66     ; Error Handling:   None
+                            67     ;
+                            68     ; Registers Used:   AX, BX, CX, SI, DS
+                            69     ; Stack Depth:      0 words
+                            70     ;
+                            71     ; Algorithms:       Repeatedly divide by powers of 10 and get the remainders. 
+                            72     ;               These remainder are added to ASCII # and stored as a byte in memory.
+                            73     ;
+                            74     ; Data Structures:  None.
+                            75     ;
+                            76     ;Known Bugs:       None.
+                            77     ;Limitations:      None.
+                            78     
+                            79     ;Pseudo Code
+                            80     ;
+                            81     ;   pwr10 = 1000
+                            82     ;   error = FALSE
+                            83     ;   Offset = 0
+                            84     ;   IF arg < 0 then
+                            85     ;     write to (startaddress + offset) value 2DH ; ASCII Code for ^-^
+                            86     ;     Offset = Offset + 1                               
+                            87     ;     arg = magnitude (arg)
+                            88     ;   ENDIF
+                            89     ;    
+                            90     ;   WHILE ((error = FALSE) AND (pwr10 > 0))
+                            91     ;       digit = arg/pwr10
+                            92     ;       IF (digit < 10) THEN
+                            93     ;        Write to (startaddress + offset) value (digit + 30H)
+                            94     ;                                       ;ASCII Code for 0 + digit;
+                            95     ;       Offset = offset + 1
+                            96     ;        arg = arg MODULO pwr10
+                            97     ;        pwr10 = pwr10/10
+                            98     ;        error = FALSE
+                            99     ;       ELSE
+                           100     ;        error = TRUE
+                           101     ;       ENDIF
+                           102     ;   ENDWHILE
+                           103     ;   Write to (startaddress + offset), 0H  
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           104     ;               ;ASCII Code for Null char, end string
+                           105     ;   RETURN  
+                           106     
+                           107     
+                           108     ; Revision History: 02/10/2002   Chirath Neranjena      Creation
+                           109     ;
+                           110     
+                           111     
+0000                       112     Dec2String      PROC    NEAR
+                           113                     PUBLIC  Dec2String
+                           114     
+0000 50                    115             PUSH    AX                              ; Store the registers to start the fu
+                                   ncion
+0001 53                    116             PUSH    BX
+0002 51                    117             PUSH    CX
+0003 52                    118             PUSH    DX
+                           119     
+                           120     
+0004                       121     DecInit:
+                           122     
+                           123     
+0004 BB0000                124             MOV     BX, 0                           ; Error = False
+0007 B91027                125             MOV     CX, 10000                       ; Pwr10 = 10000
+000A 56                    126             PUSH    SI                              ; Store the SI register to get the st
+                                   arting address later
+                           127     
+000B                       128     MakeDecString:
+                           129     
+                           130                                                     ; IF (I<0) THEN
+000B 3D0000                131             CMP     AX, 0                           ;   Start String with '-' Sign
+000E 7C02                  132             JL      PutNegativeSign                 ; ELSE
+0010 7D0A                  133             JGE     StartDecTrace                   ;   Start String Normally
+                           134                                                     ; ENDIF
+                           135     
+0012                       136     PutNegativeSign:
+                           137     
+0012 50                    138             PUSH    AX                              ; Relieve AX for calculations
+0013 B82D00                139             MOV     AX, 0002DH                      ; Move the ASCII value for '-' in AX
+0016 8904                  140             MOV     DS:[SI], AX                     ; Store '-' in string
+0018 46                    141             INC     SI                              ; Go to the next byte in memmory
+0019 58                    142             POP     AX                              ; Get back the number to AX
+                           143     
+                           144                                                     
+001A F7D8                  145             NEG     AX                              ; I=absolute(I)
+                           146             ;JMP    StartTrace                      ; Start Tracing Digits
+                           147     
+001C                       148     StartDecTrace:
+                           149     
+001C 83FB00                150             CMP     BX, 0                           
+001F 753C                  151             JNE     StpDecTrace                     
+0021 83F900                152             CMP     CX, 0                           
+0024 7E37                  153             JLE     StpDecTrace                     
+                           154             ;JG     CheckDecDigit                   
+                           155                                                     
+0026                       156     CheckDecDigit:                                  
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           157                                                     
+0026 50                    158             PUSH    AX                              ;   (relieve AX for calculations)
+                           159                                                     
+0027 BA0000                160             MOV     DX, 0                           ;   (prepair for division)
+002A F7F1                  161             DIV     CX                              ;   digit = I / pwr10
+002C 3D0A00                162             CMP     AX, 10                          ;   IF (digit >= 10) THEN
+002F 7D02                  163             JGE     DecDigitError                   ;       
+0031 7C06                  164             JL      StoreDecNumber
+                           165     
+0033                       166     DecDigitError:
+                           167     
+0033 BB0100                168             MOV     BX, 1
+0036 58                    169             POP     AX                              ;     Error = True
+0037 EBE3                  170             JMP     StartDecTrace                   ;
+                           171                                                     ;   ELSE
+                           172     
+0039                       173     StoreDecNumber:
+                           174     
+0039 053000                175             ADD     AX, 00030H                      ;     Convert digit to ASCII
+003C 8904                  176             MOV     DS:[SI], AX                     ;     Store ASCII Code
+003E 46                    177             INC     SI                              ;     Go to the next byte in memory
+                                      
+                           178             ;JMP    CorrectIandPwr10
+                           179     
+003F                       180     CorrectIandPwr10:
+                           181     
+003F 58                    182             POP     AX                              ;     (Get back I)
+0040 BA0000                183             MOV     DX, 0                           ;     Prepair for division      
+0043 F7F1                  184             DIV     CX                              ;     I = I MOD pwr10
+0045 8BC2                  185             MOV     AX, DX                          
+0047 50                    186             PUSH    AX                              ;     (push back I to relieve AX for 
+                                   calculations
+                           187     
+0048 8BC1                  188             MOV     AX, CX                         
+004A BA0000                189             MOV     DX, 0
+004D BB0A00                190             MOV     BX, 10                          ;     Prepair for Division
+0050 F7F3                  191             DIV     BX
+0052 8BC8                  192             MOV     CX, AX                          ;     Pwr10 = Pwr10/10
+0054 BB0000                193             MOV     BX, 0                           ;     Error = False
+0057 58                    194             POP     AX                              ;     (restore I in AX)
+0058 EB0190                195             JMP     TraceNextDec                            
+                           196     
+005B                       197     TraceNextDec:
+                           198     
+005B EBBF                  199             JMP     StartDecTrace                   ;   ENDIF
+                           200                                                     ; END WHILE
+                           201     
+005D                       202     StpDecTrace:
+005D B80000                203             MOV     AX, 00000H                      ; Store Null at the end of
+0060 8904                  204             MOV     DS:[SI], AX                     ; string
+0062 5E                    205             POP     SI                              ; Get back the starting address of th
+                                   e string
+                           206             ;JMP EndDec2String
+                           207     
+                           208     
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0063                       209     EndDec2String:
+                           210     
+0063 5A                    211             POP     DX                              ; Restore the registers
+0064 59                    212             POP     CX
+0065 5A                    213             POP     DX
+0066 58                    214             POP     AX
+                           215     
+0067 C3                    216             RET
+                           217     
+                           218     Dec2String      ENDP
+                           219     
+                           220     ;Hex2String
+                           221     ;
+                           222     ; Description: The function converts the 16-bit signed value passed to it, 
+                           223     ;              into a string using the ASCII values for each numeric character.
+                           224     ;                If the digit is greater than 10 then it puts the appropriate
+                           225     ;                alpha character to the hex string. 
+                           226     ;              The number is assumed to be unsigned.
+                           227     ;
+                           228     ; Arguments:    AX Binary value to convert to a Hex string
+                           229     ;               SI Address in memory where the string is stored.
+                           230     ;            
+                           231     ;          
+                           232     ; Return Values: DS:SI String value of the binary number passed in AX
+                           233     ;                   
+                           234     ; Local Variables: arg (BX)    - copy of passed binary value to convert.
+                           235     ;                 digit (AX)  - computed string character.
+                           236     ;                 pwr10 (CX)  - current power of 10H being computed.
+                           237     ;                 StartAddress (DS) ^ Address where the string begin
+                           238     ;                 Offset (SI) ^ Address where each character is stored.
+                           239     ;                       
+                           240     ;Shared Variables: None.
+                           241     ;Global Variables: None.
+                           242     ;
+                           243     ;Input:            None.
+                           244     ;Output:           None.
+                           245     ;
+                           246     ;Error Handling:   None
+                           247     ;
+                           248     ;Registers Used:   AX, BX, CX, SI, DS
+                           249     ;Stack Depth:      0 words
+                           250     ;
+                           251     ;Algorithms:       Repeatedly divide by powers of 10 and get the remainders. 
+                           252     ;                  These remainder are added to ASCII # and stored as a byte in memor
+                                   y.
+                           253     ;
+                           254     ;Data Structures:  None.
+                           255     ;
+                           256     ;Known Bugs:       None.
+                           257     ;Limitations:      None.
+                           258     ;
+                           259     ;
+                           260     ;
+                           261     ;Pseudo Code
+                           262     ;
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           263     ;   pwr10 = 1000H
+                           264     ;   error = FALSE
+                           265     ;   Offset = 0
+                           266     ;   
+                           267     ;   WHILE ((error = FALSE) AND (pwr10 > 0))
+                           268     ;       digit = arg/pwr10
+                           269     ;       IF (digit < 10H) THEN
+                           270     ;         IF (digit =< 9H) THEN
+                           271     ;           Write to (startaddress +offset) value (digit + 30H);
+                           272     ;         ELSE
+                           273     ;           Write to (startaddress + Offset) value (digit + 41H)
+                           274     ;                       ;ASCII Code for ^A^ + digit
+                           275     ;         ENDIF     
+                           276     ;        Offset = offset + 1
+                           277     ;        arg = arg MODULO pwr10
+                           278     ;        pwr10 = pwr10/10
+                           279     ;        error = FALSE
+                           280     ;       ELSE
+                           281     ;        error = TRUE
+                           282     ;      ENDIF
+                           283     ;  ENDWHILE
+                           284     ;   Write to (startaddress + offset), 0H  ;end string
+                           285     ;   RETURN  
+                           286     
+                           287     
+                           288     
+                           289     
+0068                       290     Hex2String      PROC    NEAR
+                           291                     PUBLIC  Hex2String
+                           292     
+                           293     
+0068 50                    294             PUSH    AX                              ; Store the registers to start the fu
+                                   nction
+0069 53                    295             PUSH    BX
+006A 51                    296             PUSH    CX
+006B 52                    297             PUSH    DX
+                           298     
+006C                       299     HexInit:
+                           300     
+                           301     
+006C BB0000                302             MOV     BX, 0                           ; Error = False
+006F B90010                303             MOV     CX, 1000H                       ; Pwr16 = 1000H
+0072 56                    304             PUSH    SI                              ; Store the SI register to get the st
+                                   arting address later
+                           305     
+0073                       306     StartHexTrace:
+                           307     
+0073 83FB00                308             CMP     BX, 0                           ; WHILE (Error = False)
+0076 7550                  309             JNE     StopHexTrace                    ;  AND
+0078 83F900                310             CMP     CX, 0                           ;    (Pwr10 > 0)
+007B 7E4B                  311             JLE     StopHexTrace
+                           312             ;JG     CheckHexDigit
+                           313     
+007D                       314     CheckHexDigit:
+                           315     
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+007D 50                    316             PUSH    AX                              ;   (relieve AX for calculations)
+                           317                                                     ;   digit = I / pwr10
+007E BA0000                318             MOV     DX, 0                           ;   Prepair for division
+0081 F7F1                  319             DIV     CX
+0083 3D1000                320             CMP     AX, 00010H                      ;   IF (digit >= 10H) THEN
+0086 7D02                  321             JGE     HexDigitError                   ;       
+0088 7C07                  322             JL      CheckHexNumber                  
+                           323     
+008A                       324     HexDigitError:
+                           325     
+008A BB0100                326             MOV     BX, 00001                       ;     ERROR ERROR ERROR !
+008D 58                    327             POP     AX                              ;     Error = True
+008E EB3690                328             JMP     TraceNextHex                    ;
+                           329                                                     ;   ELSE
+                           330     
+0091                       331     CheckHexNumber:
+                           332     
+0091 3D0A00                333             CMP     AX, 10                          ; IF (digit > 10) THEN
+0094 7D02                  334             JGE     StoreHexNumber                  ;
+0096 7C0C                  335             JL      StoreHexDecNumber               ;
+                           336     
+                           337     
+0098                       338     StoreHexNumber:
+                           339     
+0098 054100                340            ADD      AX, 00041H                      ;   Convert digit to ASCII Code
+009B 2D0A00                341            SUB      AX, 10                          ;    more converting to ASCII code
+009E 8904                  342            MOV      DS:[SI], AX                     ;   Store ASCII Code 
+00A0 46                    343            INC      SI                              ;   Go to next byte in memory
+00A1 EB0790                344            JMP      CorrectIandPwr16
+                           345     
+                           346     
+                           347     
+00A4                       348     StoreHexDecNumber:
+                           349     
+00A4 053000                350             ADD     AX, 00030H                      ;     Convert digit to ASCII
+00A7 8904                  351             MOV     DS:[SI], AX                     ;     Store ASCII Code
+00A9 46                    352             INC     SI                              ;     Go to next byte in memory      
+                                                        
+                           353             ;JMP    CorrectIandPwr16
+                           354     
+00AA                       355     CorrectIandPwr16:
+                           356     
+00AA 58                    357             POP     AX                              ;     (get back I)
+00AB BA0000                358             MOV     DX, 0                           ;     Prepiar for division      
+00AE F7F1                  359             DIV     CX                              ;     I = I MOD pwr10
+00B0 8BC2                  360             MOV     AX, DX
+00B2 50                    361             PUSH    AX                              ;     (relieve AX for calculations)
+                           362     
+00B3 8BC1                  363             MOV     AX, CX                          ;     
+00B5 BA0000                364             MOV     DX, 0                           ;     prepair for division
+00B8 BB1000                365             MOV     BX, 00010H                      ;     Pwr10 = Pwr10/10
+00BB F7F3                  366             DIV     BX
+00BD 8BC8                  367             MOV     CX, AX          
+00BF BB0000                368             MOV     BX, 0                            ;     Error = False
+00C2 58                    369             POP     AX                               ;     (get back I)                  
+8086/87/88/186 MACRO ASSEMBLER    CONVERT                                                  15:54:54  04/23/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                                           
+00C3 EB0190                370             JMP     TraceNextHex                            
+                           371     
+00C6                       372     TraceNextHex:
+                           373     
+00C6 EBAB                  374             JMP     StartHexTrace                   ;   ENDIF
+                           375                                                     ; END WHILE
+                           376     
+00C8                       377     StopHexTrace:
+                           378     
+00C8 B80000                379             MOV     AX, 00000H                      ; Store Null at the end of
+00CB 8904                  380             MOV     DS:[SI], AX                     ; string
+00CD 5E                    381             POP     SI
+                           382             ;JMP EndHex2String
+                           383     
+                           384     
+00CE                       385     EndHex2String:
+                           386     
+00CE 5A                    387             POP     DX                              ; Restore the registers 
+00CF 59                    388             POP     CX
+00D0 5B                    389             POP     BX
+00D1 58                    390             POP     AX
+00D2 C3                    391             RET
+                           392     
+                           393     
+                           394     Hex2String      ENDP
+                           395     
+----                       396     CODE ENDS
+                           397             END                                     ; WE ARE DONE !
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

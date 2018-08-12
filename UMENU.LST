@@ -1,0 +1,391 @@
+8086/87/88/186 MACRO ASSEMBLER    USERMENU                                                 15:54:55  04/23/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE USERMENU
+OBJECT MODULE PLACED IN UMENU.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE UMENU.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     NAME UserMenu
+                             3     
+                             4     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             5     ;                                                                            ;
+                             6     ;                                 UserMenu                                   ;
+                             7     ;                           Manual Control Routines                          ;
+                             8     ;                                of RoboCrane                                ;
+                             9     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            10     
+                            11     ; Description:      The function containing the Manual Control Routines of
+                            12     ;                       RoboCrane.
+                            13     ;
+                            14     ; Input:            KeyPad Key Inputs
+                            15     ; Output:           RoboCrane Stepper Motor Control Values      
+                            16     ;
+                            17     ; User Interface:   KeyPad and LED Display
+                            18     ; Error Handling:   None.
+                            19     ;
+                            20     ; Algorithms:       None.
+                            21     ; Data Structures:  None.
+                            22     ;
+                            23     ; Revision History:
+                            24     ;       Chirath Neranjena       18 Mar 2002     Creation
+                            25     
+                            26     
+                            27     CGROUP  GROUP   CODE
+                            28     
+                            29     
+                            30 +1  $INCLUDE(51MAIN.INC)
+                      =1    31     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    32     ;                                                                            ;
+                      =1    33     ;                                  51Main.INC                                ;
+                      =1    34     ;                              Robo Crane Main File                          ;
+                      =1    35     ;                                 Include File                               ;
+                      =1    36     ;                                                                            ;
+                      =1    37     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    38     
+                      =1    39     ; This file contains the definitions for the Robo Crane Main File
+                      =1    40     ; program 
+                      =1    41     ;
+                      =1    42     ; Revision History:
+                      =1    43     ;       
+                      =1    44     ; 02/21/02      Chirath Thouppuarachchi         Creation
+                      =1    45     ;
+                      =1    46     
+                      =1    47     
+                      =1    48     ; Timer Defintions
+                      =1    49     
+                      =1    50     ; Addresses
+8086/87/88/186 MACRO ASSEMBLER    USERMENU                                                 15:54:55  04/23/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+  FF56                =1    51     Tmr0Ctrl        EQU     0FF56H          ;address of Timer 0 Control Register
+  FF52                =1    52     Tmr0MaxCntA     EQU     0FF52H          ;address of Timer 0 Max Count A Register
+  FF50                =1    53     Tmr0Count       EQU     0FF50H          ;address of Timer 0 Count Register
+  FF66                =1    54     Tmr2Ctrl        EQU     0FF66H          ;address of Timer 2 Control Register
+  FF62                =1    55     Tmr2MaxCnt      EQU     0FF62H          ;address of Timer 2 Max Count A Register
+  FF60                =1    56     Tmr2Count       EQU     0FF60H          ;address of Timer 2 Count Register
+                      =1    57     
+  FF5E                =1    58     Tmr1Ctrl        EQU     0FF5EH          ; address of Timer 1 Control Register
+  FF58                =1    59     Tmr1Count       EQU     0FF58H          ; address of Timer 1 Count Register
+  FF5A                =1    60     Tmr1MaxCntA     EQU     0FF5AH          ; address of Timer 1 Max Count A Register
+                      =1    61     
+                      =1    62     ; Control Register Values
+  E001                =1    63     Tmr0CtrlVal     EQU     0E001H          ;value to write to Timer 0 Control Register
+                      =1    64                                             ;1---------------  enable timer
+                      =1    65                                             ;-1--------------  write to control
+                      =1    66                                             ;--1-------------  enable interrupts
+                      =1    67                                             ;------------00--  do not count timer 2 outs
+                      =1    68                                             ;--------------0-  single counter mode
+                      =1    69                                             ;---------------1  continuous mode
+  C001                =1    70     Tmr2CtrlVal     EQU     0C001H          ;value to write to Timer 2 Control Register
+                      =1    71                                             ;1---------------  enable timer
+                      =1    72                                             ;-1--------------  write to control
+                      =1    73                                             ;--0-------------  set interrupts on
+                      =1    74                                             ;---------------1  continuous mode
+                      =1    75     
+                      =1    76     
+  E009                =1    77     Tmr1CtrlVal     EQU     0E009H          ;value to write to Timer 0 Control Registe
+                      =1    78                                             ;1---------------  enable timer
+                      =1    79                                             ;-1--------------  write to control
+                      =1    80                                             ;--1-------------  enable interrupts
+                      =1    81                                             ;------------10--  count timer 2 outs
+                      =1    82                                             ;--------------0-  single counter mode
+                      =1    83                                             ;---------------1  continuous mode
+                      =1    84     
+                      =1    85     ; Interrupt Vectors
+  0008                =1    86     Tmr0Vec         EQU     8               ;interrupt vector for Timer 0
+  0013                =1    87     Tmr2Vec         EQU     19              ;interrupt vector for Timer 2   
+  0012                =1    88     Tmr1Vec         EQU     18              ;interrupt vector for Timer 1
+                      =1    89     
+  000E                =1    90     SerialVec       EQU     14              ; Interrupt Vector for Interrupt 2
+                      =1    91     
+                      =1    92     ; Interrupt Controller Definitions
+                      =1    93     
+                      =1    94     ; Addresses
+  FF32                =1    95     INTCtrlrCtrl    EQU     0FF32H          ;address of interrupt controller for timer
+  FF22                =1    96     INTCtrlrEOI     EQU     0FF22H          ;address of interrupt controller EOI register
+                      =1    97     
+                      =1    98     ; Register Values
+  0001                =1    99     INTCtrlrCVal    EQU     00001H          ;set priority for timers to 1 and enable
+  0008                =1   100     Timer0EOI       EQU     00008H          ;Timer EOI command (same for all timers)
+  8000                =1   101     NonSpecEOI      EQU     08000H          ;Non-specific EOI command
+                      =1   102     
+                      =1   103     
+                      =1   104     ; Chip Select Unit Definitions
+                      =1   105     
+8086/87/88/186 MACRO ASSEMBLER    USERMENU                                                 15:54:55  04/23/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   106     ; Addresses
+  FFA4                =1   107     PACSreg         EQU     0FFA4H          ;address of PACS register
+  FFA8                =1   108     MPCSreg         EQU     0FFA8H          ;address of MPCS register
+                      =1   109     
+                      =1   110     ; Control Register Values
+  0003                =1   111     PACSval         EQU     00003H          ;PCS base at 0, 3 wait states
+  0183                =1   112     MPCSval         EQU     00183H          ;PCS in I/O space, use PCS5/6, 3 wait states
+                      =1   113     
+                      =1   114     
+                      =1   115     
+                      =1   116     ; Timing Definitions
+                      =1   117     
+  0900                =1   118     COUNTS_PER_MS_0 EQU     2304            ;number of timer counts per 1 ms for timer 1
+  0900                =1   119     COUNTS_PER_MS_2 EQU     2304            ; number of timer counts per 1 ms for timer 2
+  0064                =1   120     MS_PER_STEP     EQU     100             ;number of ms for crane step
+                      =1   121     
+                      =1   122     
+                      =1   123     ;KepPad Key Values
+                      =1   124     ; Each key is named after its row and column numbers
+                      =1   125     
+  002E                =1   126     Key11           EQU     0002EH
+  002D                =1   127     Key12           EQU     0002DH
+  002B                =1   128     Key13           EQU     0002BH
+  0027                =1   129     Key14           EQU     00027H
+  001E                =1   130     Key21           EQU     0001EH
+  001D                =1   131     Key22           EQU     0001DH
+  001B                =1   132     Key23           EQU     0001BH
+  0017                =1   133     Key24           EQU     00017H
+  000E                =1   134     Key31           EQU     0000EH
+  000D                =1   135     Key32           EQU     0000DH
+  000B                =1   136     Key33           EQU     0000BH
+  0007                =1   137     Key34           EQU     00007H
+                      =1   138     
+                      =1   139     ;Key Status
+  0000                =1   140     NoKeystate              EQU     0
+  0001                =1   141     KeyPressedstate         EQU     1
+  0002                =1   142     KeyDebouncedstate       EQU     2
+                      =1   143     
+  00DF                =1   144     NoKeyValue              EQU     000DFH
+                      =1   145     
+  0002                =1   146     KeyPadRows      EQU     2
+                      =1   147     
+  0001                =1   148     True            EQU     1
+  0000                =1   149     False           EQU     0
+                      =1   150     
+  0014                =1   151     AutoRepeatRate  EQU     20
+                      =1   152     
+                      =1   153     
+                      =1   154     ; General Definitions
+                      =1   155     
+  0004                =1   156     RESERVED_VECS   EQU     4               ;vectors reserved for debugger
+                      =1   157     
+  0080                =1   158     LEDDisplay      EQU     0080H           ;display address
+                      =1   159     
+  0008                =1   160     NO_DIGITS       EQU     8               ;number of digits in the display
+8086/87/88/186 MACRO ASSEMBLER    USERMENU                                                 15:54:55  04/23/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   161                                      
+  0014                =1   162     DebounceTime    EQU     20              ; number of ms to debounce each key
+                      =1   163     
+  0000                =1   164     KeypadPort      EQU     0               ; Port # of Keypad
+                      =1   165     
+  0001                =1   166     MagnetOn        EQU     1
+  0000                =1   167     MagnetOff       EQU     0       
+                      =1   168     
+                      =1   169     
+                           170     
+                           171     EXTRN   Display :NEAR
+                           172     EXTRN   GetKey  :NEAR
+                           173     
+                           174     EXTRN   LowerCrane      :NEAR
+                           175     EXTRN   RotateCrane     :NEAR
+                           176     EXTRN   EnergizeMagnet  :NEAR
+                           177     
+----                       178     CODE SEGMENT PUBLIC 'CODE'
+                           179     
+                           180             ASSUME  CS: CGROUP, DS: DATA
+                           181     
+                           182     ; UserMenu
+                           183     ;
+                           184     ; Description:      Function gets the key presses from the key pad and
+                           185     ;                   appropriately sends motor control values to the
+                           186     ;                   RoboCrane.
+                           187     ;                   -   see attached keypad layout for functions assigned
+                           188     ;                       to each key
+                           189     ;
+                           190     ; Arguments:        None.
+                           191     ; Return Value:     None.
+                           192     ;
+                           193     ; Local Variables:  None
+                           194     ;
+                           195     ; Shared Variables: None.
+                           196     ; Global Variables: StringBuffer, CraneVert, CraneAngle, CraneMagnet
+                           197     ;                   
+                           198     ;                   
+                           199     ;
+                           200     ; Input:            Key Pad Input
+                           201     ; Output:           None.
+                           202     ;
+                           203     ; Error Handling:   None.
+                           204     ;
+                           205     ; Algorithms:       None.
+                           206     ;                   
+                           207     ;                   
+                           208     ; Data Structures:  None.
+                           209     ;
+                           210     ; Registers Used:   AX
+                           211     ; Stack Depth:      1 words
+                           212     ;
+                           213     ; Author:           Chirath Neranjena
+                           214     ; Last Modified:    MAR 18 2002
+                           215     
+8086/87/88/186 MACRO ASSEMBLER    USERMENU                                                 15:54:55  04/23/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           216     
+                           217     
+                           218     
+0000                       219     UserMenu        PROC    NEAR
+                           220                     PUBLIC  UserMenu
+                           221     
+0000 50                    222             PUSH    AX      ; Save Registers
+                           223     
+0001 B8----         R      224             MOV     AX, SEG StringBuffer    ; Display message to acknowledge menu entry
+0004 8EC0                  225             MOV     ES, AX
+0006 B80000         E      226             MOV     AX, OFFSET  StringBuffer
+0009 8BF0                  227             MOV     SI, AX
+                           228             
+000B B055                  229             MOV     AL, 85
+000D 268804                230             MOV     ES:[SI], AL             ; 83 - U
+0010 46                    231             INC     SI
+0011 B053                  232             MOV     AL, 83
+0013 268804                233             MOV     ES:[SI], AL             ; 116 - S
+0016 46                    234             INC     SI                      
+0017 B045                  235             MOV     AL, 69
+0019 268804                236             MOV     ES:[SI], AL             ; 65 - E
+001C 46                    237             INC     SI
+001D B072                  238             MOV     AL, 114
+001F 268804                239             MOV     ES:[SI], AL             ; 114 - r
+0022 46                    240             INC     SI
+0023 B000                  241             MOV     AL, 0
+0025 268804                242             MOV     ES:[SI], AL             ; null char for termination
+0028 46                    243             INC     SI
+                           244     
+0029 B80000         E      245             MOV     AX, OFFSET  StringBuffer ; return to the top of message 
+002C 8BF0                  246             MOV     SI, AX
+                           247     
+002E E80000         E      248             CALL    Display                 ; now call display to display message
+                           249     
+                           250     
+0031                       251     UserLoop:
+                           252     
+                           253             
+0031 E80000         E      254             CALL    GetKey          ; Get Key from Key pad  
+                           255     
+0034 3C2B                  256             CMP     AL, Key13       ; If key = Up
+0036 7417                  257             JE      CraneRaise      ;     Lower Crane
+0038 3C0B                  258             CMP     AL, Key33       ; If Key =  Down
+003A 7420                  259             JE      CraneLower      ;     Raise Crane       
+                           260     
+003C 3C1D                  261             CMP     AL, Key22       ; If key = Left
+003E 7429                  262             JE      CraneRotLeft    ;     rotate anti clock wise
+0040 3C17                  263             CMP     AL, Key24       ; If Key =  Right
+0042 7433                  264             JE      CraneRotRight   ;     rotate clock wise 
+                           265     
+0044 3C1B                  266             CMP     AL, Key23       ; If key = Middle
+0046 743D                  267             JE      MagnetChange    ;     Change Magnet Status
+                           268     
+0048 3C2D                  269             CMP     AL, Key12       ; If key = Return
+004A 7462                  270             JE      UserReturn    ;     go back to main menu
+8086/87/88/186 MACRO ASSEMBLER    USERMENU                                                 15:54:55  04/23/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           271     
+004C EB5E90                272             JMP     EndUser
+                           273     
+004F                       274     CraneRaise:
+                           275     
+004F B80500                276             MOV     AX, 5
+0052 01060000       E      277             ADD     CraneVert, AX   ; remember the new position of the crane
+0056 E80000         E      278             CALL    LowerCrane      ; raise the crane (5)
+0059 EB5190                279             JMP     EndUser
+                           280     
+005C                       281     CraneLower:
+                           282     
+005C B8FBFF                283             MOV     AX, -5
+005F 01060000       E      284             ADD     CraneVert, AX   ; remember the new position of the crane
+0063 E80000         E      285             CALL    LowerCrane      ; Lower the crane (5)
+0066 EB4490                286             JMP     EndUser
+                           287     
+0069                       288     CraneRotLeft:
+                           289     
+0069 832E000005     E      290             SUB     CraneAngle, 5
+006E A10000         E      291             MOV     AX, CraneAngle          ; remember the new position of the crane
+0071 E80000         E      292             CALL    RotateCrane             ; Rotate the crane (-5)
+0074 EB3690                293             JMP     EndUser
+                           294     
+0077                       295     CraneRotRight:
+                           296     
+0077 8306000005     E      297             ADD     CraneAngle, 5
+007C A10000         E      298             MOV     AX, CraneAngle          ; remember the new position of the crane
+007F E80000         E      299             CALL    RotateCrane             ; Rotate the Crane (5)
+0082 EB2890                300             JMP     EndUser
+                           301     
+0085                       302     MagnetChange:
+                           303     
+0085 833E000001     E      304             CMP     CraneMagnet, MagnetOn   ; Check the Current ctatus of the magnet
+008A 7402                  305             JE      TurnMagnetOff           ;  If magnet is On then
+008C 750F                  306             JNE     TurnMagnetOn
+                           307     
+008E                       308     TurnMagnetOff:
+                           309     
+008E B80000                310             MOV     AX, 0
+0091 E80000         E      311             CALL    EnergizeMagnet          ;       Turn off the magnet
+0094 C70600000000   E      312             MOV     CraneMagnet, MagnetOff  ;       remember magnet is now off
+009A EB1090                313             JMP     EndUser
+                           314     
+009D                       315     TurnMagnetOn:                           ; Else
+                           316     
+009D B80A00                317             MOV     AX, 10
+00A0 E80000         E      318             CALL    EnergizeMagnet          ;       Turn On the magnet
+00A3 C70600000100   E      319             MOV     CraneMagnet, MagnetOn   ;       remember now the magnet is on
+00A9 EB0190                320             JMP     EndUser                 ; ENDIF
+                           321     
+00AC                       322     EndUser:
+                           323     
+00AC EB83                  324             JMP     UserLoop                ; Go back and start again
+                           325     
+8086/87/88/186 MACRO ASSEMBLER    USERMENU                                                 15:54:55  04/23/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00AE                       326     UserReturn:
+                           327     
+00AE 58                    328             POP     AX                      ; restore registers
+                           329                     
+00AF C3                    330             RET                             ; return to the main menu
+                           331     
+                           332     UserMenu        ENDP
+                           333     
+----                       334     CODE    ENDS
+                           335     
+----                       336     DATA    SEGMENT PUBLIC  'DATA'
+                           337     
+                           338     EXTRN   StringBuffer    :BYTE   ; ; Buffer for storing display messages
+                           339     
+                           340     EXTRN   CraneAngle      :WORD   ; Holds the Absolute Angle       
+                           341     EXTRN   CraneVert       :WORD   ; Holds the Absolute Vertical position         
+                           342     EXTRN   CraneMagnet     :WORD   ; Holds the status of the magnet        
+                           343     
+                           344     
+                           345     
+----                       346     DATA    ENDS
+                           347     
+                           348     
+                           349             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

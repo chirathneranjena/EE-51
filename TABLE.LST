@@ -1,0 +1,2047 @@
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE PARSETABLES
+OBJECT MODULE PLACED IN TABLE.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE TABLE.ASM
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     NAME  PARSETABLES
+                             2     
+                             3     
+                             4     CGROUP  GROUP   CODE
+                             5     
+----                         6     CODE    SEGMENT PUBLIC 'CODE'
+                             7     
+                             8     
+0000                         9     ASCIITable   LABEL   BYTE
+                            10                  PUBLIC  ASCIITable
+                            11     
+0000 00                     12             DB      0               ;NUL                    0
+0001 00                     13             DB      0               ;SOH                    1
+0002 00                     14             DB      0               ;STX                    2
+0003 00                     15             DB      0               ;ETX                    3
+0004 00                     16             DB      0               ;EOT                    4
+0005 00                     17             DB      0               ;ENQ                    5
+0006 00                     18             DB      0               ;ACK                    6
+0007 00                     19             DB      0               ;BEL                    7
+0008 00                     20             DB      0               ;backspace              8
+0009 00                     21             DB      0               ;TAB                    9
+000A 00                     22             DB      0               ;new line               10
+000B 00                     23             DB      0               ;vertical tab           11
+000C 00                     24             DB      0               ;form feed              12
+000D 01                     25             DB      1               ;carriage return        13
+000E 00                     26             DB      0               ;SO                     14
+000F 00                     27             DB      0               ;SI                     15                      
+0010 00                     28             DB      0               ;DLE                    16
+0011 00                     29             DB      0               ;DC1                    17
+0012 00                     30             DB      0               ;DC2                    18
+0013 00                     31             DB      0               ;DC3                    19
+0014 00                     32             DB      0               ;DC4                    20
+0015 00                     33             DB      0               ;NAK                    21
+0016 00                     34             DB      0               ;SYN                    22
+0017 00                     35             DB      0               ;ETB                    23
+0018 00                     36             DB      0               ;CAN                    24
+0019 00                     37             DB      0               ;EM                     25
+001A 00                     38             DB      0               ;SUB                    26
+001B 00                     39             DB      0               ;escape                 27
+001C 00                     40             DB      0               ;FS                     28
+001D 00                     41             DB      0               ;GS                     29
+001E 00                     42             DB      0               ;AS                     30
+001F 00                     43             DB      0               ;US                     31
+                            44     
+                            45     ;       DB      .gfedcba                ;ASCII character
+                            46     
+0020 00                     47             DB      0               ;space                  32
+0021 00                     48             DB      0               ;!                      33
+0022 00                     49             DB      0               ;"                      34
+0023 00                     50             DB      0               ;#                      35
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0024 00                     51             DB      0               ;$                      36
+0025 00                     52             DB      0               ;percent symbol         37      
+0026 00                     53             DB      0               ;&                      38
+0027 00                     54             DB      0               ;'                      39
+0028 00                     55             DB      0               ;(                      40
+0029 00                     56             DB      0               ;)                      41
+002A 00                     57             DB      0               ;*                      42
+002B 02                     58             DB      2               ;+                      43
+002C 00                     59             DB      0               ;,                      44
+002D 03                     60             DB      3               ;-                      45
+002E 00                     61             DB      0               ;.                      46
+002F 00                     62             DB      0               ;/                      47
+0030 04                     63             DB      4               ;0                      48
+0031 05                     64             DB      5               ;1                      49
+0032 06                     65             DB      6               ;2                      50
+0033 07                     66             DB      7               ;3                      51
+0034 08                     67             DB      8               ;4                      52
+0035 09                     68             DB      9               ;5                      53
+0036 0A                     69             DB     10               ;6                      54
+0037 0B                     70             DB     11               ;7                      55
+0038 0C                     71             DB     12               ;8                      56
+0039 0D                     72             DB     13               ;9                      57
+003A 00                     73             DB      0               ;:                      58
+003B 00                     74             DB      0               ;;                      59
+003C 00                     75             DB      0               ;<                      60
+003D 00                     76             DB      0               ;=                      61
+003E 00                     77             DB      0               ;>                      62
+003F 00                     78             DB      0               ;?                      63
+                            79     
+                            80     ;       DB      .gfedcba                ;ASCII character
+                            81     
+0040 00                     82             DB      0               ;@                      64
+0041 0E                     83             DB     14               ;A                      65
+0042 00                     84             DB      0               ;B                      66
+0043 00                     85             DB      0               ;C                      67
+0044 00                     86             DB      0               ;D                      68
+0045 15                     87             DB     21               ;E                      69
+0046 13                     88             DB     19               ;F                      70
+0047 00                     89             DB      0               ;G                      71
+0048 00                     90             DB      0               ;H                      72
+0049 00                     91             DB      0               ;I                      73
+004A 00                     92             DB      0               ;J                      74
+004B 00                     93             DB      0               ;K                      75
+004C 00                     94             DB      0               ;L                      76
+004D 00                     95             DB      0               ;M                      77
+004E 12                     96             DB     18               ;N                      78
+004F 00                     97             DB      0               ;O                      79
+0050 14                     98             DB     20               ;P                      80
+0051 00                     99             DB      0               ;Q                      81
+0052 0F                    100             DB     15               ;R                      82
+0053 00                    101             DB      0               ;S                      83
+0054 00                    102             DB      0               ;T                      84
+0055 00                    103             DB      0               ;U                      85
+0056 11                    104             DB     17               ;V                      86
+0057 00                    105             DB      0               ;W                      87
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0058 00                    106             DB      0               ;X                      88
+0059 00                    107             DB      0               ;Y                      89
+005A 10                    108             DB     16               ;Z                      90
+005B 00                    109             DB      0               ;[                      91
+005C 00                    110             DB      0               ;\                      92
+005D 00                    111             DB      0               ;]                      93
+005E 00                    112             DB      0               ;^                      94
+005F 00                    113             DB      0              ;_                       95
+                           114                             
+                           115     ;       DB      .gfedcba                ;ASCII character
+                           116     
+0060 00                    117             DB      0               ;`                      96
+0061 00                    118             DB      0               ;a                      97
+0062 00                    119             DB      0               ;b                      98
+0063 00                    120             DB      0               ;c                      99
+0064 00                    121             DB      0               ;d                      100
+0065 00                    122             DB      0               ;e                      101
+0066 00                    123             DB      0               ;f                      102
+0067 00                    124             DB      0               ;g                      103
+0068 00                    125             DB      0               ;h                      104
+0069 00                    126             DB      0               ;i                      105
+006A 00                    127             DB      0               ;j                      106
+006B 00                    128             DB      0               ;k                      107
+006C 00                    129             DB      0               ;l                      108
+006D 00                    130             DB      0               ;m                      109
+006E 00                    131             DB      0               ;n                      110
+006F 00                    132             DB      0               ;o                      111
+0070 00                    133             DB      0               ;p                      112
+0071 00                    134             DB      0               ;q                      113
+0072 00                    135             DB      0               ;r                      114
+0073 00                    136             DB      0               ;s                      115
+0074 00                    137             DB      0               ;t                      116
+0075 00                    138             DB      0               ;u                      117
+0076 00                    139             DB      0               ;v                      118
+0077 00                    140             DB      0               ;w                      119
+0078 00                    141             DB      0               ;x                      120
+0079 00                    142             DB      0               ;y                      121
+007A 00                    143             DB      0               ;z                      122
+007B 00                    144             DB      0               ;{                      123
+007C 00                    145             DB      0               ;|                      124
+007D 00                    146             DB      0               ;}                      125
+007E 00                    147             DB      0               ;~                      126
+007F 00                    148             DB      0               ;rubout                 127
+                           149     
+                           150     
+                           151     
+0080                       152     StateTable   LABEL   BYTE
+                           153                  PUBLIC  StateTable
+                           154     
+                           155     
+0080 0000                  156             DW      OFFSET ParseError               ; path Begin
+*** ERROR #38 IN 156, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 156, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 156, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0082 0000                  157             DW      OFFSET ParseError       
+*** ERROR #38 IN 157, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 157, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 157, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0084 0000                  158             DW      OFFSET ParseError
+*** ERROR #38 IN 158, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 158, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 158, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0086 0000                  159             DW      OFFSET ParseError
+*** ERROR #38 IN 159, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 159, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 159, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0088 0000                  160             DW      OFFSET ParseError
+*** ERROR #38 IN 160, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 160, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 160, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+008A 0000                  161             DW      OFFSET ParseError
+*** ERROR #38 IN 161, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 161, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 161, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+008C 0000                  162             DW      OFFSET ParseError
+*** ERROR #38 IN 162, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 162, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 162, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+008E 0000                  163             DW      OFFSET ParseError
+*** ERROR #38 IN 163, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 163, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 163, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0090 0000                  164             DW      OFFSET ParseError
+*** ERROR #38 IN 164, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 164, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 164, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0092 0000                  165             DW      OFFSET ParseError
+*** ERROR #38 IN 165, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 165, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 165, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0094 0000                  166             DW      OFFSET ParseError
+*** ERROR #38 IN 166, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 166, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 166, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0096 0000                  167             DW      OFFSET ParseError
+*** ERROR #38 IN 167, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 167, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 167, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0098 0000                  168             DW      OFFSET ParseError
+*** ERROR #38 IN 168, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 168, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 168, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+009A 0000                  169             DW      OFFSET ParseError
+*** ERROR #38 IN 169, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 169, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 169, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+009C 0000                  170             DW      OFFSET ParseError
+*** ERROR #38 IN 170, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 170, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 170, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+009E 0000                  171             DW      OFFSET ParseError
+*** ERROR #38 IN 171, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 171, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 171, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00A0 0000                  172             DW      OFFSET ParseError
+*** ERROR #38 IN 172, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 172, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 172, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00A2 0000                  173             DW      OFFSET ParseError
+*** ERROR #38 IN 173, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 173, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 173, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00A4 0000                  174             DW      OFFSET ParseError
+*** ERROR #38 IN 174, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 174, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 174, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00A6 0000                  175             DW      OFFSET PathInit
+*** ERROR #38 IN 175, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 175, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 175, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00A8 0000                  176             DW      OFFSET ParseError
+*** ERROR #38 IN 176, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 176, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 176, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           177             
+00AA 0000                  178             DW      OFFSET ParseError               ; path just started
+*** ERROR #38 IN 178, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 178, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 178, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00AC 0000                  179             DW      OFFSET ParseError
+*** ERROR #38 IN 179, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 179, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 179, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00AE 0000                  180             DW      OFFSET ParseError
+*** ERROR #38 IN 180, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 180, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 180, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00B0 0000                  181             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 181, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 181, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 181, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00B2 0000                  182             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 182, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 182, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 182, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00B4 0000                  183             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 183, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 183, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 183, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00B6 0000                  184             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 184, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 184, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 184, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00B8 0000                  185             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 185, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 185, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 185, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00BA 0000                  186             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 186, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 186, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 186, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00BC 0000                  187             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 187, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 187, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 187, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00BE 0000                  188             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 188, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 188, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 188, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00C0 0000                  189             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 189, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 189, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 189, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00C2 0000                  190             DW      OFFSET GetFirstPathNum
+*** ERROR #38 IN 190, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 190, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 190, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00C4 0000                  191             DW      OFFSET ParseError
+*** ERROR #38 IN 191, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 191, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 191, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00C6 0000                  192             DW      OFFSET ParseError
+*** ERROR #38 IN 192, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 192, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 192, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00C8 0000                  193             DW      OFFSET ParseError
+*** ERROR #38 IN 193, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 193, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 193, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00CA 0000                  194             DW      OFFSET ParseError
+*** ERROR #38 IN 194, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 194, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 194, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00CC 0000                  195             DW      OFFSET ParseError
+*** ERROR #38 IN 195, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 195, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 195, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00CE 0000                  196             DW      OFFSET ParseError
+*** ERROR #38 IN 196, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 196, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 196, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00D0 0000                  197             DW      OFFSET ParseError
+*** ERROR #38 IN 197, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 197, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 197, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00D2 0000                  198             DW      OFFSET ParseError
+*** ERROR #38 IN 198, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 198, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 198, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           199     
+00D4 0000                  200             DW      OFFSET Enter                    ; path started done
+*** ERROR #38 IN 200, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 200, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 200, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00D6 0000                  201             DW      OFFSET ParseError
+*** ERROR #38 IN 201, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 201, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 201, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00D8 0000                  202             DW      OFFSET ParseError
+*** ERROR #38 IN 202, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 202, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 202, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00DA 0000                  203             DW      OFFSET GetPathNum
+*** ERROR #38 IN 203, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 203, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 203, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00DC 0000                  204             DW      OFFSET GetPathNum
+*** ERROR #38 IN 204, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 204, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 204, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00DE 0000                  205             DW      OFFSET GetPathNum
+*** ERROR #38 IN 205, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 205, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 205, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00E0 0000                  206             DW      OFFSET GetPathNum
+*** ERROR #38 IN 206, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 206, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 206, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00E2 0000                  207             DW      OFFSET GetPathNum
+*** ERROR #38 IN 207, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 207, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 207, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00E4 0000                  208             DW      OFFSET GetPathNum
+*** ERROR #38 IN 208, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 208, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 208, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00E6 0000                  209             DW      OFFSET GetPathNum
+*** ERROR #38 IN 209, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 209, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 209, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00E8 0000                  210             DW      OFFSET GetPathNum
+*** ERROR #38 IN 210, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 210, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 210, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00EA 0000                  211             DW      OFFSET GetPathNum
+*** ERROR #38 IN 211, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 211, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 211, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00EC 0000                  212             DW      OFFSET GetPathNum
+*** ERROR #38 IN 212, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 212, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 212, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00EE 0000                  213             DW      OFFSET AAfterPath       
+*** ERROR #38 IN 213, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 213, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 213, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00F0 0000                  214             DW      OFFSET RAfterPath
+*** ERROR #38 IN 214, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 214, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 214, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00F2 0000                  215             DW      OFFSET ZAfterPath
+*** ERROR #38 IN 215, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 215, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 215, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00F4 0000                  216             DW      OFFSET VAfterPath
+*** ERROR #38 IN 216, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 216, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 216, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00F6 0000                  217             DW      OFFSET NAfterPath
+*** ERROR #38 IN 217, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 217, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 217, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00F8 0000                  218             DW      OFFSET FAfterPath
+*** ERROR #38 IN 218, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 218, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 218, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00FA 0000                  219             DW      OFFSET PathDone
+*** ERROR #38 IN 219, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 219, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 219, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+00FC 0000                  220             DW      OFFSET PArseError
+*** ERROR #38 IN 220, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 220, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 220, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           221     
+00FE 0000                  222             DW      OFFSET ParseError               ; A started
+*** ERROR #38 IN 222, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 222, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 222, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0100 0000                  223             DW      OFFSET RotateSignPositive
+*** ERROR #38 IN 223, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 223, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 223, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0102 0000                  224             DW      OFFSET RotateSignNegative
+*** ERROR #38 IN 224, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 224, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 224, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0104 0000                  225             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 225, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 225, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 225, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0106 0000                  226             DW      OFFSET GetFirstRotNumA          
+*** ERROR #38 IN 226, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 226, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 226, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0108 0000                  227             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 227, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 227, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 227, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+010A 0000                  228             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 228, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 228, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 228, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+010C 0000                  229             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 229, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 229, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 229, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+010E 0000                  230             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 230, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 230, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 230, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0110 0000                  231             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 231, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 231, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 231, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0112 0000                  232             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 232, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 232, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 232, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0114 0000                  233             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 233, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 233, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 233, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0116 0000                  234             DW      OFFSET GetFirstRotNumA
+*** ERROR #38 IN 234, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 234, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 234, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0118 0000                  235             DW      OFFSET ParseError
+*** ERROR #38 IN 235, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 235, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 235, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+011A 0000                  236             DW      OFFSET ParseError
+*** ERROR #38 IN 236, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 236, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 236, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+011C 0000                  237             DW      OFFSET ParseError
+*** ERROR #38 IN 237, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 237, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 237, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+011E 0000                  238             DW      OFFSET ParseError
+*** ERROR #38 IN 238, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 238, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 238, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0120 0000                  239             DW      OFFSET ParseError
+*** ERROR #38 IN 239, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 239, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 239, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0122 0000                  240             DW      OFFSET ParseError
+*** ERROR #38 IN 240, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 240, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 240, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0124 0000                  241             DW      OFFSET ParseError
+*** ERROR #38 IN 241, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 241, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 241, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0126 0000                  242             DW      OFFSET ParseError
+*** ERROR #38 IN 242, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 242, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 242, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           243     
+0128 0000                  244             DW      OFFSET Enter                    ; A Started Done
+*** ERROR #38 IN 244, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 244, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 244, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+012A 0000                  245             DW      OFFSET ParseError               
+*** ERROR #38 IN 245, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 245, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 245, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+012C 0000                  246             DW      OFFSET ParseError
+*** ERROR #38 IN 246, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 246, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 246, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+012E 0000                  247             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 247, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 247, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 247, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0130 0000                  248             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 248, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 248, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 248, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0132 0000                  249             DW      OFFSET GetRotNum                
+*** ERROR #38 IN 249, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 249, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 249, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0134 0000                  250             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 250, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 250, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 250, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0136 0000                  251             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 251, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 251, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 251, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0138 0000                  252             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 252, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 252, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 252, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+013A 0000                  253             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 253, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 253, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 253, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+013C 0000                  254             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 254, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 254, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 254, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+013E 0000                  255             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 255, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 255, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 255, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0140 0000                  256             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 256, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 256, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 256, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0142 0000                  257             DW      OFFSET ParseError
+*** ERROR #38 IN 257, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 257, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 257, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0144 0000                  258             DW      OFFSET ParseError
+*** ERROR #38 IN 258, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 258, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 258, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0146 0000                  259             DW      OFFSET ZAfterRot
+*** ERROR #38 IN 259, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 259, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 259, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0148 0000                  260             DW      OFFSET VAfterRot
+*** ERROR #38 IN 260, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 260, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 260, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+014A 0000                  261             DW      OFFSET NForAll
+*** ERROR #38 IN 261, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 261, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 261, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+014C 0000                  262             DW      OFFSET FForAll
+*** ERROR #38 IN 262, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 262, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 262, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+014E 0000                  263             DW      OFFSET PathDone
+*** ERROR #38 IN 263, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 263, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 263, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0150 0000                  264             DW      OFFSET ParseError
+*** ERROR #38 IN 264, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 264, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 264, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           265     
+0152 0000                  266             DW      OFFSET ParseError                       ; R Started
+*** ERROR #38 IN 266, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 266, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 266, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0154 0000                  267             DW      OFFSET RotateSignPositive
+*** ERROR #38 IN 267, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 267, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 267, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0156 0000                  268             DW      OFFSET RotateSignNegative
+*** ERROR #38 IN 268, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 268, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 268, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0158 0000                  269             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 269, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 269, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 269, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   12
+
+
+LOC  OBJ                  LINE     SOURCE
+
+015A 0000                  270             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 270, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 270, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 270, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+015C 0000                  271             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 271, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 271, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 271, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+015E 0000                  272             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 272, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 272, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 272, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0160 0000                  273             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 273, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 273, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 273, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0162 0000                  274             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 274, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 274, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 274, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0164 0000                  275             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 275, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 275, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 275, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0166 0000                  276             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 276, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 276, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 276, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0168 0000                  277             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 277, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 277, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 277, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+016A 0000                  278             DW      OFFSET GetFirstRotNumR
+*** ERROR #38 IN 278, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 278, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 278, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+016C 0000                  279             DW      OFFSET ParseError
+*** ERROR #38 IN 279, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 279, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 279, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+016E 0000                  280             DW      OFFSET ParseError
+*** ERROR #38 IN 280, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 280, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 280, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0170 0000                  281             DW      OFFSET ParseError
+*** ERROR #38 IN 281, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 281, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 281, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0172 0000                  282             DW      OFFSET ParseError
+*** ERROR #38 IN 282, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 282, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 282, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0174 0000                  283             DW      OFFSET ParseError
+*** ERROR #38 IN 283, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 283, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   13
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 283, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0176 0000                  284             DW      OFFSET ParseError
+*** ERROR #38 IN 284, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 284, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 284, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0178 0000                  285             DW      OFFSET ParseError
+*** ERROR #38 IN 285, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 285, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 285, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+017A 0000                  286             DW      OFFSET ParseError
+*** ERROR #38 IN 286, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 286, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 286, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           287     
+017C 0000                  288             DW      OFFSET Enter                            ; R Started Done
+*** ERROR #38 IN 288, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 288, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 288, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+017E 0000                  289             DW      OFFSET ParseError
+*** ERROR #38 IN 289, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 289, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 289, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0180 0000                  290             DW      OFFSET ParseError
+*** ERROR #38 IN 290, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 290, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 290, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0182 0000                  291             DW      OFFSET GetRotNum
+*** ERROR #38 IN 291, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 291, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 291, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0184 0000                  292             DW      OFFSET GetRotNum
+*** ERROR #38 IN 292, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 292, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 292, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0186 0000                  293             DW      OFFSET GetRotNum
+*** ERROR #38 IN 293, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 293, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 293, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0188 0000                  294             DW      OFFSET GetRotNum
+*** ERROR #38 IN 294, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 294, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 294, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+018A 0000                  295             DW      OFFSET GetRotNum
+*** ERROR #38 IN 295, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 295, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 295, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+018C 0000                  296             DW      OFFSET GetRotNum
+*** ERROR #38 IN 296, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 296, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 296, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+018E 0000                  297             DW      OFFSET GetRotNum
+*** ERROR #38 IN 297, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 297, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 297, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   14
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0190 0000                  298             DW      OFFSET GetRotNum
+*** ERROR #38 IN 298, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 298, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 298, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0192 0000                  299             DW      OFFSET GetRotNum
+*** ERROR #38 IN 299, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 299, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 299, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0194 0000                  300             DW      OFFSET GetRotNum
+*** ERROR #38 IN 300, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 300, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 300, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0196 0000                  301             DW      OFFSET ParseError
+*** ERROR #38 IN 301, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 301, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 301, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0198 0000                  302             DW      OFFSET ParseError
+*** ERROR #38 IN 302, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 302, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 302, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+019A 0000                  303             DW      OFFSET ZAfterRot
+*** ERROR #38 IN 303, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 303, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 303, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+019C 0000                  304             DW      OFFSET VAfterRot
+*** ERROR #38 IN 304, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 304, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 304, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+019E 0000                  305             DW      OFFSET NForAll
+*** ERROR #38 IN 305, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 305, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 305, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01A0 0000                  306             DW      OFFSET FForAll
+*** ERROR #38 IN 306, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 306, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 306, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01A2 0000                  307             DW      OFFSET PathDone
+*** ERROR #38 IN 307, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 307, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 307, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01A4 0000                  308             DW      OFFSET ParseError
+*** ERROR #38 IN 308, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 308, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 308, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           309     
+01A6 0000                  310             DW      OFFSET ParseError                       ; Z Started
+*** ERROR #38 IN 310, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 310, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 310, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01A8 0000                  311             DW      OFFSET VertSignPositive
+*** ERROR #38 IN 311, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 311, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 311, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01AA 0000                  312             DW      OFFSET VertSignNegative
+*** ERROR #38 IN 312, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   15
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 312, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 312, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01AC 0000                  313             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 313, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 313, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 313, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01AE 0000                  314             DW      OFFSET GetFirstVertNumZ 
+*** ERROR #38 IN 314, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 314, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 314, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01B0 0000                  315             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 315, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 315, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 315, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01B2 0000                  316             DW      OFFSET GetFirstVertNumZ 
+*** ERROR #38 IN 316, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 316, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 316, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01B4 0000                  317             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 317, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 317, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 317, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01B6 0000                  318             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 318, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 318, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 318, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01B8 0000                  319             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 319, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 319, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 319, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01BA 0000                  320             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 320, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 320, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 320, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01BC 0000                  321             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 321, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 321, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 321, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01BE 0000                  322             DW      OFFSET GetFirstVertNumZ
+*** ERROR #38 IN 322, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 322, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 322, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01C0 0000                  323             DW      OFFSET ParseError
+*** ERROR #38 IN 323, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 323, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 323, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01C2 0000                  324             DW      OFFSET ParseError
+*** ERROR #38 IN 324, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 324, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 324, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01C4 0000                  325             DW      OFFSET ParseError
+*** ERROR #38 IN 325, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 325, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 325, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   16
+
+
+LOC  OBJ                  LINE     SOURCE
+
+01C6 0000                  326             DW      OFFSET ParseError
+*** ERROR #38 IN 326, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 326, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 326, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01C8 0000                  327             DW      OFFSET ParseError
+*** ERROR #38 IN 327, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 327, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 327, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01CA 0000                  328             DW      OFFSET ParseError
+*** ERROR #38 IN 328, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 328, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 328, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01CC 0000                  329             DW      OFFSET ParseError
+*** ERROR #38 IN 329, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 329, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 329, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01CE 0000                  330             DW      OFFSET ParseError
+*** ERROR #38 IN 330, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 330, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 330, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           331     
+01D0 0000                  332             DW      OFFSET Enter                    ; Z Started Done
+*** ERROR #38 IN 332, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 332, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 332, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01D2 0000                  333             DW      OFFSET ParseError
+*** ERROR #38 IN 333, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 333, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 333, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01D4 0000                  334             DW      OFFSET ParseError
+*** ERROR #38 IN 334, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 334, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 334, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01D6 0000                  335             DW      OFFSET GetVertNum
+*** ERROR #38 IN 335, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 335, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 335, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01D8 0000                  336             DW      OFFSET GetVertNum
+*** ERROR #38 IN 336, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 336, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 336, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01DA 0000                  337             DW      OFFSET GetVertNum
+*** ERROR #38 IN 337, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 337, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 337, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01DC 0000                  338             DW      OFFSET GetVertNum
+*** ERROR #38 IN 338, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 338, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 338, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01DE 0000                  339             DW      OFFSET GetVertNum
+*** ERROR #38 IN 339, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 339, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 339, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01E0 0000                  340             DW      OFFSET GetVertNum
+*** ERROR #38 IN 340, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   17
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 340, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 340, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01E2 0000                  341             DW      OFFSET GetVertNum
+*** ERROR #38 IN 341, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 341, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 341, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01E4 0000                  342             DW      OFFSET GetVertNum
+*** ERROR #38 IN 342, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 342, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 342, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01E6 0000                  343             DW      OFFSET GetVertNum
+*** ERROR #38 IN 343, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 343, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 343, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01E8 0000                  344             DW      OFFSET GetVertNum
+*** ERROR #38 IN 344, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 344, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 344, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01EA 0000                  345             DW      OFFSET AAfterVert
+*** ERROR #38 IN 345, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 345, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 345, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01EC 0000                  346             DW      OFFSET RAfterVert
+*** ERROR #38 IN 346, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 346, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 346, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01EE 0000                  347             DW      OFFSET ParseError
+*** ERROR #38 IN 347, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 347, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 347, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01F0 0000                  348             DW      OFFSET ParseError
+*** ERROR #38 IN 348, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 348, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 348, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01F2 0000                  349             DW      OFFSET NForAll
+*** ERROR #38 IN 349, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 349, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 349, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01F4 0000                  350             DW      OFFSET FForAll
+*** ERROR #38 IN 350, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 350, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 350, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01F6 0000                  351             DW      OFFSET PathDone
+*** ERROR #38 IN 351, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 351, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 351, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01F8 0000                  352             DW      OFFSET ParseError
+*** ERROR #38 IN 352, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 352, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 352, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           353     
+01FA 0000                  354             DW      OFFSET ParseError               ; V Started
+*** ERROR #38 IN 354, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 354, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 354, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   18
+
+
+LOC  OBJ                  LINE     SOURCE
+
+01FC 0000                  355             DW      OFFSET VertSignPositive
+*** ERROR #38 IN 355, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 355, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 355, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+01FE 0000                  356             DW      OFFSET VertSignNegative
+*** ERROR #38 IN 356, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 356, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 356, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0200 0000                  357             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 357, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 357, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 357, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0202 0000                  358             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 358, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 358, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 358, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0204 0000                  359             DW      OFFSET GetFirstVertNumV 
+*** ERROR #38 IN 359, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 359, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 359, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0206 0000                  360             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 360, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 360, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 360, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0208 0000                  361             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 361, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 361, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 361, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+020A 0000                  362             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 362, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 362, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 362, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+020C 0000                  363             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 363, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 363, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 363, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+020E 0000                  364             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 364, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 364, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 364, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0210 0000                  365             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 365, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 365, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 365, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0212 0000                  366             DW      OFFSET GetFirstVertNumV
+*** ERROR #38 IN 366, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 366, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 366, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0214 0000                  367             DW      OFFSET ParseError
+*** ERROR #38 IN 367, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 367, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 367, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0216 0000                  368             DW      OFFSET ParseError
+*** ERROR #38 IN 368, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 368, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   19
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 368, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0218 0000                  369             DW      OFFSET ParseError
+*** ERROR #38 IN 369, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 369, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 369, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+021A 0000                  370             DW      OFFSET ParseError
+*** ERROR #38 IN 370, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 370, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 370, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+021C 0000                  371             DW      OFFSET ParseError
+*** ERROR #38 IN 371, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 371, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 371, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+021E 0000                  372             DW      OFFSET ParseError
+*** ERROR #38 IN 372, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 372, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 372, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0220 0000                  373             DW      OFFSET ParseError
+*** ERROR #38 IN 373, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 373, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 373, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0222 0000                  374             DW      OFFSET ParseError
+*** ERROR #38 IN 374, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 374, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 374, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           375     
+0224 0000                  376             DW      OFFSET Enter                    ; V Started Done
+*** ERROR #38 IN 376, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 376, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 376, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0226 0000                  377             DW      OFFSET ParseError
+*** ERROR #38 IN 377, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 377, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 377, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0228 0000                  378             DW      OFFSET ParseError
+*** ERROR #38 IN 378, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 378, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 378, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+022A 0000                  379             DW      OFFSET GetVertNum
+*** ERROR #38 IN 379, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 379, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 379, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+022C 0000                  380             DW      OFFSET GetVertNum
+*** ERROR #38 IN 380, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 380, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 380, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+022E 0000                  381             DW      OFFSET GetVertNum
+*** ERROR #38 IN 381, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 381, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 381, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0230 0000                  382             DW      OFFSET GetVertNum
+*** ERROR #38 IN 382, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 382, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 382, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   20
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0232 0000                  383             DW      OFFSET GetVertNum
+*** ERROR #38 IN 383, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 383, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 383, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0234 0000                  384             DW      OFFSET GetVertNum
+*** ERROR #38 IN 384, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 384, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 384, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0236 0000                  385             DW      OFFSET GetVertNum
+*** ERROR #38 IN 385, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 385, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 385, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0238 0000                  386             DW      OFFSET GetVertNum
+*** ERROR #38 IN 386, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 386, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 386, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+023A 0000                  387             DW      OFFSET GetVertNum
+*** ERROR #38 IN 387, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 387, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 387, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+023C 0000                  388             DW      OFFSET GetVertNum
+*** ERROR #38 IN 388, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 388, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 388, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+023E 0000                  389             DW      OFFSET AAfterVert
+*** ERROR #38 IN 389, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 389, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 389, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0240 0000                  390             DW      OFFSET RAfterVert
+*** ERROR #38 IN 390, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 390, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 390, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0242 0000                  391             DW      OFFSET ParseError
+*** ERROR #38 IN 391, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 391, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 391, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0244 0000                  392             DW      OFFSET ParseError
+*** ERROR #38 IN 392, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 392, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 392, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0246 0000                  393             DW      OFFSET NForAll
+*** ERROR #38 IN 393, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 393, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 393, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0248 0000                  394             DW      OFFSET FForAll
+*** ERROR #38 IN 394, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 394, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 394, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+024A 0000                  395             DW      OFFSET PathDone
+*** ERROR #38 IN 395, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 395, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 395, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+024C 0000                  396             DW      OFFSET ParseError
+*** ERROR #38 IN 396, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 396, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   21
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 396, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           397     
+024E 0000                  398             DW      OFFSET ParseError                       ; A Second
+*** ERROR #38 IN 398, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 398, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 398, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0250 0000                  399             DW      OFFSET RotateSignPositive
+*** ERROR #38 IN 399, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 399, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 399, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0252 0000                  400             DW      OFFSET RotateSignNegative
+*** ERROR #38 IN 400, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 400, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 400, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0254 0000                  401             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 401, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 401, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 401, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0256 0000                  402             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 402, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 402, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 402, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0258 0000                  403             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 403, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 403, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 403, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+025A 0000                  404             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 404, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 404, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 404, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+025C 0000                  405             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 405, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 405, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 405, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+025E 0000                  406             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 406, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 406, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 406, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0260 0000                  407             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 407, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 407, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 407, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0262 0000                  408             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 408, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 408, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 408, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0264 0000                  409             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 409, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 409, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 409, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0266 0000                  410             DW      OFFSET GetSecondRotNumA
+*** ERROR #38 IN 410, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 410, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 410, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   22
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0268 0000                  411             DW      OFFSET ParseError       
+*** ERROR #38 IN 411, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 411, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 411, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+026A 0000                  412             DW      OFFSET ParseError       
+*** ERROR #38 IN 412, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 412, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 412, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+026C 0000                  413             DW      OFFSET ParseError
+*** ERROR #38 IN 413, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 413, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 413, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+026E 0000                  414             DW      OFFSET ParseError
+*** ERROR #38 IN 414, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 414, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 414, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0270 0000                  415             DW      OFFSET ParseError
+*** ERROR #38 IN 415, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 415, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 415, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0272 0000                  416             DW      OFFSET ParseError
+*** ERROR #38 IN 416, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 416, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 416, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0274 0000                  417             DW      OFFSET ParseError
+*** ERROR #38 IN 417, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 417, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 417, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0276 0000                  418             DW      OFFSET ParseError
+*** ERROR #38 IN 418, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 418, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 418, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           419     
+0278 0000                  420             DW      OFFSET Enter                            ; A Second Done
+*** ERROR #38 IN 420, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 420, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 420, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+027A 0000                  421             DW      OFFSET ParseError
+*** ERROR #38 IN 421, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 421, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 421, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+027C 0000                  422             DW      OFFSET ParseError
+*** ERROR #38 IN 422, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 422, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 422, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+027E 0000                  423             DW      OFFSET GetRotNum
+*** ERROR #38 IN 423, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 423, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 423, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0280 0000                  424             DW      OFFSET GetRotNum        
+*** ERROR #38 IN 424, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 424, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 424, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0282 0000                  425             DW      OFFSET GetRotNum
+*** ERROR #38 IN 425, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   23
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 425, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 425, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0284 0000                  426             DW      OFFSET GetRotNum
+*** ERROR #38 IN 426, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 426, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 426, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0286 0000                  427             DW      OFFSET GetRotNum
+*** ERROR #38 IN 427, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 427, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 427, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0288 0000                  428             DW      OFFSET GetRotNum
+*** ERROR #38 IN 428, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 428, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 428, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+028A 0000                  429             DW      OFFSET GetRotNum
+*** ERROR #38 IN 429, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 429, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 429, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+028C 0000                  430             DW      OFFSET GetRotNum
+*** ERROR #38 IN 430, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 430, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 430, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+028E 0000                  431             DW      OFFSET GetRotNum
+*** ERROR #38 IN 431, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 431, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 431, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0290 0000                  432             DW      OFFSET GetRotNum
+*** ERROR #38 IN 432, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 432, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 432, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0292 0000                  433             DW      OFFSET Enter
+*** ERROR #38 IN 433, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 433, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 433, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0294 0000                  434             DW      OFFSET Enter
+*** ERROR #38 IN 434, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 434, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 434, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0296 0000                  435             DW      OFFSET Enter
+*** ERROR #38 IN 435, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 435, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 435, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0298 0000                  436             DW      OFFSET Enter
+*** ERROR #38 IN 436, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 436, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 436, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+029A 0000                  437             DW      OFFSET NForAll
+*** ERROR #38 IN 437, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 437, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 437, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+029C 0000                  438             DW      OFFSET FForAll
+*** ERROR #38 IN 438, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 438, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 438, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   24
+
+
+LOC  OBJ                  LINE     SOURCE
+
+029E 0000                  439             DW      OFFSET PathDone
+*** ERROR #38 IN 439, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 439, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 439, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02A0 0000                  440             DW      OFFSET ParseError
+*** ERROR #38 IN 440, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 440, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 440, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           441     
+02A2 0000                  442             DW      OFFSET ParseError                               ; R Second
+*** ERROR #38 IN 442, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 442, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 442, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02A4 0000                  443             DW      OFFSET RotateSignPositive
+*** ERROR #38 IN 443, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 443, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 443, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02A6 0000                  444             DW      OFFSET RotateSignNegative
+*** ERROR #38 IN 444, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 444, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 444, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02A8 0000                  445             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 445, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 445, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 445, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02AA 0000                  446             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 446, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 446, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 446, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02AC 0000                  447             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 447, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 447, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 447, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02AE 0000                  448             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 448, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 448, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 448, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02B0 0000                  449             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 449, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 449, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 449, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02B2 0000                  450             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 450, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 450, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 450, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02B4 0000                  451             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 451, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 451, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 451, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02B6 0000                  452             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 452, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 452, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 452, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02B8 0000                  453             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 453, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   25
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 453, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 453, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02BA 0000                  454             DW      OFFSET GetSecondRotNumR
+*** ERROR #38 IN 454, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 454, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 454, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02BC 0000                  455             DW      OFFSET ParseError
+*** ERROR #38 IN 455, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 455, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 455, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02BE 0000                  456             DW      OFFSET ParseError
+*** ERROR #38 IN 456, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 456, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 456, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02C0 0000                  457             DW      OFFSET ParseError
+*** ERROR #38 IN 457, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 457, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 457, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02C2 0000                  458             DW      OFFSET ParseError
+*** ERROR #38 IN 458, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 458, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 458, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02C4 0000                  459             DW      OFFSET ParseError
+*** ERROR #38 IN 459, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 459, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 459, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02C6 0000                  460             DW      OFFSET ParseError
+*** ERROR #38 IN 460, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 460, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 460, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02C8 0000                  461             DW      OFFSET ParseError
+*** ERROR #38 IN 461, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 461, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 461, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02CA 0000                  462             DW      OFFSET ParseError
+*** ERROR #38 IN 462, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 462, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 462, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           463     
+02CC 0000                  464             DW      OFFSET Enter                            ; R Second Done
+*** ERROR #38 IN 464, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 464, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 464, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02CE 0000                  465             DW      OFFSET ParseError
+*** ERROR #38 IN 465, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 465, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 465, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02D0 0000                  466             DW      OFFSET ParseError
+*** ERROR #38 IN 466, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 466, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 466, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02D2 0000                  467             DW      OFFSET GetRotNum
+*** ERROR #38 IN 467, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 467, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 467, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   26
+
+
+LOC  OBJ                  LINE     SOURCE
+
+02D4 0000                  468             DW      OFFSET GetRotNum
+*** ERROR #38 IN 468, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 468, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 468, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02D6 0000                  469             DW      OFFSET GetRotNum
+*** ERROR #38 IN 469, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 469, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 469, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02D8 0000                  470             DW      OFFSET GetRotNum
+*** ERROR #38 IN 470, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 470, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 470, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02DA 0000                  471             DW      OFFSET GetRotNum
+*** ERROR #38 IN 471, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 471, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 471, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02DC 0000                  472             DW      OFFSET GetRotNum
+*** ERROR #38 IN 472, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 472, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 472, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02DE 0000                  473             DW      OFFSET GetRotNum
+*** ERROR #38 IN 473, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 473, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 473, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02E0 0000                  474             DW      OFFSET GetRotNum
+*** ERROR #38 IN 474, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 474, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 474, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02E2 0000                  475             DW      OFFSET GetRotNum
+*** ERROR #38 IN 475, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 475, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 475, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02E4 0000                  476             DW      OFFSET GetRotNum
+*** ERROR #38 IN 476, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 476, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 476, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02E6 0000                  477             DW      OFFSET ParseError
+*** ERROR #38 IN 477, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 477, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 477, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02E8 0000                  478             DW      OFFSET ParseError
+*** ERROR #38 IN 478, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 478, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 478, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02EA 0000                  479             DW      OFFSET ParseError
+*** ERROR #38 IN 479, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 479, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 479, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02EC 0000                  480             DW      OFFSET ParseError
+*** ERROR #38 IN 480, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 480, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 480, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02EE 0000                  481             DW      OFFSET NForAll          
+*** ERROR #38 IN 481, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 481, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   27
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 481, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02F0 0000                  482             DW      OFFSET FForAll
+*** ERROR #38 IN 482, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 482, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 482, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02F2 0000                  483             DW      OFFSET PathDone
+*** ERROR #38 IN 483, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 483, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 483, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02F4 0000                  484             DW      OFFSET ParseError
+*** ERROR #38 IN 484, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 484, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 484, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           485     
+                           486     
+02F6 0000                  487             DW      OFFSET ParseError                               ; Z Second
+*** ERROR #38 IN 487, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 487, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 487, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02F8 0000                  488             DW      OFFSET VertSignPositive
+*** ERROR #38 IN 488, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 488, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 488, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02FA 0000                  489             DW      OFFSET VertSignNegative
+*** ERROR #38 IN 489, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 489, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 489, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02FC 0000                  490             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 490, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 490, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 490, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+02FE 0000                  491             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 491, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 491, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 491, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0300 0000                  492             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 492, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 492, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 492, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0302 0000                  493             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 493, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 493, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 493, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0304 0000                  494             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 494, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 494, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 494, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0306 0000                  495             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 495, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 495, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 495, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0308 0000                  496             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 496, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 496, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 496, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   28
+
+
+LOC  OBJ                  LINE     SOURCE
+
+030A 0000                  497             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 497, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 497, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 497, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+030C 0000                  498             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 498, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 498, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 498, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+030E 0000                  499             DW      OFFSET GetSecondVertNumZ
+*** ERROR #38 IN 499, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 499, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 499, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0310 0000                  500             DW      OFFSET ParseError
+*** ERROR #38 IN 500, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 500, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 500, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0312 0000                  501             DW      OFFSET ParseError
+*** ERROR #38 IN 501, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 501, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 501, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0314 0000                  502             DW      OFFSET ParseError
+*** ERROR #38 IN 502, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 502, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 502, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0316 0000                  503             DW      OFFSET ParseError
+*** ERROR #38 IN 503, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 503, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 503, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0318 0000                  504             DW      OFFSET ParseError
+*** ERROR #38 IN 504, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 504, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 504, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+031A 0000                  505             DW      OFFSET ParseError
+*** ERROR #38 IN 505, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 505, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 505, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+031C 0000                  506             DW      OFFSET ParseError
+*** ERROR #38 IN 506, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 506, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 506, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+031E 0000                  507             DW      OFFSET ParseError
+*** ERROR #38 IN 507, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 507, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 507, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           508     
+0320 0000                  509             DW      OFFSET Enter                            ; Z Second Done
+*** ERROR #38 IN 509, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 509, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 509, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0322 0000                  510             DW      OFFSET ParseError
+*** ERROR #38 IN 510, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 510, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 510, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0324 0000                  511             DW      OFFSET ParseError
+*** ERROR #38 IN 511, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   29
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 511, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 511, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0326 0000                  512             DW      OFFSET GetVertNum
+*** ERROR #38 IN 512, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 512, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 512, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0328 0000                  513             DW      OFFSET GetVertNum
+*** ERROR #38 IN 513, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 513, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 513, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+032A 0000                  514             DW      OFFSET GetVertNum
+*** ERROR #38 IN 514, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 514, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 514, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+032C 0000                  515             DW      OFFSET GetVertNum
+*** ERROR #38 IN 515, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 515, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 515, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+032E 0000                  516             DW      OFFSET GetVertNum
+*** ERROR #38 IN 516, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 516, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 516, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0330 0000                  517             DW      OFFSET GetVertNum
+*** ERROR #38 IN 517, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 517, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 517, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0332 0000                  518             DW      OFFSET GetVertNum
+*** ERROR #38 IN 518, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 518, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 518, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0334 0000                  519             DW      OFFSET GetVertNum
+*** ERROR #38 IN 519, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 519, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 519, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0336 0000                  520             DW      OFFSET GetVertNum
+*** ERROR #38 IN 520, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 520, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 520, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0338 0000                  521             DW      OFFSET GetVertNum
+*** ERROR #38 IN 521, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 521, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 521, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+033A 0000                  522             DW      OFFSET ParseError
+*** ERROR #38 IN 522, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 522, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 522, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+033C 0000                  523             DW      OFFSET ParseError
+*** ERROR #38 IN 523, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 523, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 523, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+033E 0000                  524             DW      OFFSET ParseError
+*** ERROR #38 IN 524, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 524, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 524, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   30
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0340 0000                  525             DW      OFFSET ParseError
+*** ERROR #38 IN 525, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 525, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 525, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0342 0000                  526             DW      OFFSET NForAll
+*** ERROR #38 IN 526, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 526, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 526, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0344 0000                  527             DW      OFFSET FForAll
+*** ERROR #38 IN 527, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 527, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 527, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0346 0000                  528             DW      OFFSET PathDone
+*** ERROR #38 IN 528, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 528, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 528, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0348 0000                  529             DW      OFFSET ParseError
+*** ERROR #38 IN 529, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 529, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 529, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           530     
+034A 0000                  531             DW      OFFSET ParseError                               ; V Second
+*** ERROR #38 IN 531, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 531, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 531, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+034C 0000                  532             DW      OFFSET VertSignPositive
+*** ERROR #38 IN 532, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 532, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 532, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+034E 0000                  533             DW      OFFSET VertSignNegative
+*** ERROR #38 IN 533, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 533, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 533, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0350 0000                  534             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 534, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 534, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 534, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0352 0000                  535             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 535, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 535, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 535, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0354 0000                  536             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 536, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 536, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 536, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0356 0000                  537             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 537, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 537, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 537, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0358 0000                  538             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 538, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 538, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 538, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+035A 0000                  539             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 539, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   31
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #59 IN 539, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 539, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+035C 0000                  540             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 540, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 540, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 540, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+035E 0000                  541             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 541, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 541, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 541, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0360 0000                  542             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 542, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 542, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 542, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0362 0000                  543             DW      OFFSET GetSecondVertNumV
+*** ERROR #38 IN 543, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 543, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 543, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0364 0000                  544             DW      OFFSET ParseError
+*** ERROR #38 IN 544, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 544, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 544, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0366 0000                  545             DW      OFFSET ParseError
+*** ERROR #38 IN 545, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 545, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 545, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0368 0000                  546             DW      OFFSET ParseError
+*** ERROR #38 IN 546, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 546, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 546, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+036A 0000                  547             DW      OFFSET ParseError
+*** ERROR #38 IN 547, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 547, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 547, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+036C 0000                  548             DW      OFFSET ParseError
+*** ERROR #38 IN 548, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 548, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 548, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+036E 0000                  549             DW      OFFSET ParseError
+*** ERROR #38 IN 549, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 549, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 549, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0370 0000                  550             DW      OFFSET ParseError
+*** ERROR #38 IN 550, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 550, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 550, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0372 0000                  551             DW      OFFSET ParseError
+*** ERROR #38 IN 551, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 551, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 551, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           552     
+0374 0000                  553             DW      OFFSET Enter                            ; V Second Done
+*** ERROR #38 IN 553, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 553, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 553, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   32
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0376 0000                  554             DW      OFFSET ParseError
+*** ERROR #38 IN 554, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 554, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 554, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0378 0000                  555             DW      OFFSET ParseError
+*** ERROR #38 IN 555, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 555, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 555, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+037A 0000                  556             DW      OFFSET GetVertNum
+*** ERROR #38 IN 556, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 556, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 556, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+037C 0000                  557             DW      OFFSET GetVertNum
+*** ERROR #38 IN 557, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 557, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 557, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+037E 0000                  558             DW      OFFSET GetVertNum
+*** ERROR #38 IN 558, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 558, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 558, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0380 0000                  559             DW      OFFSET GetVertNum
+*** ERROR #38 IN 559, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 559, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 559, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0382 0000                  560             DW      OFFSET GetVertNum
+*** ERROR #38 IN 560, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 560, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 560, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0384 0000                  561             DW      OFFSET GetVertNum
+*** ERROR #38 IN 561, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 561, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 561, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0386 0000                  562             DW      OFFSET GetVertNum
+*** ERROR #38 IN 562, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 562, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 562, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0388 0000                  563             DW      OFFSET GetVertNum
+*** ERROR #38 IN 563, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 563, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 563, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+038A 0000                  564             DW      OFFSET GetVertNum
+*** ERROR #38 IN 564, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 564, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 564, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+038C 0000                  565             DW      OFFSET GetVertNum
+*** ERROR #38 IN 565, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 565, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 565, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+038E 0000                  566             DW      OFFSET ParseError
+*** ERROR #38 IN 566, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 566, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 566, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0390 0000                  567             DW      OFFSET ParseError
+*** ERROR #38 IN 567, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 567, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   33
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 567, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0392 0000                  568             DW      OFFSET ParseError
+*** ERROR #38 IN 568, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 568, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 568, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0394 0000                  569             DW      OFFSET ParseError
+*** ERROR #38 IN 569, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 569, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 569, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0396 0000                  570             DW      OFFSET NForAll
+*** ERROR #38 IN 570, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 570, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 570, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+0398 0000                  571             DW      OFFSET FForAll
+*** ERROR #38 IN 571, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 571, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 571, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+039A 0000                  572             DW      OFFSET PathDone
+*** ERROR #38 IN 572, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 572, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 572, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+039C 0000                  573             DW      OFFSET ParseError
+*** ERROR #38 IN 573, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 573, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 573, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           574             
+039E 0000                  575             DW      OFFSET ParseError                                       ; Step Start
+*** ERROR #38 IN 575, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 575, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 575, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03A0 0000                  576             DW      OFFSET ParseError
+*** ERROR #38 IN 576, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 576, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 576, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03A2 0000                  577             DW      OFFSET ParseError
+*** ERROR #38 IN 577, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 577, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 577, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03A4 0000                  578             DW      OFFSET ParseError
+*** ERROR #38 IN 578, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 578, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 578, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03A6 0000                  579             DW      OFFSET ParseError
+*** ERROR #38 IN 579, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 579, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 579, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03A8 0000                  580             DW      OFFSET ParseError
+*** ERROR #38 IN 580, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 580, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 580, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03AA 0000                  581             DW      OFFSET ParseError
+*** ERROR #38 IN 581, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 581, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 581, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   34
+
+
+LOC  OBJ                  LINE     SOURCE
+
+03AC 0000                  582             DW      OFFSET ParseError
+*** ERROR #38 IN 582, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 582, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 582, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03AE 0000                  583             DW      OFFSET ParseError
+*** ERROR #38 IN 583, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 583, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 583, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03B0 0000                  584             DW      OFFSET ParseError
+*** ERROR #38 IN 584, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 584, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 584, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03B2 0000                  585             DW      OFFSET ParseError
+*** ERROR #38 IN 585, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 585, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 585, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03B4 0000                  586             DW      OFFSET ParseError
+*** ERROR #38 IN 586, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 586, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 586, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03B6 0000                  587             DW      OFFSET ParseError
+*** ERROR #38 IN 587, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 587, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 587, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03B8 0000                  588             DW      OFFSET AStart   
+*** ERROR #38 IN 588, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 588, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 588, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03BA 0000                  589             DW      OFFSET RStart   
+*** ERROR #38 IN 589, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 589, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 589, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03BC 0000                  590             DW      OFFSET ZStart   
+*** ERROR #38 IN 590, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 590, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 590, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03BE 0000                  591             DW      OFFSET VStart   
+*** ERROR #38 IN 591, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 591, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 591, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03C0 0000                  592             DW      OFFSET NForAll
+*** ERROR #38 IN 592, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 592, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 592, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03C2 0000                  593             DW      OFFSET FForAll
+*** ERROR #38 IN 593, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 593, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 593, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03C4 0000                  594             DW      OFFSET PathInit
+*** ERROR #38 IN 594, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 594, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+*** ERROR #42 IN 594, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+03C6 0000                  595             DW      OFFSET Exit
+*** ERROR #38 IN 595, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #59 IN 595, (PASS 2) OPERAND TO OFFSET MUST BE A VARIABLE OR LABEL
+8086/87/88/186 MACRO ASSEMBLER    PARSETABLES                                              18:31:43  03/15/:2  PAGE   35
+
+
+LOC  OBJ                  LINE     SOURCE
+
+*** ERROR #42 IN 595, (PASS 2) STORAGE INITIALIZATION EXPRESSION IS OF THE WRONG TYPE
+                           596     
+                           597     
+----                       598     CODE    ENDS
+                           599     
+                           600     
+                           601     
+                           602             END
+                           603     
+*** ERROR #88 IN 603, TEXT FOUND BEYOND END STATEMENT - IGNORED
+                           604     
+
+ASSEMBLY COMPLETE, 1261 ERRORS FOUND

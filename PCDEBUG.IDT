@@ -1,0 +1,18 @@
+load d2s
+fill d2s.i 32 00
+fill d2s.string 32 00
+set 1 d2s d2s.inputloop
+set 2 d2s d2s.makestring
+set 3 d2s d2s.putnegativesign
+set 4 d2s d2s.starttrace
+set 5 d2s d2s.checkdigit
+set 6 d2s d2s.digiterror
+set 7 d2s d2s.storenumber
+set 8 d2s d2s.correctiandpwr10
+set 9 d2s d2s.tracenext
+set 10 d2s d2s.stoptrace
+set 11 d2s d2s.endinputloop
+set 12 d2s d2s.enddec2string
+
+
+

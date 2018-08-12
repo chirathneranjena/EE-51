@@ -1,0 +1,710 @@
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE QUEUE
+OBJECT MODULE PLACED IN QUEUE.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE QUEUE.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1     
+                             2     NAME    Queue
+                             3     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             4     ;                                                                            ;
+                             5     ;                                 Queue                                      ;
+                             6     ;                              Queue  Routines                               ;
+                             7     ;                                                                            ;
+                             8     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             9     
+                            10     ; Description:      Functions involved with handling queues for serial communication
+                            11     ;                       InitQueues - Setup head and tails pointers of the Tx and Rx Q
+                                   ueues
+                            12     ;                       RxEmpty - Checks if the Receive Queue is Empty
+                            13     ;                       TxEmpty - Checks if the Transmit Queue is Empty
+                            14     ;                       RxFull  - Checks if the Receieve Queue is Full
+                            15     ;                       TxFull  - Checks if the Transmit Queue is Full
+                            16     ;                       RxDeQueue - Pops a value from the receive queue
+                            17     ;                       TxDeQueue - pops a value from the transmit queue
+                            18     ;                       RxEnQueue - pushes a value into the receieve queue
+                            19     ;                       TxEnQueue - pushes a value into the transmit queue
+                            20     ;
+                            21     ;
+                            22     ;
+                            23     ; Input:            AX ( PUSH Values)
+                            24     ; Output:           Zero Flag, AX ( POP Values)
+                            25     ;
+                            26     ; User Interface:   None
+                            27     ; Error Handling:   None.
+                            28     ;
+                            29     ; Algorithms:       None.
+                            30     ; Data Structures:  None.
+                            31     ;
+                            32     ; Revision History:
+                            33     ;       Chirath Neranjena       08, Mar 2002    Creation
+                            34     
+                            35     
+                            36     
+                            37     CGROUP  GROUP   CODE
+                            38     
+                            39 +1  $INCLUDE(QUEUE.INC)
+                      =1    40     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    41     ;                                                                            ;
+                      =1    42     ;                                  QUEUE.INC                                 ;
+                      =1    43     ;                                     QUEUE                                  ;
+                      =1    44     ;                                 Include File                               ;
+                      =1    45     ;                                                                            ;
+                      =1    46     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      =1    47     
+                      =1    48     ; This file contains the definitions for the Queue used in Serial Communication
+                      =1    49     ; Program, (SERIAL.ASM) and (QUEUE.ASM)
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1    50     ;
+                      =1    51     ; Revision History:
+                      =1    52     ;    03/08/2002  Chirath Neranjena      initial revision
+                      =1    53     
+                      =1    54     ; Define the number of element in queue and byte size of queue
+                      =1    55     
+  0064                =1    56     Q_Elem          EQU     100     ; no of elements in queue
+  00C8                =1    57     Queue_Size      EQU     200     ; Queue Size in bytes, 1 elem = 1 word = 2 bytes (2*Q
+                                   _Elem)
+                            58     
+----                        59     CODE SEGMENT PUBLIC 'CODE'
+                            60     
+                            61             ASSUME  CS: CGROUP, DS: DATA
+                            62     
+                            63     ; InitQueues
+                            64     ;
+                            65     ; Description:      Queue Initializing Routines
+                            66     ;
+                            67     ; Arguments:        None.
+                            68     ; Return Value:     None
+                            69     ;
+                            70     ; Local Variables:  None
+                            71     ;
+                            72     ; Shared Variables: TxHead, TxTail, RxHead, RxTail
+                            73     ; Global Variables: None
+                            74     ;                               
+                            75     ;
+                            76     ; Input:            None.
+                            77     ; Output:           None.
+                            78     ;
+                            79     ; Error Handling:   None.
+                            80     ;
+                            81     ; Algorithms:       Set Queue Head pointers
+                            82     ;                   Set Queue Tail pointers
+                            83     ;                       
+                            84     ; Data Structures:  TxQueue, RxQueue
+                            85     ;
+                            86     ; Registers Used:   AX
+                            87     ; Stack Depth:      1 word
+                            88     ;
+                            89     ; Author:           Chirath Neranjena
+                            90     ; Last Modified:    Mar 08 2002
+                            91     
+0000                        92     InitQueues      PROC    NEAR
+                            93                     PUBLIC  InitQueues
+                            94     
+0000 50                     95             PUSH    AX                      ; Save registers
+                            96             
+0001 B80800         R       97             MOV     AX, OFFSET TxQueue      ; Get start of the queue
+0004 A30000         R       98             MOV     TxHead, AX              ; initialize queue head
+0007 A30200         R       99             MOV     TxTail, AX              ; initialize queue tail
+                           100             
+000A B8D000         R      101             MOV     AX, OFFSET RxQueue      ; do the same for the receive queue     
+000D A30400         R      102             MOV     RxHead, AX
+0010 A30600         R      103             MOV     RxTail, AX
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           104     
+0013 58                    105             POP     AX
+                           106     
+0014 C3                    107             RET                             ; return
+                           108     
+                           109     InitQueues      ENDP
+                           110     
+                           111     ; RxEmpty
+                           112     ;
+                           113     ; Description:      Checks if the Receive Queue is Empty
+                           114     ;
+                           115     ; Arguments:        None
+                           116     ; Return Value:     Zero Flag set or reset
+                           117     ;
+                           118     ; Local Variables:  None
+                           119     ;
+                           120     ; Shared Variables: RxTail, RxHead
+                           121     ; Global Variables: None
+                           122     ;                   
+                           123     ;                   
+                           124     ;
+                           125     ; Input:            None.
+                           126     ; Output:           Zero Flag
+                           127     ;
+                           128     ; Error Handling:   None.
+                           129     ;
+                           130     ; Algorithms:       Check if Receive Queue is Empty and set the zero flag, else
+                           131     ;                   reset the flag
+                           132     ;                       
+                           133     ; Data Structures:  RxQueue
+                           134     ;
+                           135     ; Registers Used:   AX
+                           136     ; Stack Depth:      1 words
+                           137     ;
+                           138     ; Author:           Chirath Neranjena
+                           139     ; Last Modified:    MAR 08 2002
+                           140     
+                           141     
+0015                       142     RxEmpty         PROC    NEAR
+                           143                     PUBLIC  RxEmpty
+                           144     
+0015 50                    145             PUSH    AX                      ; store registers
+                           146     
+0016 A10400         R      147             MOV     AX, RxHead              ; if head = tails then queue is empty (set fl
+                                   ag)
+0019 3B060600       R      148             CMP     AX, RxTail              ; else queue is not empty (reset flag)
+                           149     
+001D 58                    150             POP     AX                      ; restore registers
+                           151     
+001E C3                    152             RET
+                           153     
+                           154     RxEmpty         ENDP
+                           155     
+                           156     
+                           157     ; TxEmpty
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           158     ;
+                           159     ; Description:      Checks if the Transmit Queue is Empty
+                           160     ;
+                           161     ; Arguments:        None
+                           162     ; Return Value:     Zero Flag set or reset
+                           163     ;
+                           164     ; Local Variables:  None
+                           165     ;
+                           166     ; Shared Variables: TxTail, TxHead
+                           167     ; Global Variables: None
+                           168     ;                   
+                           169     ;                   
+                           170     ;
+                           171     ; Input:            None.
+                           172     ; Output:           Zero Flag
+                           173     ;
+                           174     ; Error Handling:   None.
+                           175     ;
+                           176     ; Algorithms:       Check if Receive Queue is Empty and set the zero flag, else
+                           177     ;                   reset the flag
+                           178     ;                       
+                           179     ; Data Structures:  TxQueue
+                           180     ;
+                           181     ; Registers Used:   AX
+                           182     ; Stack Depth:      1 words
+                           183     ;
+                           184     ; Author:           Chirath Neranjena
+                           185     ; Last Modified:    MAR 08 2002
+                           186     
+                           187     
+001F                       188     TxEmpty         PROC    NEAR
+                           189                     PUBLIC  TxEmpty
+                           190     
+001F 50                    191             PUSH    AX                      ; store registers
+                           192     
+0020 A10000         R      193             MOV     AX, TxHead              ; if head = tails then queue is empty (set fl
+                                   ag)
+0023 3B060200       R      194             CMP     AX, TxTail              ; else queue is not empty (reset flag)
+                           195     
+0027 58                    196             POP     AX                      ; restore registers
+                           197     
+0028 C3                    198             RET
+                           199     
+                           200     TxEmpty         ENDP
+                           201     
+                           202     
+                           203     ; RxFull
+                           204     ;
+                           205     ; Description:      Checks if the Receive Queue is Full
+                           206     ;
+                           207     ; Arguments:        None
+                           208     ; Return Value:     Zero Flag set or reset
+                           209     ;
+                           210     ; Local Variables:  None
+                           211     ;
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           212     ; Shared Variables: RxTail, RxHead
+                           213     ; Global Variables: None
+                           214     ;                   
+                           215     ;                   
+                           216     ;
+                           217     ; Input:            None.
+                           218     ; Output:           Zero Flag
+                           219     ;
+                           220     ; Error Handling:   None.
+                           221     ;
+                           222     ; Algorithms:       Check if Receive Queue is Full and set the zero flag, else
+                           223     ;                   reset the flag
+                           224     ;                       
+                           225     ; Data Structures:  RxQueue
+                           226     ;
+                           227     ; Registers Used:   AX
+                           228     ; Stack Depth:      2 words
+                           229     ;
+                           230     ; Author:           Chirath Neranjena
+                           231     ; Last Modified:    MAR 08 2002
+                           232     
+                           233     
+0029                       234     RxFull          PROC    NEAR
+                           235                     PUBLIC  RxFull
+                           236     
+0029 50                    237             PUSH    AX                      ; save registers
+002A 53                    238             PUSH    BX
+                           239     
+002B A10600         R      240             MOV     AX, RxTail              ; get the tail of the queue
+002E 40                    241             INC     AX                      ; twice increment ( for word)
+002F 40                    242             INC     AX              
+0030 BBD00090       R      243             MOV     BX, OFFSET RxQueue        
+0034 81C3C800              244             ADD     BX, Queue_Size
+0038 3BC3                  245             CMP     AX, BX                  ; if tail+1 > queue size the then
+003A 7E03                  246             JLE     RxFullCheck             ;    do a wrap around
+003C B8D000         R      247             MOV     AX, OFFSET RxQueue      ;           
+                           248             
+003F                       249     RxFullCheck:
+003F 3B060400       R      250             CMP     AX, RxHead              ; if the tail is one behind head
+                           251                                             ;       the queue is full (set flag)
+0043 5B                    252             POP     BX
+0044 58                    253             POP     AX                      ; else  the queue is not full (reset flag)
+0045 C3                    254             RET
+                           255     
+                           256     RxFull  ENDP
+                           257     
+                           258     ; TxFull
+                           259     ;
+                           260     ; Description:      Checks if the Transmit Queue is Full
+                           261     ;
+                           262     ; Arguments:        None
+                           263     ; Return Value:     Zero Flag set or reset
+                           264     ;
+                           265     ; Local Variables:  None
+                           266     ;
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           267     ; Shared Variables: TxTail, TxHead
+                           268     ; Global Variables: None
+                           269     ;                   
+                           270     ;                   
+                           271     ;
+                           272     ; Input:            None.
+                           273     ; Output:           Zero Flag
+                           274     ;
+                           275     ; Error Handling:   None.
+                           276     ;
+                           277     ; Algorithms:       Check if Transmit Queue is Full and set the zero flag, else
+                           278     ;                   reset the flag
+                           279     ;                       
+                           280     ; Data Structures:  TxQueue
+                           281     ;
+                           282     ; Registers Used:   AX
+                           283     ; Stack Depth:      1 words
+                           284     ;
+                           285     ; Author:           Chirath Neranjena
+                           286     ; Last Modified:    MAR 08 2002
+                           287     
+0046                       288     TxFull          PROC    NEAR
+                           289                     PUBLIC  TxFull
+                           290     
+0046 50                    291             PUSH    AX                      ; save registers
+0047 53                    292             PUSH    BX
+                           293     
+0048 A10200         R      294             MOV     AX, TxTail              ; get the tail of the queue
+004B 40                    295             INC     AX                      ; twice increment it for word
+004C 40                    296             INC     AX           
+004D BB080090       R      297             MOV     BX, OFFSET TxQueue
+0051 81C3C800              298             ADD     BX, Queue_Size        
+0055 3BC3                  299             CMP     AX, BX                  ; if tail+1 > queue size the then
+0057 7E03                  300             JLE     TxFullCheck             ;    do a wrap around
+0059 B80800         R      301             MOV     AX, OFFSET TxQueue      ;           
+                           302             
+005C                       303     TxFullCheck:
+005C 3B060000       R      304             CMP     AX, TxHead              ; if the tail is one behind head
+                           305                                             ;       the queue is full (set flag)
+0060 5B                    306             POP     BX
+0061 58                    307             POP     AX                      ; else  the queue is not full (reset flag)
+0062 C3                    308             RET
+                           309     
+                           310     TxFull  ENDP
+                           311     
+                           312     ; RxDeQueue
+                           313     ;
+                           314     ; Description:      POPS a value from the Receive queue
+                           315     ;
+                           316     ; Arguments:        None
+                           317     ; Return Value:     POPPED value from queue in AX
+                           318     ;
+                           319     ; Local Variables:  None
+                           320     ;
+                           321     ; Shared Variables: RxHead, Rx Queue
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           322     ; Global Variables: None
+                           323     ;                   
+                           324     ;                   
+                           325     ;
+                           326     ; Input:            None.
+                           327     ; Output:           AX, BX, DX, ES, SI
+                           328     ;
+                           329     ; Error Handling:   None.
+                           330     ;
+                           331     ; Algorithms:       if queue if empty then loop while key available
+                           332     ;                       then get the value and adjust the queue head
+                           333     ;                       
+                           334     ; Data Structures:  RxQueue
+                           335     ;
+                           336     ; Registers Used:   AX, BX, ES, SI, DX
+                           337     ; Stack Depth:      4 words
+                           338     ;
+                           339     ; Author:           Chirath Neranjena
+                           340     ; Last Modified:    MAR 08 2002
+                           341     
+0063                       342     RxDeQueue       PROC    NEAR
+                           343                     PUBLIC  RxDeQueue
+                           344     
+                           345     
+0063 06                    346             PUSH    ES                      ; save the registers
+0064 56                    347             PUSH    SI
+0065 53                    348             PUSH    BX
+0066 52                    349             PUSH    DX
+                           350     
+0067 E8ABFF                351             CALL    RxEmpty                 ; If queue is empty then
+006A 7424                  352             JZ      EndRxDeQueue            ;   nothing to return 
+                           353     
+006C A10400         R      354             MOV     AX, RxHead              ; get value of queue head
+006F 40                    355             INC     AX
+0070 40                    356             INC     AX                      ; increment AX twice ( for word )
+0071 BBD00090       R      357             MOV     BX, OFFSET RxQueue
+0075 81C3C800              358             ADD     BX, Queue_Size
+0079 3BC3                  359             CMP     AX, BX                  ; if the value exceeds the queue size then
+007B 7E03                  360             JLE     RxGetchar               ;   wrap around to the start of the queue
+007D B8D000         R      361             MOV     AX, OFFSET RxQueue      ;
+                           362             
+0080                       363     RxGetChar:
+                           364     
+0080 8BD0                  365             MOV     DX, AX                  ; save the value of the offset
+0082 B8----         R      366             MOV     AX, SEG RxQueue         ; get the segement of the queue
+0085 8EC0                  367             MOV     ES, AX                  ; put that to ES
+0087 8BF2                  368             MOV     SI, DX                  ; put the offset into SI        
+                           369                                     
+0089 268B04                370             MOV     AX, ES:[SI]             ; get the character in the queue
+008C 89160400       R      371             MOV     RxHead, DX              ; change queue head
+                           372             
+                           373     
+0090                       374     EndRxDeQueue:
+                           375             
+0090 5A                    376             POP     DX                      ; restore the registers
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0091 5B                    377             POP     BX
+0092 5E                    378             POP     SI
+0093 07                    379             POP     ES
+                           380     
+0094 C3                    381             RET
+                           382     
+                           383     RxDeQueue       ENDP
+                           384     
+                           385     
+                           386     ; TxDeQueue
+                           387     ;
+                           388     ; Description:      POPS a value from the Transmit queue
+                           389     ;
+                           390     ; Arguments:        None
+                           391     ; Return Value:     POPPED value from queue
+                           392     ;
+                           393     ; Local Variables:  None
+                           394     ;
+                           395     ; Shared Variables: TxHead, TxQueue
+                           396     ; Global Variables: None
+                           397     ;                   
+                           398     ;                   
+                           399     ;
+                           400     ; Input:            None.
+                           401     ; Output:           None
+                           402     ;
+                           403     ; Error Handling:   None.
+                           404     ;
+                           405     ; Algorithms:       if queue if empty then loop while key available
+                           406     ;                       then get the value and adjust the queue head
+                           407     ;                       
+                           408     ; Data Structures:  TxQueue
+                           409     ;
+                           410     ; Registers Used:   AX, BX, DX, ES, SI
+                           411     ; Stack Depth:      4 words
+                           412     ;
+                           413     ; Author:           Chirath Neranjena
+                           414     ; Last Modified:    MAR 08 2002
+                           415     
+0095                       416     TxDeQueue       PROC    NEAR
+                           417                     PUBLIC  TxDeQueue
+                           418     
+0095 06                    419             PUSH    ES                      ; save the registers
+0096 56                    420             PUSH    SI
+0097 53                    421             PUSH    BX
+0098 52                    422             PUSH    DX
+                           423     
+0099 E883FF                424             CALL    TxEmpty                 ; If queue is empty then
+009C 7424                  425             JZ      EndTxDeQueue            ;   nothing to return 
+                           426     
+                           427     
+009E A10000         R      428             MOV     AX, TxHead              ; get value of queue head
+00A1 40                    429             INC     AX
+00A2 40                    430             INC     AX                      ; add one to the value 
+00A3 BB080090       R      431             MOV     BX, OFFSET TxQueue
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00A7 81C3C800              432             ADD     BX, Queue_Size        
+00AB 3BC3                  433             CMP     AX, BX                  ; if the value exceeds the queue size then
+00AD 7E03                  434             JLE     TxGetchar               ;   wrap around to the start of the queue
+00AF B80800         R      435             MOV     AX, OFFSET TxQueue      ;
+                           436             
+00B2                       437     TxGetChar:
+                           438            
+                           439     
+00B2 8BD0                  440             MOV     DX, AX                  ; save the value of the offset    
+00B4 B8----         R      441             MOV     AX, SEG TxQueue         ; get the segement of the queue
+00B7 8EC0                  442             MOV     ES, AX                  ;   and put this value in ES
+00B9 8BF2                  443             MOV     SI, DX                  ; get the offset of the character in queue
+                                      
+                           444     
+                           445             
+00BB 268B04                446             MOV     AX, ES:[SI]             ; get the character in the queue
+00BE 89160000       R      447             MOV     TxHead, DX              ; change queue head
+                           448     
+                           449     
+00C2                       450     EndTxDeQueue:
+                           451             
+00C2 5A                    452             POP     DX                      ; restore the registers
+00C3 5B                    453             POP     BX
+00C4 5E                    454             POP     SI
+00C5 07                    455             POP     ES
+                           456     
+                           457     
+                           458     
+00C6 C3                    459             RET
+                           460     
+                           461     TxDeQueue       ENDP
+                           462     
+                           463     ; RxEeQueue
+                           464     ;
+                           465     ; Description:      PUSHES a value to the Receive queue
+                           466     ;
+                           467     ; Arguments:        AX - Value
+                           468     ; Return Value:     None
+                           469     ;
+                           470     ; Local Variables:  None
+                           471     ;
+                           472     ; Shared Variables: RxTail, Rx Queue
+                           473     ; Global Variables: None
+                           474     ;                   
+                           475     ;                   
+                           476     ;
+                           477     ; Input:            None.
+                           478     ; Output:           None
+                           479     ;
+                           480     ; Error Handling:   None.
+                           481     ;
+                           482     ; Algorithms:       if queue if Full then loop while space available
+                           483     ;                       then put the value and adjust the queue tail
+                           484     ;                       
+                           485     ; Data Structures:  RxQueue
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           486     ;
+                           487     ; Registers Used:   AX, BX, CX, DX, ES, SI
+                           488     ; Stack Depth:      5 words
+                           489     ;
+                           490     ; Author:           Chirath Neranjena
+                           491     ; Last Modified:    MAR 08 2002
+                           492     
+00C7                       493     RxEnQueue       PROC    NEAR
+                           494                     PUBLIC  RxEnQueue
+                           495     
+00C7 06                    496             PUSH    ES
+00C8 56                    497             PUSH    SI                      ; save registers
+00C9 53                    498             PUSH    BX
+00CA 51                    499             PUSH    CX
+00CB 52                    500             PUSH    DX
+                           501     
+00CC 8BD0                  502             MOV     DX, AX                  ; save the input character
+00CE E858FF                503             CALL    RxFull                  ; check if the queue if full
+00D1 7424                  504             JZ      EndRxEnQueue            ; if queue is full the exit
+                           505     
+                           506     
+00D3 A10600         R      507             MOV     AX, RxTail              ; get the queue tail
+00D6 40                    508             INC     AX
+00D7 40                    509             INC     AX                      ; increment this value
+00D8 BBD00090       R      510             MOV     BX, OFFSET RxQueue
+00DC 81C3C800              511             ADD     BX, Queue_Size
+00E0 3BC3                  512             CMP     AX, BX                  ; if this vaalue passes the size of the queue
+00E2 7E03                  513             JLE     RxPutChar               ; then wrap around to the start of the queue
+00E4 B8D000         R      514             MOV     AX, OFFSET RxQueue
+                           515     
+00E7                       516     RxPutChar:
+00E7 8BC8                  517             MOV     CX, AX                  ; save offset
+00E9 B8----         R      518             MOV     AX, SEG RxQueue         ; get the segment of the queue
+00EC 8EC0                  519             MOV     ES, AX                  ;    put this value in ES
+00EE 8BF1                  520             MOV     SI, CX                  ; put the offset in SI
+00F0 268914                521             MOV     ES:[SI], DX             ; store the value in queue      
+00F3 890E0600       R      522             MOV     RxTail, CX              ; update the queue tail
+                           523     
+                           524     
+00F7                       525     EndRxEnQueue:
+                           526     
+00F7 5A                    527             POP     DX
+00F8 59                    528             POP     CX
+00F9 5B                    529             POP     BX
+00FA 5E                    530             POP     SI                      ; restore registers
+00FB 07                    531             POP     ES
+                           532     
+                           533     
+00FC C3                    534             RET
+                           535     
+                           536     RxEnQueue       ENDP                    ; done
+                           537     
+                           538     
+                           539     ; TxEeQueue
+                           540     ;
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           541     ; Description:      PUSHES a value to the Transmit queue
+                           542     ;
+                           543     ; Arguments:        AX - Value
+                           544     ; Return Value:     None
+                           545     ;
+                           546     ; Local Variables:  None
+                           547     ;
+                           548     ; Shared Variables: TxTail, Rx Queue
+                           549     ; Global Variables: None
+                           550     ;                   
+                           551     ;                   
+                           552     ;
+                           553     ; Input:            None.
+                           554     ; Output:           None
+                           555     ;
+                           556     ; Error Handling:   None.
+                           557     ;
+                           558     ; Algorithms:       if queue if Full then loop while space available
+                           559     ;                       then put the value and adjust the queue tail
+                           560     ;                       
+                           561     ; Data Structures:  TxQueue
+                           562     ;
+                           563     ; Registers Used:   AX, BX, CX, DX, ES, SI
+                           564     ; Stack Depth:      5 words
+                           565     ;
+                           566     ; Author:           Chirath Neranjena
+                           567     ; Last Modified:    MAR 08 2002
+                           568     
+00FD                       569     TxEnQueue       PROC    NEAR
+                           570                     PUBLIC  TxEnQueue
+                           571     
+                           572     
+00FD 06                    573             PUSH    ES
+00FE 56                    574             PUSH    SI                      ; save registers
+00FF 53                    575             PUSH    BX
+0100 51                    576             PUSH    CX
+0101 52                    577             PUSH    DX
+                           578     
+0102 8BD0                  579             MOV     DX, AX                  ; save the input character
+0104 E83FFF                580             CALL    TxFull                  ; check if the queue if full
+0107 7424                  581             JZ      EndTxEnQueue            ; if queue is full the exit
+                           582     
+                           583     
+0109 A10200         R      584             MOV     AX, TxTail              ; get the queue tail
+010C 40                    585             INC     AX
+010D 40                    586             INC     AX                      ; increment this value twice
+010E BB080090       R      587             MOV     BX, OFFSET TxQueue
+0112 81C3C800              588             ADD     BX, Queue_Size
+0116 3BC3                  589             CMP     AX, BX                  ; if this vaalue passes the size of the queue
+0118 7E03                  590             JLE     TxPutChar               ; then wrap around to the start of the queue
+011A B80800         R      591             MOV     AX, OFFSET TxQueue
+                           592     
+011D                       593     TxPutChar:
+                           594     
+011D 8BC8                  595             MOV     CX, AX                  ; save offset
+8086/87/88/186 MACRO ASSEMBLER    QUEUE                                                    15:54:36  05/08/:2  PAGE   12
+
+
+LOC  OBJ                  LINE     SOURCE
+
+011F B8----         R      596             MOV     AX, SEG TxQueue         ; get the segment of the queue
+0122 8EC0                  597             MOV     ES, AX                  ;  put thi value in ES
+0124 8BF1                  598             MOV     SI, CX                  ; put offset in SI
+0126 268914                599             MOV     ES:[SI], DX             ; store the value in queue  
+0129 890E0200       R      600             MOV     TxTail, CX              ; update the queue tail
+                           601     
+                           602     
+012D                       603     EndTxEnQueue:
+                           604     
+012D 5A                    605             POP     DX
+012E 59                    606             POP     CX
+012F 5B                    607             POP     BX        
+0130 5E                    608             POP     SI                      ; restore registers
+0131 07                    609             POP     ES
+                           610     
+                           611     
+0132 C3                    612             RET
+                           613     
+                           614     TxEnQueue       ENDP                    ; done
+                           615     
+                           616     
+----                       617     CODE    ENDS
+                           618     
+----                       619     DATA    SEGMENT PUBLIC  'DATA'
+                           620     
+                           621     
+0000 ????                  622     TxHead          DW      ?               ; Transmit Queue Head Pointer
+0002 ????                  623     TxTail          DW      ?               ; Transmit Queue Tail Pointer
+0004 ????                  624     RxHead          DW      ?               ; Receive Queue Head Pointer
+0006 ????                  625     RxTail          DW      ?               ; Receive Queue Tail Pointer
+                           626     
+                           627     
+0008 (100                  628     TxQueue         DW      Q_Elem DUP(?)   ; TRANSMIT QUEUE
+     ????
+     )
+00D0 (100                  629     RxQueue         DW      Q_Elem DUP(?)   ; RECEIVE QUEUE 
+     ????
+     )
+                           630     
+----                       631     DATA    ENDS
+                           632     
+                           633     
+                           634             END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

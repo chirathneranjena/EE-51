@@ -1,0 +1,151 @@
+8086/87/88/186 MACRO ASSEMBLER    MACRODEMO                                                14:46:47  02/27/:2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE MACRODEMO
+OBJECT MODULE PLACED IN MACTEST.OBJ
+ASSEMBLER INVOKED BY:  D:\ASM\ASM86.EXE MACTEST.ASM DB M1 EP
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1            NAME  MACRODEMO
+                             2     
+                             3     
+                             4     ; local include files
+                             5 +1  $INCLUDE(macro.inc)
+                      =1     6     
+                      =1     7     
+                      =1     8     
+                      =1     9     
+                      =1    10     
+                      =1    11     
+                      =1    12     
+                      =1    13     
+                      =1    14     
+                      =1    15     
+                      =1    16     
+                      =1    17     
+                      =1    18     
+                      =1    19     
+                      =1    20     
+                      =1    21     
+                      =1    22     
+                            23     
+                            24     
+                            25     
+----                        26     PROGRAM SEGMENT PUBLIC 'CODE'
+                            27     
+                            28             ASSUME  CS:PROGRAM, DS:NOTHING, ES:NOTHING
+                            29     
+                            30     
+                            31 +1          
+                            32 +1  
+0000 B80000                 33 +2          MOV     AX, 0
+                            34 +1  
+                            35 +1          
+                            36 +1  
+0003 50                     37 +1          PUSH    AX
+0004 1E                     38 +1          PUSH    DS
+                            39 +1  
+0005 B80100                 40 +1          MOV     AX, 1b
+0008 C1E005                 41 +2          SAL     AX,  5
+000B 8ED8                   42 +1          MOV     DS, AX
+                            43 +1          
+000D 58                     44 +1          POP     AX
+000E 9090909090             45 +2          OR      BX, DS
+*** ERROR #2 IN 45 (LINE 28), OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            46 +1  
+0013 1F                     47 +1          POP     DS
+                            48 +1  
+                            49 +1          
+8086/87/88/186 MACRO ASSEMBLER    MACRODEMO                                                14:46:47  02/27/:2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            50 +1  
+0014 50                     51 +1          PUSH    AX
+0015 1E                     52 +1          PUSH    DS
+                            53 +1  
+0016 B80100                 54 +1          MOV     AX, 1b
+0019 C1E003                 55 +2          SAL     AX,  3
+001C 8ED8                   56 +1          MOV     DS, AX
+                            57 +1          
+001E 58                     58 +1          POP     AX
+001F 9090909090             59 +2          OR      CX, DS
+*** ERROR #2 IN 59 (LINE 42), OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            60 +1  
+0024 1F                     61 +1          POP     DS
+                            62 +1  
+                            63 +1          
+                            64 +1  
+0025 50                     65 +1          PUSH    AX
+0026 1E                     66 +1          PUSH    DS
+0027 06                     67 +1          PUSH    ES
+                            68 +1  
+0028 B80100                 69 +1          MOV     AX, 1b
+002B C1E002                 70 +2          SAL     AX,  2
+002E 8ED8                   71 +1          MOV     DS, AX
+                            72 +1          
+0030 58                     73 +1          POP     AX
+0031 8EC2                   74 +2          MOV     ES, DX
+0033 9090909090             75 +1          AND     ES, DS
+*** ERROR #2 IN 75 (LINE 58), OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            76 +1  
+                            77 +2          
+*** ERROR #304 IN 77 (LINE 60), (MACRO) ILLEGAL EXPRESSION 
+                                  INSIDE CALL: IF
+                                  INSIDE EXPANSION: COMBIT
+                            78 +3                  
+                            79 +3  
+0038 50                     80 +3          PUSH    AX
+0039 1E                     81 +3          PUSH    DS
+                            82 +3  
+003A B80100                 83 +3          MOV     AX, 1b
+003D C1E000                 84 +4          SAL     AX,  bit
+*** ERROR #38 IN 84 (LINE 67), (PASS 2) UNDEFINED SYMBOL, ZERO USED
+0040 8ED8                   85 +3          MOV     DS, AX
+                            86 +3          
+0042 58                     87 +3          POP     AX
+0043 9090909090             88 +4          OR      reg, DS
+*** ERROR #38 IN 88 (LINE 71), (PASS 2) UNDEFINED SYMBOL, ZERO USED
+*** ERROR #2 IN 88 (LINE 71), OPERANDS DO NOT MATCH THIS INSTRUCTION
+                            89 +3  
+0048 1F                     90 +3          POP     DS
+                            91 +3  
+                            92 +2          
+                            93 +1  
+                            94 +1  
+0049 07                     95 +1          POP     ES
+004A 1F                     96 +1          POP     DS
+8086/87/88/186 MACRO ASSEMBLER    MACRODEMO                                                14:46:47  02/27/:2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            97 +1  
+                            98 +1          
+                            99 +1  
+004B 50                    100 +1          PUSH    AX
+004C 1E                    101 +1          PUSH    DS
+004D 06                    102 +1          PUSH    ES
+                           103 +1  
+004E B80100                104 +1          MOV     AX, 1b
+0051 C1E004                105 +2          SAL     AX,  4
+0054 8ED8                  106 +1          MOV     DS, AX
+                           107 +1          
+0056 58                    108 +1          POP     AX
+0057 8EC0                  109 +2          MOV     ES, AX
+0059 9090909090            110 +1          AND     ES, DS
+*** ERROR #2 IN 110 (LINE 93), OPERANDS DO NOT MATCH THIS INSTRUCTION
+                           111 +1  
+005E 07                    112 +1          POP     ES
+005F 1F                    113 +1          POP     DS
+                           114 +1  
+                           115     
+----                       116     PROGRAM ENDS
+                           117     
+                           118     
+                           119             END
+
+ASSEMBLY COMPLETE, 8 ERRORS FOUND
